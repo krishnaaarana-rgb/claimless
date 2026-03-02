@@ -1,0 +1,83 @@
+import { NextRequest, NextResponse } from "next/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+
+const STAGE_ORDER = [
+  "applied",
+  "stage_1_passed",
+  "interview_invited",
+  "interview_completed",
+  "hired",
+] as const;
+
+export async function POST(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const supabase = createAdminClient();
+
+  const { data: application, error: fetchError } = await supabase
+    .from("applications")
+    .select("*, candidates (full_name, email), jobs (title)")
+    .eq("id", id)
+    .single();
+
+  if (fetchError || !application) {
+    return NextResponse.json(
+      { error: "Application not found" },
+      { status: 404 }
+    );
+  }
+
+  if (application.current_stage === "hired") {
+    return NextResponse.json(
+      { error: "Application is already hired" },
+      { status: 400 }
+    );
+  }
+
+  if (application.current_stage === "rejected") {
+    return NextResponse.json(
+      { error: "Cannot advance a rejected application" },
+      { status: 400 }
+    );
+  }
+
+  const currentIndex = STAGE_ORDER.indexOf(
+    application.current_stage as (typeof STAGE_ORDER)[number]
+  );
+  const nextStage = currentIndex >= 0 ? STAGE_ORDER[currentIndex + 1] : STAGE_ORDER[1];
+
+  if (!nextStage) {
+    return NextResponse.json(
+      { error: "No next stage available" },
+      { status: 400 }
+    );
+  }
+
+  const updates: Record<string, unknown> = {
+    current_stage: nextStage,
+    updated_at: new Date().toISOString(),
+  };
+
+  if (nextStage === "hired") {
+    updates.status = "hired";
+    updates.shortlisted_at = new Date().toISOString();
+  }
+
+  const { data: updated, error: updateError } = await supabase
+    .from("applications")
+    .update(updates)
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (updateError) {
+    return NextResponse.json(
+      { error: "Failed to advance application", details: updateError.message },
+      { status: 500 }
+    );
+  }
+
+  return NextResponse.json({ application: updated });
+}
