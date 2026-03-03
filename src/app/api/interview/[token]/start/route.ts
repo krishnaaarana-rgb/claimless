@@ -164,8 +164,9 @@ RULES:
 - End the interview naturally when you've covered the key topics`;
 
   // 7. Create Vapi assistant via API
+  const name = `IV: ${candidateName} - ${job.title}`.slice(0, 40);
   const vapiPayload = {
-    name: `Interview: ${candidateName} - ${job.title}`,
+    name,
     model: {
       provider: "openrouter",
       model: "anthropic/claude-sonnet-4-20250514",
