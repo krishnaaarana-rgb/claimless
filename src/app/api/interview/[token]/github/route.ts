@@ -35,7 +35,7 @@ export async function GET(
   }
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  const redirectUri = `${baseUrl}/api/interview/${token}/github/callback`;
+  const redirectUri = `${baseUrl}/api/auth/interview-github/callback`;
 
   const githubUrl = new URL("https://github.com/login/oauth/authorize");
   githubUrl.searchParams.set("client_id", clientId);

@@ -26,7 +26,7 @@ interface InterviewData {
 function isValidGithubUsername(value: string | null | undefined): boolean {
   if (!value || !value.trim()) return false;
   const lower = value.toLowerCase();
-  if (lower.includes("linkedin.com") || lower.includes("localhost")) return false;
+  if (lower.includes("linkedin.com") || lower.includes("localhost") || lower.includes("http")) return false;
   // GitHub usernames: alphanumeric + hyphens, 1-39 chars, no leading/trailing hyphen
   return /^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,37}[a-zA-Z0-9])?$/.test(value.trim());
 }

@@ -92,7 +92,9 @@ export async function POST(
 
   // 4. Get GitHub profile if connected
   let githubContext = "";
-  if (candidate.github_username) {
+  const ghUser = candidate.github_username;
+  const hasValidGithub = ghUser && /^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,37}[a-zA-Z0-9])?$/.test(ghUser) && !ghUser.includes("http") && !ghUser.includes("localhost");
+  if (hasValidGithub) {
     const { data: profile } = await supabase
       .from("candidate_profiles")
       .select("github_analysis")
@@ -101,6 +103,8 @@ export async function POST(
 
     if (profile?.github_analysis) {
       githubContext = `\n\nGITHUB PROFILE:\n${JSON.stringify(profile.github_analysis, null, 2)}`;
+    } else {
+      githubContext = `\n\nThe candidate's GitHub profile is github.com/${ghUser}. Ask about their open source contributions or notable repos.`;
     }
   }
 
