@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
         id,
         full_name,
         email,
-        github_url,
+        github_username,
         linkedin_url,
         personal_website_url
       ),
@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
       candidate_id: candidate.id,
       full_name: candidate.full_name,
       email: candidate.email,
-      github_url: candidate.github_url,
+      github_username: candidate.github_username,
       linkedin_url: candidate.linkedin_url,
       website_url: candidate.personal_website_url,
       job_id: job.id,
