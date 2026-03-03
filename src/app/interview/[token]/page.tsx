@@ -135,17 +135,18 @@ export default function InterviewPrepPage() {
 
     setStarting(true);
     try {
+      const name = preferredName.trim() || data?.candidate_name || "";
       await fetch(`/api/interview/${token}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          preferred_name: preferredName.trim() || data?.candidate_name,
+          preferred_name: name,
           start_interview: true,
         }),
       });
       // Stop the preview stream before navigating
       stream?.getTracks().forEach((t) => t.stop());
-      router.push(`/interview/${token}/session`);
+      router.push(`/interview/${token}/session?name=${encodeURIComponent(name)}`);
     } catch {
       setStarting(false);
     }
@@ -165,7 +166,7 @@ export default function InterviewPrepPage() {
   }
 
   if (pageState === "used") {
-    return <StatusPage icon={<Check size={32} className="text-emerald-600" />} title="Interview Completed" message="This interview has already been completed. If you believe this is an error, please contact the company." />;
+    return <StatusPage icon={<Check size={32} className="text-emerald-600" />} title="Interview Completed" message="This interview has already been completed. If you believe this is an error, please contact the company." linkHref={`/interview/${token}/complete`} linkText="View completion page" />;
   }
 
   if (pageState === "error") {
@@ -417,10 +418,14 @@ function StatusPage({
   icon,
   title,
   message,
+  linkHref,
+  linkText,
 }: {
   icon: React.ReactNode;
   title: string;
   message: string;
+  linkHref?: string;
+  linkText?: string;
 }) {
   return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: "#FAFAF9" }}>
@@ -430,6 +435,9 @@ function StatusPage({
         </div>
         <h1 className="text-[20px] font-bold text-stone-900 mb-2">{title}</h1>
         <p className="text-[14px] text-stone-500 leading-relaxed">{message}</p>
+        {linkHref && linkText && (
+          <a href={linkHref} className="inline-block mt-4 text-[13px] text-amber-600 hover:text-amber-700 underline underline-offset-2">{linkText}</a>
+        )}
         <p className="text-[12px] text-stone-400 mt-8">Powered by Claimless</p>
       </div>
     </div>
