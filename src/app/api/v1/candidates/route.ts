@@ -31,9 +31,9 @@ export async function GET(request: NextRequest) {
     .select(
       `
       id,
-      stage,
-      fit_score,
-      screening_status,
+      current_stage,
+      match_score,
+      status,
       created_at,
       candidates!inner (
         id,
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
     .range(offset, offset + limit - 1);
 
   if (jobId) query = query.eq("job_id", jobId);
-  if (stage) query = query.eq("stage", stage);
+  if (stage) query = query.eq("current_stage", stage);
 
   const { data, count, error } = await query;
 
@@ -76,9 +76,9 @@ export async function GET(request: NextRequest) {
       website_url: candidate.personal_website_url,
       job_id: job.id,
       job_title: job.title,
-      stage: app.stage,
-      fit_score: app.fit_score,
-      screening_status: app.screening_status,
+      stage: app.current_stage,
+      match_score: app.match_score,
+      status: app.status,
       applied_at: app.created_at,
     };
   });
