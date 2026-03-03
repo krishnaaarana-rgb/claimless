@@ -130,7 +130,9 @@ export default async function CandidateDetailPage({
           return (
             <ActionButtons
               applicationId={primaryApp.id}
+              candidateId={candidate.id}
               currentStage={primaryApp.current_stage}
+              hasInterviewToken={!!interviewToken}
               notificationSent={appData.notification_sent as boolean | undefined}
               notificationType={appData.notification_type as string | null | undefined}
               notificationSentAt={appData.notification_sent_at as string | null | undefined}

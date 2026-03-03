@@ -729,6 +729,30 @@ export default function CandidatesPage() {
     toast("Profile link copied", "info");
   };
 
+  const handleInviteInterview = async (candidate: CandidateRow) => {
+    setOpenMenu(null);
+    try {
+      const res = await fetch(`/api/candidates/${candidate.id}/invite`, {
+        method: "POST",
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        toast(data.error || "Failed to invite", "error");
+        return;
+      }
+      const data = await res.json();
+      await navigator.clipboard.writeText(data.interview_url);
+      if (data.already_existed) {
+        toast("Interview link copied!", "success");
+      } else {
+        toast("Interview invite sent and link copied!", "success");
+        fetchCandidates();
+      }
+    } catch {
+      toast("Failed to invite to interview", "error");
+    }
+  };
+
   /* Improvement 1: Row click handler */
   const handleRowClick = (e: React.MouseEvent, candidate: CandidateRow) => {
     const target = e.target as HTMLElement;
@@ -1191,11 +1215,11 @@ export default function CandidatesPage() {
                                   Add Note
                                 </button>
                                 <button
-                                  onClick={() => { setOpenMenu(null); toast("Interview scheduling coming soon", "info"); }}
+                                  onClick={() => handleInviteInterview(c)}
                                   className="w-full text-left px-3 py-2 text-[13px] text-stone-700 hover:bg-stone-50 flex items-center gap-2 transition-colors"
                                 >
                                   <Mic size={13} className="text-stone-400" />
-                                  Schedule Interview
+                                  {c.interview_status ? "Copy Interview Link" : "Invite to Interview"}
                                 </button>
                                 {c.has_resume && (
                                   <button

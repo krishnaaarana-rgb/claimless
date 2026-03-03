@@ -11,15 +11,21 @@ const STAGE_ADVANCE_LABEL: Record<string, string> = {
   interview_completed: "Hire",
 };
 
+const INVITE_ELIGIBLE_STAGES = ["applied", "pending_review", "stage_1_passed"];
+
 export function ActionButtons({
   applicationId,
+  candidateId,
   currentStage,
+  hasInterviewToken,
   notificationSent,
   notificationType,
   notificationSentAt,
 }: {
   applicationId: string;
+  candidateId: string;
   currentStage: string;
+  hasInterviewToken: boolean;
   notificationSent?: boolean;
   notificationType?: string | null;
   notificationSentAt?: string | null;
@@ -27,17 +33,80 @@ export function ActionButtons({
   const router = useRouter();
   const [advanceLoading, setAdvanceLoading] = useState(false);
   const [rejectLoading, setRejectLoading] = useState(false);
+  const [inviteLoading, setInviteLoading] = useState(false);
+  const [interviewUrl, setInterviewUrl] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const advanceLabel = STAGE_ADVANCE_LABEL[currentStage] || "Advance";
+  const showInviteButton = INVITE_ELIGIBLE_STAGES.includes(currentStage);
+
+  const showToast = (message: string) => {
+    setToastMessage(message);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const handleInvite = async () => {
+    setInviteLoading(true);
+    try {
+      const res = await fetch(`/api/candidates/${candidateId}/invite`, {
+        method: "POST",
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        showToast(data.error || "Failed to send invite");
+        return;
+      }
+      const data = await res.json();
+      setInterviewUrl(data.interview_url);
+
+      if (data.already_existed) {
+        showToast("Interview link ready");
+      } else {
+        showToast("Interview invite sent!");
+      }
+      router.refresh();
+    } catch {
+      showToast("Failed to send invite");
+    } finally {
+      setInviteLoading(false);
+    }
+  };
+
+  const handleCopyLink = async () => {
+    if (interviewUrl) {
+      await navigator.clipboard.writeText(interviewUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+      return;
+    }
+    // If no URL yet, fetch it
+    setInviteLoading(true);
+    try {
+      const res = await fetch(`/api/candidates/${candidateId}/invite`, {
+        method: "POST",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setInterviewUrl(data.interview_url);
+        await navigator.clipboard.writeText(data.interview_url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+        showToast("Interview link copied!");
+      }
+    } catch {
+      showToast("Failed to get interview link");
+    } finally {
+      setInviteLoading(false);
+    }
+  };
 
   const handleAdvance = async () => {
     setAdvanceLoading(true);
     try {
-      // 1. Advance the stage
       await fetch(`/api/dashboard/applications/${applicationId}/advance`, {
         method: "POST",
       });
-      // 2. Send acceptance email
       await fetch(`/api/dashboard/applications/${applicationId}/notify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -55,13 +124,11 @@ export function ActionButtons({
     }
     setRejectLoading(true);
     try {
-      // 1. Reject the application
       await fetch(`/api/dashboard/applications/${applicationId}/reject`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ reason: "Rejected from candidate detail view" }),
       });
-      // 2. Send rejection email
       await fetch(`/api/dashboard/applications/${applicationId}/notify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -73,10 +140,17 @@ export function ActionButtons({
     }
   };
 
-  const loading = advanceLoading || rejectLoading;
+  const loading = advanceLoading || rejectLoading || inviteLoading;
 
   return (
     <div className="flex flex-col items-end gap-2 shrink-0">
+      {/* Toast */}
+      {toastMessage && (
+        <div className="fixed top-4 right-4 z-50 bg-stone-900 text-white text-[13px] px-4 py-2.5 rounded-lg shadow-lg animate-in fade-in slide-in-from-top-2">
+          {toastMessage}
+        </div>
+      )}
+
       <div className="flex items-center gap-2">
         <button
           onClick={handleReject}
@@ -85,6 +159,30 @@ export function ActionButtons({
         >
           {rejectLoading ? "Rejecting..." : "Reject"}
         </button>
+
+        {/* Invite to Interview button */}
+        {showInviteButton && !hasInterviewToken && (
+          <button
+            onClick={handleInvite}
+            disabled={loading}
+            className="px-4 py-2 rounded-lg text-[13px] font-medium text-white transition-colors disabled:opacity-50"
+            style={{ background: "#7C3AED" }}
+          >
+            {inviteLoading ? "Sending..." : "Invite to Interview"}
+          </button>
+        )}
+
+        {/* Copy Interview Link (when token exists) */}
+        {hasInterviewToken && (
+          <button
+            onClick={handleCopyLink}
+            disabled={loading}
+            className="px-4 py-2 rounded-lg text-[13px] font-medium border border-violet-200 text-violet-600 hover:bg-violet-50 transition-colors disabled:opacity-50"
+          >
+            {copied ? "Copied!" : inviteLoading ? "Loading..." : "Copy Interview Link"}
+          </button>
+        )}
+
         <button
           onClick={handleAdvance}
           disabled={loading}
@@ -94,6 +192,24 @@ export function ActionButtons({
           {advanceLoading ? "Sending..." : `${advanceLabel} \u2192`}
         </button>
       </div>
+
+      {/* Interview URL display */}
+      {interviewUrl && (
+        <div className="flex items-center gap-2 mt-1">
+          <input
+            readOnly
+            value={interviewUrl}
+            className="text-[12px] text-stone-500 bg-stone-50 border border-stone-200 rounded px-2 py-1 w-[280px] truncate"
+          />
+          <button
+            onClick={handleCopyLink}
+            className="text-[12px] font-medium text-violet-600 hover:text-violet-700 shrink-0"
+          >
+            {copied ? "Copied!" : "Copy"}
+          </button>
+        </div>
+      )}
+
       {notificationSent && notificationType && (
         <span className="text-[12px] text-stone-400 flex items-center gap-1">
           <span className="text-emerald-500">{"\u2709"}</span>
