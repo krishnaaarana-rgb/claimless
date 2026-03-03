@@ -140,6 +140,7 @@ export async function POST(
         jobTitle: job.title,
         companyId: membership.company_id,
         passed: true,
+        interviewLink: interviewUrl,
       });
     } catch (err) {
       console.error("[invite] Email send failed:", err);

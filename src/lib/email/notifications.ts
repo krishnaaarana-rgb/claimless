@@ -10,6 +10,7 @@ interface NotifyInput {
   jobTitle: string;
   companyId: string;
   passed: boolean;
+  interviewLink?: string; // Pass pre-built link to avoid creating duplicate tokens
 }
 
 export async function sendATSNotification(
@@ -44,28 +45,35 @@ export async function sendATSNotification(
 
   const companyName = company?.name || "Our Company";
 
-  // If candidate passed, generate interview token and build link
+  // If candidate passed, use provided interview link or generate a new token
   let interviewLink = "";
   if (input.passed) {
-    const token = crypto.randomUUID();
-    const { error: tokenError } = await supabase
-      .from("interview_tokens")
-      .insert({
-        application_id: input.applicationId,
-        token,
-        status: "pending",
-        expires_at: new Date(
-          Date.now() + 7 * 24 * 60 * 60 * 1000
-        ).toISOString(),
-      });
-
-    if (tokenError) {
-      console.error("[notify] Failed to create interview token:", tokenError);
+    if (input.interviewLink) {
+      // Use pre-built link (avoids creating duplicate tokens)
+      interviewLink = input.interviewLink;
+      console.log("[notify] Using provided interview link:", interviewLink);
     } else {
-      const baseUrl =
-        process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-      interviewLink = `${baseUrl}/interview/${token}`;
-      console.log("[notify] Interview link generated:", interviewLink);
+      // Create a new interview token
+      const token = crypto.randomUUID();
+      const { error: tokenError } = await supabase
+        .from("interview_tokens")
+        .insert({
+          application_id: input.applicationId,
+          token,
+          status: "pending",
+          expires_at: new Date(
+            Date.now() + 7 * 24 * 60 * 60 * 1000
+          ).toISOString(),
+        });
+
+      if (tokenError) {
+        console.error("[notify] Failed to create interview token:", tokenError);
+      } else {
+        const baseUrl =
+          process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+        interviewLink = `${baseUrl}/interview/${token}`;
+        console.log("[notify] Interview link generated:", interviewLink);
+      }
     }
   }
 

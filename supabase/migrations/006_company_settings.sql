@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS company_settings (
 
   -- Email Templates
   email_acceptance_subject TEXT NOT NULL DEFAULT 'Great news about your application at {{company_name}}',
-  email_acceptance_body TEXT NOT NULL DEFAULT E'Hi {{candidate_name}},\n\nWe were impressed by your application for {{job_title}}. We''d like to invite you to the next stage of our process \u2014 an AI-powered interview.\n\nYou''ll receive a separate email with instructions shortly.\n\nBest,\n{{company_name}} Team',
+  email_acceptance_body TEXT NOT NULL DEFAULT E'Hi {{candidate_name}},\n\nWe were impressed by your application for {{job_title}}. We''d like to invite you to the next stage of our process \u2014 an AI-powered interview.\n\nClick the link below to begin your interview when you''re ready:\n{{interview_link}}\n\nThis link will expire in 7 days.\n\nBest,\n{{company_name}} Team',
   email_rejection_subject TEXT NOT NULL DEFAULT 'Update on your application at {{company_name}}',
   email_rejection_body TEXT NOT NULL DEFAULT E'Hi {{candidate_name}},\n\nThank you for your interest in the {{job_title}} role at {{company_name}}. After careful review, we''ve decided to move forward with other candidates.\n\nWe appreciate the time you took to apply and wish you the best.\n\nBest,\n{{company_name}} Team',
 
