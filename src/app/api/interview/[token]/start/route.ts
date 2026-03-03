@@ -169,7 +169,7 @@ RULES:
     name,
     model: {
       provider: "openrouter",
-      model: "anthropic/claude-sonnet-4-20250514",
+      model: "openai/gpt-4o-mini",
       messages: [{ role: "system", content: systemPrompt }],
       temperature: 0.7,
     },

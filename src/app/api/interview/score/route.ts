@@ -80,7 +80,7 @@ Evaluate the candidate's interview performance. Return ONLY valid JSON:
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "anthropic/claude-sonnet-4-20250514",
+          model: "openai/gpt-4o-mini",
           messages: [{ role: "user", content: scoringPrompt }],
           temperature: 0.3,
         }),
