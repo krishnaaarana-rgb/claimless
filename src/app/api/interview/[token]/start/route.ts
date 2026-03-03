@@ -188,7 +188,7 @@ RULES:
     maxDurationSeconds: (duration + 2) * 60,
     silenceTimeoutSeconds: 30,
     responseDelaySeconds: 0.5,
-    serverUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/interview/webhook`,
+    serverUrl: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/interview/webhook`,
     serverUrlSecret: process.env.VAPI_API_KEY,
   };
 
