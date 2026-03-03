@@ -23,7 +23,7 @@ interface InterviewData {
   interview_duration: number;
 }
 
-type PageState = "loading" | "ready" | "expired" | "used" | "error";
+type PageState = "loading" | "ready" | "expired" | "used" | "active" | "error";
 
 export default function InterviewPrepPage() {
   const { token } = useParams<{ token: string }>();
@@ -53,7 +53,7 @@ export default function InterviewPrepPage() {
         const res = await fetch(`/api/interview/${token}`);
         const json = await res.json();
         if (!res.ok) {
-          if (json.error === "used") {
+          if (json.error === "completed") {
             setPageState("used");
           } else if (json.error === "expired") {
             setPageState("expired");
@@ -65,7 +65,11 @@ export default function InterviewPrepPage() {
         }
         setData(json);
         setPreferredName(json.candidate_name || "");
-        setPageState("ready");
+        if (json.token_status === "active") {
+          setPageState("active");
+        } else {
+          setPageState("ready");
+        }
       } catch {
         setPageState("error");
         setErrorMessage("Failed to load interview data");
@@ -139,10 +143,7 @@ export default function InterviewPrepPage() {
       await fetch(`/api/interview/${token}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          preferred_name: name,
-          start_interview: true,
-        }),
+        body: JSON.stringify({ preferred_name: name }),
       });
       // Stop the preview stream before navigating
       stream?.getTracks().forEach((t) => t.stop());
@@ -167,6 +168,30 @@ export default function InterviewPrepPage() {
 
   if (pageState === "used") {
     return <StatusPage icon={<Check size={32} className="text-emerald-600" />} title="Interview Completed" message="This interview has already been completed. If you believe this is an error, please contact the company." linkHref={`/interview/${token}/complete`} linkText="View completion page" />;
+  }
+
+  if (pageState === "active") {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "#FAFAF9" }}>
+        <div className="text-center max-w-md px-6">
+          <div className="w-16 h-16 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center mx-auto mb-4">
+            <Mic size={28} className="text-amber-600" />
+          </div>
+          <h1 className="text-[20px] font-bold text-stone-900 mb-2">Interview in Progress</h1>
+          <p className="text-[14px] text-stone-500 leading-relaxed mb-6">
+            It looks like your interview is currently active. You can rejoin the session below.
+          </p>
+          <a
+            href={`/interview/${token}/session`}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-[15px] font-semibold text-white transition-all hover:opacity-90"
+            style={{ background: "#D97706" }}
+          >
+            Rejoin Interview <ChevronRight size={18} />
+          </a>
+          <p className="text-[12px] text-stone-400 mt-8">Powered by Claimless</p>
+        </div>
+      </div>
+    );
   }
 
   if (pageState === "error") {

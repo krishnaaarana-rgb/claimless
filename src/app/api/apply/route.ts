@@ -175,9 +175,8 @@ export async function POST(request: NextRequest) {
   });
 
   // 6. Fire-and-forget background ATS screening
-  const host = request.headers.get("host") || "localhost:3000";
-  const protocol = host.includes("localhost") ? "http" : "https";
-  fetch(`${protocol}://${host}/api/apply/screen`, {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  fetch(`${baseUrl}/api/apply/screen`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ application_id: application.id }),

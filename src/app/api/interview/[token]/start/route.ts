@@ -23,13 +23,13 @@ export async function POST(
       { status: 404 }
     );
   }
-  if (tokenData.status === "used") {
+  if (tokenData.status === "completed" || tokenData.status === "used") {
     return NextResponse.json(
       { error: "Interview already completed" },
       { status: 400 }
     );
   }
-  if (new Date(tokenData.expires_at) < new Date()) {
+  if (tokenData.status === "expired" || new Date(tokenData.expires_at) < new Date()) {
     return NextResponse.json(
       { error: "Interview link expired" },
       { status: 400 }
@@ -58,7 +58,27 @@ export async function POST(
   const candidate = application.candidates;
   const job = application.jobs;
 
-  // 2. Get ATS screening data for context
+  // 2. If token is already active, allow reconnection with existing assistant
+  if (tokenData.status === "active") {
+    const existingAssistantId = application.application_form_data?.vapi_assistant_id as string | undefined;
+    if (existingAssistantId) {
+      const { data: settings } = await supabase
+        .from("company_settings")
+        .select("interview_duration_minutes")
+        .eq("company_id", job.company_id)
+        .single();
+
+      return NextResponse.json({
+        assistant_id: existingAssistantId,
+        public_key: process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY,
+        candidate_name: (application.application_form_data?.preferred_name as string) || candidate.full_name || "the candidate",
+        job_title: job.title,
+        duration_minutes: settings?.interview_duration_minutes || 15,
+      });
+    }
+  }
+
+  // 3. Get ATS screening data for context
   const screeningData = application.match_breakdown || {};
   const interviewTopics =
     (screeningData.suggested_interview_topics as string[]) || [];
@@ -190,11 +210,11 @@ RULES:
 
   const assistant = await vapiResponse.json();
 
-  // 8. Mark token as used and store assistant ID
+  // 8. Mark token as active (interview in progress)
   await supabase
     .from("interview_tokens")
     .update({
-      status: "used",
+      status: "active",
       used_at: new Date().toISOString(),
     })
     .eq("id", tokenData.id);

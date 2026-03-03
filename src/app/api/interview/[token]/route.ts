@@ -19,9 +19,9 @@ export async function GET(
     return NextResponse.json({ error: "Invalid interview link" }, { status: 404 });
   }
 
-  if (tokenData.status === "used") {
+  if (tokenData.status === "completed" || tokenData.status === "used") {
     return NextResponse.json(
-      { error: "used", message: "This interview has already been completed." },
+      { error: "completed", message: "This interview has already been completed." },
       { status: 410 }
     );
   }
@@ -78,6 +78,7 @@ export async function GET(
     .single();
 
   return NextResponse.json({
+    token_status: tokenData.status,
     candidate_name: candidate?.full_name || "",
     candidate_email: candidate?.email || "",
     github_username: candidate?.github_username || null,
@@ -108,13 +109,12 @@ export async function PATCH(
     return NextResponse.json({ error: "Invalid token" }, { status: 404 });
   }
 
-  if (tokenData.status === "used") {
-    return NextResponse.json({ error: "Interview already started" }, { status: 410 });
+  if (tokenData.status === "completed" || tokenData.status === "used") {
+    return NextResponse.json({ error: "Interview already completed" }, { status: 410 });
   }
 
   // Save preferred name if provided
   if (body.preferred_name) {
-    // Get candidate id from application
     const { data: app } = await supabase
       .from("applications")
       .select("candidate_id")
@@ -127,25 +127,6 @@ export async function PATCH(
         .update({ full_name: body.preferred_name })
         .eq("id", app.candidate_id);
     }
-  }
-
-  // If starting interview, mark token as used and advance stage
-  if (body.start_interview) {
-    await supabase
-      .from("interview_tokens")
-      .update({
-        status: "used",
-        used_at: new Date().toISOString(),
-      })
-      .eq("id", tokenData.id);
-
-    await supabase
-      .from("applications")
-      .update({
-        current_stage: "interview_invited",
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", tokenData.application_id);
   }
 
   return NextResponse.json({ success: true });

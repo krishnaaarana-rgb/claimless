@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
-const GITHUB_AUTH_URL = `https://github.com/login/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID}&scope=repo,read:user&redirect_uri=${typeof window !== "undefined" ? window.location.origin : "http://localhost:3000"}/auth/github/callback`;
+const GITHUB_AUTH_URL = `https://github.com/login/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID}&scope=repo,read:user&redirect_uri=${typeof window !== "undefined" ? window.location.origin : (process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000")}/auth/github/callback`;
 
 const STEPS = [
   { title: "Connect GitHub", desc: "We read your public repos and contribution history" },

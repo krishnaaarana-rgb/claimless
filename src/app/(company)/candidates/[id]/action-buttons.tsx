@@ -155,18 +155,18 @@ export function ActionButtons({
         <button
           onClick={handleReject}
           disabled={loading}
-          className="px-4 py-2 rounded-lg text-[13px] font-medium border border-stone-200 text-stone-600 hover:border-red-300 hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+          className="px-4 py-2 rounded-lg text-[13px] font-medium border border-red-200 text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
         >
           {rejectLoading ? "Rejecting..." : "Reject"}
         </button>
 
-        {/* Invite to Interview button */}
+        {/* Invite to Interview button -- amber filled (most important for passed candidates) */}
         {showInviteButton && !hasInterviewToken && (
           <button
             onClick={handleInvite}
             disabled={loading}
-            className="px-4 py-2 rounded-lg text-[13px] font-medium text-white transition-colors disabled:opacity-50"
-            style={{ background: "#7C3AED" }}
+            className="px-5 py-2 rounded-lg text-[13px] font-semibold text-white transition-colors disabled:opacity-50 hover:opacity-90"
+            style={{ background: "#D97706" }}
           >
             {inviteLoading ? "Sending..." : "Invite to Interview"}
           </button>
@@ -177,7 +177,7 @@ export function ActionButtons({
           <button
             onClick={handleCopyLink}
             disabled={loading}
-            className="px-4 py-2 rounded-lg text-[13px] font-medium border border-violet-200 text-violet-600 hover:bg-violet-50 transition-colors disabled:opacity-50"
+            className="px-4 py-2 rounded-lg text-[13px] font-medium border border-amber-200 text-amber-600 hover:bg-amber-50 transition-colors disabled:opacity-50"
           >
             {copied ? "Copied!" : inviteLoading ? "Loading..." : "Copy Interview Link"}
           </button>
@@ -186,8 +186,7 @@ export function ActionButtons({
         <button
           onClick={handleAdvance}
           disabled={loading}
-          className="px-4 py-2 rounded-lg text-[13px] font-medium text-white transition-colors disabled:opacity-50"
-          style={{ background: "#D97706" }}
+          className="px-4 py-2 rounded-lg text-[13px] font-medium border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-50"
         >
           {advanceLoading ? "Sending..." : `${advanceLabel} \u2192`}
         </button>

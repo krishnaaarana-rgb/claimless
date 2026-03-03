@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useTransition } from "react";
 import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -108,6 +108,27 @@ function stagePill(stage: string): string {
       return "bg-yellow-50 text-yellow-700 border-yellow-200";
     default:
       return "bg-stone-100 text-stone-600 border-stone-200";
+  }
+}
+
+function stageDot(stage: string): string {
+  switch (stage) {
+    case "stage_1_passed": return "bg-emerald-500";
+    case "interview_invited": return "bg-amber-500";
+    case "interview_completed": return "bg-cyan-500";
+    case "hired": return "bg-green-500";
+    case "rejected": return "bg-red-500";
+    default: return "bg-stone-400";
+  }
+}
+
+function stageChangeMessage(stage: string): string {
+  switch (stage) {
+    case "interview_invited": return "This will send an acceptance email with an interview link.";
+    case "rejected": return "This will send a rejection email to the candidate.";
+    case "hired": return "This will mark the candidate as hired.";
+    case "interview_completed": return "This will mark the interview as completed.";
+    default: return "This will update the candidate's stage. No email will be sent.";
   }
 }
 
@@ -490,6 +511,12 @@ export default function CandidatesPage() {
   const [emailModal, setEmailModal] = useState<CandidateRow | null>(null);
   const [noteModal, setNoteModal] = useState<CandidateRow | null>(null);
   const [resumeModal, setResumeModal] = useState<CandidateRow | null>(null);
+  const [stagePillMenu, setStagePillMenu] = useState<string | null>(null);
+  const [stageConfirm, setStageConfirm] = useState<{ candidate: CandidateRow; targetStage: string } | null>(null);
+  const [stageConfirmLoading, setStageConfirmLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const [navigatingRow, setNavigatingRow] = useState<string | null>(null);
+  const rowClickLock = useRef(false);
 
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
@@ -753,10 +780,9 @@ export default function CandidatesPage() {
     }
   };
 
-  /* Improvement 1: Row click handler */
+  /* Improvement 1: Row click handler with startTransition for smoother nav */
   const handleRowClick = (e: React.MouseEvent, candidate: CandidateRow) => {
     const target = e.target as HTMLElement;
-    // Skip if clicking on interactive elements
     if (
       target.closest("input[type=checkbox]") ||
       target.closest("a") ||
@@ -765,8 +791,15 @@ export default function CandidatesPage() {
     ) {
       return;
     }
-    router.push(`/candidates/${candidate.id}`);
+    if (rowClickLock.current) return;
+    rowClickLock.current = true;
+    setNavigatingRow(candidate.application_id);
+    startTransition(() => {
+      router.push(`/candidates/${candidate.id}`);
+    });
+    setTimeout(() => { rowClickLock.current = false; }, 500);
   };
+  void isPending;
 
   const totalPages = Math.ceil(total / 20);
 
@@ -1005,9 +1038,9 @@ export default function CandidatesPage() {
                       key={c.application_id}
                       onClick={(e) => handleRowClick(e, c)}
                       className="border-t border-stone-100 transition-colors group cursor-pointer"
-                      style={{ background: "transparent" }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = "#F5F5F4")}
-                      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                      style={{ background: navigatingRow === c.application_id ? "#FEF3C7" : "transparent" }}
+                      onMouseEnter={(e) => { if (navigatingRow !== c.application_id) e.currentTarget.style.background = "#F5F5F4"; }}
+                      onMouseLeave={(e) => { if (navigatingRow !== c.application_id) e.currentTarget.style.background = "transparent"; }}
                     >
                       <td className="w-10 px-4 py-3">
                         <input
@@ -1116,10 +1149,49 @@ export default function CandidatesPage() {
                           <span className="text-[13px] text-stone-300">--</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-center">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium border ${stagePill(c.status)}`}>
-                          {stageLabel(c.status)}
-                        </span>
+                      <td className="px-4 py-3 text-center" data-no-row-click>
+                        <div className="relative inline-block">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setStagePillMenu(stagePillMenu === c.application_id ? null : c.application_id);
+                            }}
+                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium border cursor-pointer transition-all hover:shadow-sm hover:brightness-95 ${stagePill(c.status)}`}
+                          >
+                            {stageLabel(c.status)}
+                            <ChevronDown size={10} className="opacity-0 group-hover:opacity-60 transition-opacity" />
+                          </button>
+                          {stagePillMenu === c.application_id && (
+                            <>
+                              <div className="fixed inset-0 z-10" onClick={() => setStagePillMenu(null)} />
+                              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1 z-20 bg-white border border-stone-200 rounded-lg shadow-lg py-1 min-w-[170px]">
+                                {STAGE_MOVES.map((s) => {
+                                  const isCurrent = s.value === c.status;
+                                  return (
+                                    <button
+                                      key={s.value}
+                                      disabled={isCurrent}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setStagePillMenu(null);
+                                        setStageConfirm({ candidate: c, targetStage: s.value });
+                                      }}
+                                      className={`w-full text-left px-3 py-1.5 text-[13px] flex items-center gap-2 transition-colors ${
+                                        isCurrent
+                                          ? "text-stone-400 cursor-default bg-stone-50"
+                                          : "text-stone-700 hover:bg-stone-50"
+                                      }`}
+                                    >
+                                      <span className={`w-2 h-2 rounded-full shrink-0 ${stageDot(s.value)}`} />
+                                      {s.label}
+                                      {isCurrent && <span className="text-[10px] text-stone-400 ml-auto">current</span>}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </>
+                          )}
+                        </div>
                       </td>
                       {/* Fix 3: AI Summary column */}
                       <td className="px-4 py-3 hidden xl:table-cell">
@@ -1136,10 +1208,27 @@ export default function CandidatesPage() {
                           <span className="text-[12px] text-stone-300">--</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-right">
-                        <span className="text-[13px] text-stone-400">
+                      <td className="px-4 py-3 text-right relative" data-no-row-click>
+                        <span className="text-[13px] text-stone-400 group-hover:opacity-0 transition-opacity">
                           {relativeTime(c.applied_at)}
                         </span>
+                        {/* Quick-action buttons on hover */}
+                        <div className="absolute inset-y-0 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); router.push(`/candidates/${c.id}`); }}
+                            title="View Profile"
+                            className="p-1.5 rounded-md text-stone-400 hover:text-stone-700 hover:bg-white transition-colors"
+                          >
+                            <ExternalLink size={14} />
+                          </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setEmailModal(c); }}
+                            title="Send Email"
+                            className="p-1.5 rounded-md text-stone-400 hover:text-stone-700 hover:bg-white transition-colors"
+                          >
+                            <Mail size={14} />
+                          </button>
+                        </div>
                       </td>
                       {/* Fix 4: Action Menu - positioned to left */}
                       <td className="px-2 py-3" data-no-row-click>
@@ -1348,6 +1437,64 @@ export default function CandidatesPage() {
           candidate={resumeModal}
           onClose={() => setResumeModal(null)}
         />
+      )}
+      {stageConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+          <div className="bg-white rounded-xl shadow-xl border border-stone-200 max-w-md w-full mx-4 p-6">
+            <h3 className="text-[16px] font-semibold text-stone-900 mb-2">
+              Move {stageConfirm.candidate.name} to &ldquo;{STAGE_MOVES.find(s => s.value === stageConfirm.targetStage)?.label || stageConfirm.targetStage}&rdquo;?
+            </h3>
+            <p className="text-[14px] text-stone-500 mb-6 leading-relaxed">
+              {stageChangeMessage(stageConfirm.targetStage)}
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setStageConfirm(null)}
+                disabled={stageConfirmLoading}
+                className="px-4 py-2 rounded-lg text-[13px] font-medium border border-stone-200 text-stone-600 hover:bg-stone-50 transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  if (!stageConfirm) return;
+                  setStageConfirmLoading(true);
+                  const { candidate, targetStage } = stageConfirm;
+                  try {
+                    // 1. Update stage
+                    await fetch(`/api/candidates/${candidate.id}/stage`, {
+                      method: "PATCH",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ stage: targetStage, application_id: candidate.application_id }),
+                    });
+                    // 2. Side effects by stage
+                    if (targetStage === "interview_invited") {
+                      await fetch(`/api/candidates/${candidate.id}/invite`, { method: "POST" });
+                    } else if (targetStage === "rejected") {
+                      await fetch(`/api/dashboard/applications/${candidate.application_id}/notify`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ type: "rejection" }),
+                      });
+                    }
+                    toast(`${candidate.name} moved to ${stageLabel(targetStage)}`, "success");
+                    fetchCandidates();
+                  } catch {
+                    toast("Failed to update stage", "error");
+                  } finally {
+                    setStageConfirmLoading(false);
+                    setStageConfirm(null);
+                  }
+                }}
+                disabled={stageConfirmLoading}
+                className="px-4 py-2 rounded-lg text-[13px] font-medium text-white transition-colors disabled:opacity-50"
+                style={{ background: "#D97706" }}
+              >
+                {stageConfirmLoading ? "Updating..." : "Confirm & Send"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -96,6 +96,13 @@ export async function POST(request: NextRequest) {
       })
       .eq("id", application.id);
 
+    // Mark interview token as completed
+    await supabase
+      .from("interview_tokens")
+      .update({ status: "completed" })
+      .eq("application_id", application.id)
+      .in("status", ["pending", "active"]);
+
     // Score the interview with Claude (fire and forget)
     const baseUrl =
       process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
