@@ -164,44 +164,64 @@ RULES:
 - End the interview naturally when you've covered the key topics`;
 
   // 7. Create Vapi assistant via API
+  const vapiPayload = {
+    name: `Interview: ${candidateName} - ${job.title}`,
+    model: {
+      provider: "openrouter",
+      model: "anthropic/claude-sonnet-4-20250514",
+      messages: [{ role: "system", content: systemPrompt }],
+      temperature: 0.7,
+    },
+    voice: {
+      provider: "11labs",
+      voiceId: "EXAVITQu4vr4xnSDxMaL",
+      stability: 0.5,
+      similarityBoost: 0.75,
+    },
+    firstMessage: `Hi ${candidateName}, thanks for taking the time to chat with us today about the ${job.title} role. I'm really looking forward to learning more about you. Let's keep this super conversational -- just think of it as a friendly chat about your experience. So to kick things off, could you tell me a bit about yourself and what drew you to this role?`,
+    transcriber: {
+      provider: "deepgram",
+      model: "nova-2",
+      language: "en",
+    },
+    endCallFunctionEnabled: true,
+    maxDurationSeconds: (duration + 2) * 60,
+    silenceTimeoutSeconds: 30,
+    responseDelaySeconds: 0.5,
+    serverUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/interview/webhook`,
+    serverUrlSecret: process.env.VAPI_API_KEY,
+  };
+
+  // Log Vapi request config (excluding full system prompt for brevity)
+  console.log("[interview] Creating Vapi assistant:", JSON.stringify({
+    name: vapiPayload.name,
+    model: { provider: vapiPayload.model.provider, model: vapiPayload.model.model, temperature: vapiPayload.model.temperature, systemPromptLength: systemPrompt.length },
+    voice: vapiPayload.voice,
+    transcriber: vapiPayload.transcriber,
+    maxDurationSeconds: vapiPayload.maxDurationSeconds,
+    silenceTimeoutSeconds: vapiPayload.silenceTimeoutSeconds,
+    responseDelaySeconds: vapiPayload.responseDelaySeconds,
+    serverUrl: vapiPayload.serverUrl,
+  }));
+
   const vapiResponse = await fetch("https://api.vapi.ai/assistant", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${process.env.VAPI_API_KEY}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      name: `Interview: ${candidateName} - ${job.title}`,
-      model: {
-        provider: "openrouter",
-        model: "anthropic/claude-sonnet-4-20250514",
-        messages: [{ role: "system", content: systemPrompt }],
-        temperature: 0.7,
-      },
-      voice: {
-        provider: "11labs",
-        voiceId: "EXAVITQu4vr4xnSDxMaL",
-        stability: 0.5,
-        similarityBoost: 0.75,
-      },
-      firstMessage: `Hi ${candidateName}, thanks for taking the time to chat with us today about the ${job.title} role. I'm really looking forward to learning more about you. Let's keep this super conversational -- just think of it as a friendly chat about your experience. So to kick things off, could you tell me a bit about yourself and what drew you to this role?`,
-      transcriber: {
-        provider: "deepgram",
-        model: "nova-2",
-        language: "en",
-      },
-      endCallFunctionEnabled: true,
-      maxDurationSeconds: (duration + 2) * 60,
-      silenceTimeoutSeconds: 30,
-      responseDelaySeconds: 0.5,
-      serverUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/interview/webhook`,
-      serverUrlSecret: process.env.VAPI_API_KEY,
-    }),
+    body: JSON.stringify(vapiPayload),
   });
 
   if (!vapiResponse.ok) {
-    const error = await vapiResponse.text();
-    console.error("[interview] Vapi assistant creation failed:", error);
+    const errorBody = await vapiResponse.text();
+    console.error("[interview] Vapi assistant creation failed:", {
+      status: vapiResponse.status,
+      statusText: vapiResponse.statusText,
+      body: errorBody,
+      candidateName,
+      jobTitle: job.title,
+    });
     return NextResponse.json(
       { error: "Failed to create interview session" },
       { status: 500 }
@@ -209,6 +229,7 @@ RULES:
   }
 
   const assistant = await vapiResponse.json();
+  console.log("[interview] Vapi assistant created:", assistant.id);
 
   // 8. Mark token as active (interview in progress)
   await supabase

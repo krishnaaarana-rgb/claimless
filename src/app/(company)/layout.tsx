@@ -144,13 +144,20 @@ export default function CompanyLayout({
                           }`}
                           style={{
                             ...(isActive
-                              ? {
-                                  background: "#2A2A2A",
-                                  borderLeft: "2px solid #D97706",
-                                  paddingLeft: expanded ? 10 : 0,
-                                  color: "#FFFFFF",
-                                  justifyContent: expanded ? "flex-start" : "center",
-                                }
+                              ? expanded
+                                ? {
+                                    background: "#2A2A2A",
+                                    borderLeft: "2px solid #D97706",
+                                    paddingLeft: 10,
+                                    color: "#FFFFFF",
+                                    justifyContent: "flex-start",
+                                  }
+                                : {
+                                    background: "transparent",
+                                    color: "#D97706",
+                                    justifyContent: "center",
+                                    paddingLeft: 0,
+                                  }
                               : {
                                   color: "#A8A29E",
                                   paddingLeft: expanded ? 12 : 0,

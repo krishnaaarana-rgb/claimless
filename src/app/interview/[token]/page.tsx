@@ -23,6 +23,14 @@ interface InterviewData {
   interview_duration: number;
 }
 
+function isValidGithubUsername(value: string | null | undefined): boolean {
+  if (!value || !value.trim()) return false;
+  const lower = value.toLowerCase();
+  if (lower.includes("linkedin.com") || lower.includes("localhost")) return false;
+  // GitHub usernames: alphanumeric + hyphens, 1-39 chars, no leading/trailing hyphen
+  return /^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,37}[a-zA-Z0-9])?$/.test(value.trim());
+}
+
 type PageState = "loading" | "ready" | "expired" | "used" | "active" | "error";
 
 export default function InterviewPrepPage() {
@@ -198,7 +206,8 @@ export default function InterviewPrepPage() {
     return <StatusPage icon={<AlertCircle size={32} className="text-red-500" />} title="Invalid Link" message={errorMessage} />;
   }
 
-  const canStart = cameraReady && micReady && (!data?.github_required || !!data?.github_username);
+  const githubConnected = isValidGithubUsername(data?.github_username);
+  const canStart = cameraReady && micReady && (!data?.github_required || githubConnected);
 
   return (
     <div className="min-h-screen" style={{ background: "#FAFAF9" }}>
@@ -298,10 +307,10 @@ export default function InterviewPrepPage() {
               <CheckItem done={micReady} label="Microphone is working" />
               {data?.github_required !== undefined && (
                 <CheckItem
-                  done={!!data?.github_username}
+                  done={githubConnected}
                   label={
-                    data?.github_username
-                      ? `GitHub connected @${data.github_username}`
+                    githubConnected
+                      ? `GitHub connected @${data?.github_username}`
                       : data?.github_required
                         ? "Connect GitHub (Required)"
                         : "Connect GitHub (Optional)"
@@ -341,7 +350,7 @@ export default function InterviewPrepPage() {
             </div>
 
             {/* GitHub connect button */}
-            {!data?.github_username && (
+            {!githubConnected && (
               <button
                 onClick={() => {
                   window.location.href = `/api/interview/${token}/github`;
