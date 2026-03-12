@@ -187,7 +187,7 @@ export default function NewJobPage() {
             <Button variant="outline">View All Jobs</Button>
           </Link>
           <Link href="/jobs/new">
-            <Button className="glow-primary">Create Another</Button>
+            <Button className="">Create Another</Button>
           </Link>
         </div>
       </div>
@@ -431,7 +431,6 @@ export default function NewJobPage() {
           Save as Draft
         </Button>
         <Button
-          className="glow-primary"
           onClick={() => handleSubmit("active")}
           disabled={loading}
         >

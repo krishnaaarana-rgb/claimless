@@ -95,7 +95,7 @@ function stagePill(stage: string): string {
     case "stage_1_passed":
       return "bg-emerald-50 text-emerald-700 border-emerald-200";
     case "interview_invited":
-      return "bg-amber-50 text-amber-700 border-amber-200";
+      return "bg-blue-50 text-blue-700 border-blue-200";
     case "interview_completed":
       return "bg-cyan-50 text-cyan-700 border-cyan-200";
     case "hired":
@@ -107,18 +107,18 @@ function stagePill(stage: string): string {
     case "screening":
       return "bg-yellow-50 text-yellow-700 border-yellow-200";
     default:
-      return "bg-stone-100 text-stone-600 border-stone-200";
+      return "bg-[#F7F6F3] text-[#37352F] border-[#E9E9E7]";
   }
 }
 
 function stageDot(stage: string): string {
   switch (stage) {
     case "stage_1_passed": return "bg-emerald-500";
-    case "interview_invited": return "bg-amber-500";
+    case "interview_invited": return "bg-blue-500";
     case "interview_completed": return "bg-cyan-500";
     case "hired": return "bg-green-500";
     case "rejected": return "bg-red-500";
-    default: return "bg-stone-400";
+    default: return "bg-[#9B9A97]";
   }
 }
 
@@ -134,9 +134,9 @@ function stageChangeMessage(stage: string): string {
 
 /* Improvement 3: Score as colored pill */
 function scorePill(score: number | null): { text: string; bg: string } {
-  if (score == null) return { text: "text-stone-400", bg: "" };
+  if (score == null) return { text: "text-[#9B9A97]", bg: "" };
   if (score >= 70) return { text: "text-[#059669]", bg: "bg-[#ECFDF5]" };
-  if (score >= 40) return { text: "text-[#D97706]", bg: "bg-[#FEF3C7]" };
+  if (score >= 40) return { text: "text-[#2383E2]", bg: "bg-[#FEF3C7]" };
   return { text: "text-[#DC2626]", bg: "bg-[#FEF2F2]" };
 }
 
@@ -171,13 +171,13 @@ function formatResumeLines(text: string): ReactNode[] {
     const isHeader = /^[A-Z][A-Z\s&/,]{2,}$/.test(line.trim()) && line.trim().length > 2;
     if (isHeader) {
       return (
-        <div key={i} className="font-bold text-stone-900 mt-3 mb-1 text-[13px]">
+        <div key={i} className="font-bold text-[#37352F] mt-3 mb-1 text-[13px]">
           {line}
         </div>
       );
     }
     return (
-      <div key={i} className="text-[12px] text-stone-700 leading-relaxed">
+      <div key={i} className="text-[12px] text-[#37352F] leading-relaxed">
         {line || "\u00A0"}
       </div>
     );
@@ -293,11 +293,11 @@ function EmailModal({
 
   return (
     <ModalOverlay onClose={onClose}>
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6">
-        <h3 className="text-[16px] font-semibold text-stone-900 mb-1">
+      <div className="bg-white rounded-lg shadow-2xl w-full max-w-lg p-6">
+        <h3 className="text-[16px] font-semibold text-[#37352F] mb-1">
           Send Email
         </h3>
-        <p className="text-[13px] text-stone-500 mb-4">
+        <p className="text-[13px] text-[#9B9A97] mb-4">
           To: {candidate.name} ({candidate.email})
         </p>
         <input
@@ -305,19 +305,19 @@ function EmailModal({
           placeholder="Subject"
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
-          className="w-full px-3 py-2 rounded-lg border border-stone-200 bg-white text-[13px] text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 mb-3"
+          className="w-full px-3 py-2 rounded-lg border border-[#E9E9E7] bg-white text-[13px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 mb-3"
         />
         <textarea
           placeholder="Message..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           rows={6}
-          className="w-full px-3 py-2 rounded-lg border border-stone-200 bg-white text-[13px] text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 mb-4 resize-none"
+          className="w-full px-3 py-2 rounded-lg border border-[#E9E9E7] bg-white text-[13px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 mb-4 resize-none"
         />
         <div className="flex justify-end gap-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg text-[13px] font-medium border border-stone-200 text-stone-600 hover:bg-stone-50 transition-colors"
+            className="px-4 py-2 rounded-lg text-[13px] font-medium border border-[#E9E9E7] text-[#37352F] hover:bg-[#F7F6F3] transition-colors"
           >
             Cancel
           </button>
@@ -325,7 +325,7 @@ function EmailModal({
             onClick={handleSend}
             disabled={sending || !subject.trim() || !message.trim()}
             className="px-4 py-2 rounded-lg text-[13px] font-medium text-white transition-colors disabled:opacity-50"
-            style={{ background: "#D97706" }}
+            style={{ background: "#2383E2" }}
           >
             {sending ? "Sending..." : "Send"}
           </button>
@@ -369,11 +369,11 @@ function NoteModal({
 
   return (
     <ModalOverlay onClose={onClose}>
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6">
-        <h3 className="text-[16px] font-semibold text-stone-900 mb-1">
+      <div className="bg-white rounded-lg shadow-2xl w-full max-w-lg p-6">
+        <h3 className="text-[16px] font-semibold text-[#37352F] mb-1">
           Add Note
         </h3>
-        <p className="text-[13px] text-stone-500 mb-4">
+        <p className="text-[13px] text-[#9B9A97] mb-4">
           Internal note for {candidate.name}
         </p>
         <textarea
@@ -381,13 +381,13 @@ function NoteModal({
           value={content}
           onChange={(e) => setContent(e.target.value)}
           rows={4}
-          className="w-full px-3 py-2 rounded-lg border border-stone-200 bg-white text-[13px] text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 mb-4 resize-none"
+          className="w-full px-3 py-2 rounded-lg border border-[#E9E9E7] bg-white text-[13px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 mb-4 resize-none"
           autoFocus
         />
         <div className="flex justify-end gap-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg text-[13px] font-medium border border-stone-200 text-stone-600 hover:bg-stone-50 transition-colors"
+            className="px-4 py-2 rounded-lg text-[13px] font-medium border border-[#E9E9E7] text-[#37352F] hover:bg-[#F7F6F3] transition-colors"
           >
             Cancel
           </button>
@@ -395,7 +395,7 @@ function NoteModal({
             onClick={handleSave}
             disabled={saving || !content.trim()}
             className="px-4 py-2 rounded-lg text-[13px] font-medium text-white transition-colors disabled:opacity-50"
-            style={{ background: "#D97706" }}
+            style={{ background: "#2383E2" }}
           >
             {saving ? "Saving..." : "Save Note"}
           </button>
@@ -427,20 +427,20 @@ function ResumeModal({
 
   return (
     <ModalOverlay onClose={onClose}>
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl p-6">
+      <div className="bg-white rounded-lg shadow-2xl w-full max-w-2xl p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-[16px] font-semibold text-stone-900">
+            <h3 className="text-[16px] font-semibold text-[#37352F]">
               Resume Preview
             </h3>
-            <p className="text-[13px] text-stone-500 mt-0.5">
+            <p className="text-[13px] text-[#9B9A97] mt-0.5">
               {candidate.name}
             </p>
           </div>
           {candidate.resume_text_preview && (
             <button
               onClick={handleCopy}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-stone-200 text-stone-600 hover:bg-stone-50 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-[#E9E9E7] text-[#37352F] hover:bg-[#F7F6F3] transition-colors"
             >
               <Clipboard size={12} />
               {copied ? "Copied!" : "Copy"}
@@ -448,20 +448,20 @@ function ResumeModal({
           )}
         </div>
         <div
-          className="bg-stone-50 border border-stone-200 rounded-lg p-5 overflow-y-auto"
+          className="bg-[#F7F6F3] border border-[#E9E9E7] rounded-lg p-5 overflow-y-auto"
           style={{ maxHeight: "70vh", fontFamily: "'JetBrains Mono', ui-monospace, monospace" }}
         >
           {candidate.resume_text_preview ? (
             <>
               {formatResumeLines(candidate.resume_text_preview)}
               {candidate.resume_text_preview.length >= 200 && (
-                <p className="text-[11px] text-stone-400 mt-4 pt-3 border-t border-stone-200">
+                <p className="text-[11px] text-[#9B9A97] mt-4 pt-3 border-t border-[#E9E9E7]">
                   Preview truncated. View full profile for complete resume.
                 </p>
               )}
             </>
           ) : (
-            <p className="text-[13px] text-stone-400">
+            <p className="text-[13px] text-[#9B9A97]">
               No resume text available. View full profile for details.
             </p>
           )}
@@ -469,7 +469,7 @@ function ResumeModal({
         <div className="flex justify-end mt-4">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg text-[13px] font-medium border border-stone-200 text-stone-600 hover:bg-stone-50 transition-colors"
+            className="px-4 py-2 rounded-lg text-[13px] font-medium border border-[#E9E9E7] text-[#37352F] hover:bg-[#F7F6F3] transition-colors"
           >
             Close
           </button>
@@ -594,15 +594,15 @@ export default function CandidatesPage() {
   const SortIcon = ({ field }: { field: string }) => {
     if (sortField !== field)
       return (
-        <span className="text-stone-300 ml-1 inline-flex flex-col leading-none">
+        <span className="text-[#D3D1CB] ml-1 inline-flex flex-col leading-none">
           <ChevronUp size={10} />
           <ChevronDown size={10} className="-mt-0.5" />
         </span>
       );
     return sortOrder === "asc" ? (
-      <ChevronUp size={12} className="text-amber-600 ml-1" />
+      <ChevronUp size={12} className="text-blue-600 ml-1" />
     ) : (
-      <ChevronDown size={12} className="text-amber-600 ml-1" />
+      <ChevronDown size={12} className="text-blue-600 ml-1" />
     );
   };
 
@@ -811,10 +811,10 @@ export default function CandidatesPage() {
     <div className="space-y-0">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold text-stone-900">Candidates</h1>
+        <h1 className="text-2xl font-bold text-[#37352F]">Candidates</h1>
         <button
           onClick={handleExportCSV}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] font-medium border border-stone-200 text-stone-600 hover:bg-stone-50 transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] font-medium border border-[#E9E9E7] text-[#37352F] hover:bg-[#F7F6F3] transition-colors"
         >
           <Download size={14} />
           Export CSV
@@ -822,24 +822,24 @@ export default function CandidatesPage() {
       </div>
 
       {/* ─── GHL-Style Tabs ─── */}
-      <div className="border-b border-stone-200 mb-6 overflow-x-auto">
+      <div className="border-b border-[#E9E9E7] mb-6 overflow-x-auto">
         <div className="flex gap-0 min-w-max">
           <button
             onClick={() => { setActiveTab("all"); setPage(1); setSelected(new Set()); }}
             className={`relative px-4 py-2.5 text-[13px] font-medium transition-colors whitespace-nowrap ${
-              activeTab === "all" ? "text-amber-700" : "text-stone-500 hover:text-stone-700"
+              activeTab === "all" ? "text-blue-700" : "text-[#9B9A97] hover:text-[#37352F]"
             }`}
           >
             All Candidates
             <span className={`ml-1.5 text-[11px] px-1.5 py-0.5 rounded-full ${
-              activeTab === "all" ? "bg-amber-100 text-amber-700" : "bg-stone-100 text-stone-500"
+              activeTab === "all" ? "bg-blue-100 text-blue-700" : "bg-[#F7F6F3] text-[#9B9A97]"
             }`}>
               {activeTab === "all"
                 ? total
                 : jobs.reduce((sum, j) => sum + (j.applicant_count || 0), 0) || total}
             </span>
             {activeTab === "all" && (
-              <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-amber-600 rounded-t" />
+              <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-blue-600 rounded-t" />
             )}
           </button>
           {jobs.map((job) => (
@@ -847,17 +847,17 @@ export default function CandidatesPage() {
               key={job.id}
               onClick={() => { setActiveTab(job.id); setPage(1); setSelected(new Set()); }}
               className={`relative px-4 py-2.5 text-[13px] font-medium transition-colors whitespace-nowrap ${
-                activeTab === job.id ? "text-amber-700" : "text-stone-500 hover:text-stone-700"
+                activeTab === job.id ? "text-blue-700" : "text-[#9B9A97] hover:text-[#37352F]"
               }`}
             >
               {job.title}
               <span className={`ml-1.5 text-[11px] px-1.5 py-0.5 rounded-full ${
-                activeTab === job.id ? "bg-amber-100 text-amber-700" : "bg-stone-100 text-stone-500"
+                activeTab === job.id ? "bg-blue-100 text-blue-700" : "bg-[#F7F6F3] text-[#9B9A97]"
               }`}>
                 {job.applicant_count || 0}
               </span>
               {activeTab === job.id && (
-                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-amber-600 rounded-t" />
+                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-blue-600 rounded-t" />
               )}
             </button>
           ))}
@@ -865,16 +865,16 @@ export default function CandidatesPage() {
       </div>
 
       {/* ─── Filters Bar ─── */}
-      <div className="bg-white border border-stone-200 rounded-xl p-4 flex items-center gap-3 flex-wrap mb-4">
+      <div className="bg-white border border-[#E9E9E7] rounded-lg p-4 flex items-center gap-3 flex-wrap mb-4">
         {/* Search */}
         <div className="relative flex-1 min-w-[200px]">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9B9A97]" />
           <input
             type="text"
             placeholder="Search candidates..."
             value={search}
             onChange={(e) => handleSearch(e.target.value)}
-            className="w-full pl-8 pr-3 py-2 rounded-lg border border-stone-200 bg-white text-[13px] text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+            className="w-full pl-8 pr-3 py-2 rounded-lg border border-[#E9E9E7] bg-white text-[13px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
           />
         </div>
 
@@ -882,8 +882,8 @@ export default function CandidatesPage() {
         <div className="relative">
           <button
             onClick={() => setStatusOpen(!statusOpen)}
-            className={`px-3 py-2 rounded-lg border bg-white text-[13px] text-stone-700 focus:outline-none hover:bg-stone-50 transition-colors ${
-              statusFilter.length > 0 ? "border-amber-300 bg-amber-50/50" : "border-stone-200"
+            className={`px-3 py-2 rounded-lg border bg-white text-[13px] text-[#37352F] focus:outline-none hover:bg-[#F7F6F3] transition-colors ${
+              statusFilter.length > 0 ? "border-blue-300 bg-blue-50/50" : "border-[#E9E9E7]"
             }`}
           >
             Status{statusFilter.length > 0 ? ` (${statusFilter.length})` : ""}
@@ -891,11 +891,11 @@ export default function CandidatesPage() {
           {statusOpen && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setStatusOpen(false)} />
-              <div className="absolute left-0 top-full mt-1 z-20 bg-white border border-stone-200 rounded-lg shadow-lg py-1 min-w-[180px]">
+              <div className="absolute left-0 top-full mt-1 z-20 bg-white border border-[#E9E9E7] rounded-lg shadow-lg py-1 min-w-[180px]">
                 {STATUS_OPTIONS.map((opt) => (
                   <label
                     key={opt.value}
-                    className="flex items-center gap-2 px-3 py-1.5 hover:bg-stone-50 cursor-pointer"
+                    className="flex items-center gap-2 px-3 py-1.5 hover:bg-[#F7F6F3] cursor-pointer"
                   >
                     <input
                       type="checkbox"
@@ -908,17 +908,17 @@ export default function CandidatesPage() {
                         );
                         setPage(1);
                       }}
-                      className="rounded border-stone-300"
+                      className="rounded border-[#E9E9E7]"
                     />
-                    <span className="text-[13px] text-stone-700">{opt.label}</span>
+                    <span className="text-[13px] text-[#37352F]">{opt.label}</span>
                   </label>
                 ))}
                 {statusFilter.length > 0 && (
                   <>
-                    <div className="border-t border-stone-100 my-1" />
+                    <div className="border-t border-[#E9E9E7] my-1" />
                     <button
                       onClick={() => { setStatusFilter([]); setPage(1); }}
-                      className="w-full text-left px-3 py-1.5 text-[12px] text-amber-600 hover:bg-stone-50 font-medium"
+                      className="w-full text-left px-3 py-1.5 text-[12px] text-blue-600 hover:bg-[#F7F6F3] font-medium"
                     >
                       Clear
                     </button>
@@ -933,7 +933,7 @@ export default function CandidatesPage() {
         <select
           value={scoreFilter}
           onChange={(e) => { setScoreFilter(e.target.value); setPage(1); }}
-          className="px-3 py-2 rounded-lg border border-stone-200 bg-white text-[13px] text-stone-700 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+          className="px-3 py-2 rounded-lg border border-[#E9E9E7] bg-white text-[13px] text-[#37352F] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
         >
           {SCORE_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -944,7 +944,7 @@ export default function CandidatesPage() {
         {hasFilters && (
           <button
             onClick={clearFilters}
-            className="text-[12px] text-amber-600 hover:text-amber-700 font-medium flex items-center gap-1"
+            className="text-[12px] text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
           >
             <X size={12} />
             Clear filters
@@ -954,16 +954,15 @@ export default function CandidatesPage() {
 
       {/* ─── Table ─── */}
       <div
-        className="bg-white border border-stone-200 rounded-xl overflow-hidden"
-        style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}
+        className="bg-white border border-[#E9E9E7] rounded-lg overflow-hidden"
       >
         {loading ? (
           <div className="p-8 text-center">
-            <div className="w-6 h-6 border-2 border-amber-600 border-t-transparent rounded-full animate-spin mx-auto" />
+            <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto" />
           </div>
         ) : candidates.length === 0 ? (
           <div className="px-5 py-16 text-center">
-            <p className="text-[14px] text-stone-500">
+            <p className="text-[14px] text-[#9B9A97]">
               {hasFilters
                 ? "No candidates match your filters."
                 : "No candidates yet. Share your job posting links to start receiving applications."}
@@ -973,19 +972,19 @@ export default function CandidatesPage() {
           <>
             <table className="w-full">
               <thead>
-                <tr className="bg-stone-50/80">
+                <tr className="bg-[#F7F6F3]/80">
                   <th className="w-10 px-4 py-2.5">
                     <input
                       type="checkbox"
                       checked={candidates.length > 0 && selected.size === candidates.length}
                       onChange={toggleSelectAll}
-                      className="rounded border-stone-300"
+                      className="rounded border-[#E9E9E7]"
                     />
                   </th>
                   <th className="text-left px-4 py-2.5">
                     <button
                       onClick={() => toggleSort("created_at")}
-                      className="text-[11px] font-medium text-stone-400 uppercase tracking-[0.04em] flex items-center hover:text-stone-600"
+                      className="text-[11px] font-medium text-[#9B9A97] uppercase tracking-[0.04em] flex items-center hover:text-[#37352F]"
                     >
                       Candidate
                       <SortIcon field="created_at" />
@@ -993,7 +992,7 @@ export default function CandidatesPage() {
                   </th>
                   {activeTab === "all" && (
                     <th className="text-left px-4 py-2.5">
-                      <span className="text-[11px] font-medium text-stone-400 uppercase tracking-[0.04em]">
+                      <span className="text-[11px] font-medium text-[#9B9A97] uppercase tracking-[0.04em]">
                         Job
                       </span>
                     </th>
@@ -1001,27 +1000,27 @@ export default function CandidatesPage() {
                   <th className="text-center px-4 py-2.5">
                     <button
                       onClick={() => toggleSort("match_score")}
-                      className="text-[11px] font-medium text-stone-400 uppercase tracking-[0.04em] flex items-center justify-center hover:text-stone-600"
+                      className="text-[11px] font-medium text-[#9B9A97] uppercase tracking-[0.04em] flex items-center justify-center hover:text-[#37352F]"
                     >
                       Score
                       <SortIcon field="match_score" />
                     </button>
                   </th>
                   <th className="text-center px-4 py-2.5">
-                    <span className="text-[11px] font-medium text-stone-400 uppercase tracking-[0.04em]">
+                    <span className="text-[11px] font-medium text-[#9B9A97] uppercase tracking-[0.04em]">
                       Status
                     </span>
                   </th>
                   {/* Fix 3: AI Summary column header */}
                   <th className="text-left px-4 py-2.5 hidden xl:table-cell">
-                    <span className="text-[11px] font-medium text-stone-400 uppercase tracking-[0.04em]">
+                    <span className="text-[11px] font-medium text-[#9B9A97] uppercase tracking-[0.04em]">
                       AI Summary
                     </span>
                   </th>
                   <th className="text-right px-4 py-2.5">
                     <button
                       onClick={() => toggleSort("created_at")}
-                      className="text-[11px] font-medium text-stone-400 uppercase tracking-[0.04em] flex items-center justify-end hover:text-stone-600 ml-auto"
+                      className="text-[11px] font-medium text-[#9B9A97] uppercase tracking-[0.04em] flex items-center justify-end hover:text-[#37352F] ml-auto"
                     >
                       Applied
                       <SortIcon field="created_at" />
@@ -1037,9 +1036,9 @@ export default function CandidatesPage() {
                     <tr
                       key={c.application_id}
                       onClick={(e) => handleRowClick(e, c)}
-                      className="border-t border-stone-100 transition-colors group cursor-pointer"
+                      className="border-t border-[#E9E9E7] transition-colors group cursor-pointer"
                       style={{ background: navigatingRow === c.application_id ? "#FEF3C7" : "transparent" }}
-                      onMouseEnter={(e) => { if (navigatingRow !== c.application_id) e.currentTarget.style.background = "#F5F5F4"; }}
+                      onMouseEnter={(e) => { if (navigatingRow !== c.application_id) e.currentTarget.style.background = "#F7F6F3"; }}
                       onMouseLeave={(e) => { if (navigatingRow !== c.application_id) e.currentTarget.style.background = "transparent"; }}
                     >
                       <td className="w-10 px-4 py-3">
@@ -1047,23 +1046,23 @@ export default function CandidatesPage() {
                           type="checkbox"
                           checked={selected.has(c.application_id)}
                           onChange={() => toggleSelect(c.application_id)}
-                          className="rounded border-stone-300"
+                          className="rounded border-[#E9E9E7]"
                         />
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-start gap-3">
                           <div className="flex-1 min-w-0">
-                            <div className="text-[14px] font-medium text-stone-900 hover:underline">
+                            <div className="text-[14px] font-medium text-[#37352F] hover:underline">
                               {c.name}
                             </div>
                             <div className="flex items-center gap-1.5 mt-0.5">
-                              <span className="text-[11px] text-stone-400 truncate max-w-[180px]">
+                              <span className="text-[11px] text-[#9B9A97] truncate max-w-[180px]">
                                 {c.email}
                               </span>
                               {c.phone && (
                                 <>
-                                  <span className="text-stone-300">{"·"}</span>
-                                  <span className="text-[11px] text-stone-400">{c.phone}</span>
+                                  <span className="text-[#D3D1CB]">{"·"}</span>
+                                  <span className="text-[11px] text-[#9B9A97]">{c.phone}</span>
                                 </>
                               )}
                             </div>
@@ -1091,7 +1090,7 @@ export default function CandidatesPage() {
                                     title="GitHub"
                                     onClick={(e) => e.stopPropagation()}
                                     className="transition-transform duration-150 hover:scale-110"
-                                    style={{ color: "#1C1917" }}
+                                    style={{ color: "#37352F" }}
                                   >
                                     <GitHubIcon />
                                   </a>
@@ -1104,7 +1103,7 @@ export default function CandidatesPage() {
                                     title="Portfolio"
                                     onClick={(e) => e.stopPropagation()}
                                     className="transition-transform duration-150 hover:scale-110"
-                                    style={{ color: "#D97706" }}
+                                    style={{ color: "#2383E2" }}
                                   >
                                     <GlobeIcon />
                                   </a>
@@ -1126,11 +1125,11 @@ export default function CandidatesPage() {
                       </td>
                       {activeTab === "all" && (
                         <td className="px-4 py-3">
-                          <div className="text-[13px] text-stone-700 truncate max-w-[160px]">
+                          <div className="text-[13px] text-[#37352F] truncate max-w-[160px]">
                             {c.job_title}
                           </div>
                           {c.department && (
-                            <span className="text-[10px] text-stone-400 bg-stone-100 px-1.5 py-0.5 rounded mt-0.5 inline-block">
+                            <span className="text-[10px] text-[#9B9A97] bg-[#F7F6F3] px-1.5 py-0.5 rounded mt-0.5 inline-block">
                               {c.department}
                             </span>
                           )}
@@ -1146,7 +1145,7 @@ export default function CandidatesPage() {
                             {c.ats_score}
                           </span>
                         ) : (
-                          <span className="text-[13px] text-stone-300">--</span>
+                          <span className="text-[13px] text-[#D3D1CB]">--</span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-center" data-no-row-click>
@@ -1164,7 +1163,7 @@ export default function CandidatesPage() {
                           {stagePillMenu === c.application_id && (
                             <>
                               <div className="fixed inset-0 z-10" onClick={() => setStagePillMenu(null)} />
-                              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1 z-20 bg-white border border-stone-200 rounded-lg shadow-lg py-1 min-w-[170px]">
+                              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1 z-20 bg-white border border-[#E9E9E7] rounded-lg shadow-lg py-1 min-w-[170px]">
                                 {STAGE_MOVES.map((s) => {
                                   const isCurrent = s.value === c.status;
                                   return (
@@ -1178,13 +1177,13 @@ export default function CandidatesPage() {
                                       }}
                                       className={`w-full text-left px-3 py-1.5 text-[13px] flex items-center gap-2 transition-colors ${
                                         isCurrent
-                                          ? "text-stone-400 cursor-default bg-stone-50"
-                                          : "text-stone-700 hover:bg-stone-50"
+                                          ? "text-[#9B9A97] cursor-default bg-[#F7F6F3]"
+                                          : "text-[#37352F] hover:bg-[#F7F6F3]"
                                       }`}
                                     >
                                       <span className={`w-2 h-2 rounded-full shrink-0 ${stageDot(s.value)}`} />
                                       {s.label}
-                                      {isCurrent && <span className="text-[10px] text-stone-400 ml-auto">current</span>}
+                                      {isCurrent && <span className="text-[10px] text-[#9B9A97] ml-auto">current</span>}
                                     </button>
                                   );
                                 })}
@@ -1197,7 +1196,7 @@ export default function CandidatesPage() {
                       <td className="px-4 py-3 hidden xl:table-cell">
                         {c.ai_summary ? (
                           <span
-                            className="text-[12px] text-stone-500 block truncate max-w-[200px]"
+                            className="text-[12px] text-[#9B9A97] block truncate max-w-[200px]"
                             title={c.ai_summary}
                           >
                             {c.ai_summary.length > 50
@@ -1205,11 +1204,11 @@ export default function CandidatesPage() {
                               : c.ai_summary}
                           </span>
                         ) : (
-                          <span className="text-[12px] text-stone-300">--</span>
+                          <span className="text-[12px] text-[#D3D1CB]">--</span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-right relative" data-no-row-click>
-                        <span className="text-[13px] text-stone-400 group-hover:opacity-0 transition-opacity">
+                        <span className="text-[13px] text-[#9B9A97] group-hover:opacity-0 transition-opacity">
                           {relativeTime(c.applied_at)}
                         </span>
                         {/* Quick-action buttons on hover */}
@@ -1217,14 +1216,14 @@ export default function CandidatesPage() {
                           <button
                             onClick={(e) => { e.stopPropagation(); router.push(`/candidates/${c.id}`); }}
                             title="View Profile"
-                            className="p-1.5 rounded-md text-stone-400 hover:text-stone-700 hover:bg-white transition-colors"
+                            className="p-1.5 rounded-md text-[#9B9A97] hover:text-[#37352F] hover:bg-white transition-colors"
                           >
                             <ExternalLink size={14} />
                           </button>
                           <button
                             onClick={(e) => { e.stopPropagation(); setEmailModal(c); }}
                             title="Send Email"
-                            className="p-1.5 rounded-md text-stone-400 hover:text-stone-700 hover:bg-white transition-colors"
+                            className="p-1.5 rounded-md text-[#9B9A97] hover:text-[#37352F] hover:bg-white transition-colors"
                           >
                             <Mail size={14} />
                           </button>
@@ -1237,7 +1236,7 @@ export default function CandidatesPage() {
                             onClick={() =>
                               setOpenMenu(openMenu === c.application_id ? null : c.application_id)
                             }
-                            className="p-1.5 rounded-lg text-stone-400 hover:bg-stone-200 hover:text-stone-600 transition-colors opacity-0 group-hover:opacity-100"
+                            className="p-1.5 rounded-lg text-[#9B9A97] hover:bg-[#F7F6F3] hover:text-[#37352F] transition-colors opacity-0 group-hover:opacity-100"
                           >
                             <MoreHorizontal size={16} />
                           </button>
@@ -1247,26 +1246,26 @@ export default function CandidatesPage() {
                                 className="fixed inset-0 z-10"
                                 onClick={() => { setOpenMenu(null); setStageMenu(null); }}
                               />
-                              <div className="absolute right-full top-0 mr-1 z-20 bg-white border border-stone-200 rounded-lg shadow-lg py-1 min-w-[200px]">
+                              <div className="absolute right-full top-0 mr-1 z-20 bg-white border border-[#E9E9E7] rounded-lg shadow-lg py-1 min-w-[200px]">
                                 <button
                                   onClick={() => { setOpenMenu(null); router.push(`/candidates/${c.id}`); }}
-                                  className="w-full text-left px-3 py-2 text-[13px] text-stone-700 hover:bg-stone-50 flex items-center gap-2 transition-colors"
+                                  className="w-full text-left px-3 py-2 text-[13px] text-[#37352F] hover:bg-[#F7F6F3] flex items-center gap-2 transition-colors"
                                 >
-                                  <ExternalLink size={13} className="text-stone-400" />
+                                  <ExternalLink size={13} className="text-[#9B9A97]" />
                                   View Profile
                                 </button>
                                 <button
                                   onClick={() => { setOpenMenu(null); setEmailModal(c); }}
-                                  className="w-full text-left px-3 py-2 text-[13px] text-stone-700 hover:bg-stone-50 flex items-center gap-2 transition-colors"
+                                  className="w-full text-left px-3 py-2 text-[13px] text-[#37352F] hover:bg-[#F7F6F3] flex items-center gap-2 transition-colors"
                                 >
-                                  <Mail size={13} className="text-stone-400" />
+                                  <Mail size={13} className="text-[#9B9A97]" />
                                   Send Email
                                 </button>
                                 <button
                                   onClick={() => handleRescreen(c)}
-                                  className="w-full text-left px-3 py-2 text-[13px] text-stone-700 hover:bg-stone-50 flex items-center gap-2 transition-colors"
+                                  className="w-full text-left px-3 py-2 text-[13px] text-[#37352F] hover:bg-[#F7F6F3] flex items-center gap-2 transition-colors"
                                 >
-                                  <RefreshCw size={13} className="text-stone-400" />
+                                  <RefreshCw size={13} className="text-[#9B9A97]" />
                                   Re-screen
                                 </button>
                                 {/* Move to Stage sub-menu */}
@@ -1276,19 +1275,19 @@ export default function CandidatesPage() {
                                       e.stopPropagation();
                                       setStageMenu(stageMenu === c.application_id ? null : c.application_id);
                                     }}
-                                    className="w-full text-left px-3 py-2 text-[13px] text-stone-700 hover:bg-stone-50 flex items-center gap-2 transition-colors"
+                                    className="w-full text-left px-3 py-2 text-[13px] text-[#37352F] hover:bg-[#F7F6F3] flex items-center gap-2 transition-colors"
                                   >
-                                    <UserCheck size={13} className="text-stone-400" />
+                                    <UserCheck size={13} className="text-[#9B9A97]" />
                                     Move to Stage
-                                    <ChevronDown size={12} className="text-stone-400 ml-auto" />
+                                    <ChevronDown size={12} className="text-[#9B9A97] ml-auto" />
                                   </button>
                                   {stageMenu === c.application_id && (
-                                    <div className="absolute right-full top-0 mr-1 bg-white border border-stone-200 rounded-lg shadow-lg py-1 min-w-[160px]">
+                                    <div className="absolute right-full top-0 mr-1 bg-white border border-[#E9E9E7] rounded-lg shadow-lg py-1 min-w-[160px]">
                                       {STAGE_MOVES.filter((s) => s.value !== c.status).map((s) => (
                                         <button
                                           key={s.value}
                                           onClick={() => handleMoveStage(c, s.value)}
-                                          className="w-full text-left px-3 py-1.5 text-[13px] text-stone-700 hover:bg-stone-50 transition-colors"
+                                          className="w-full text-left px-3 py-1.5 text-[13px] text-[#37352F] hover:bg-[#F7F6F3] transition-colors"
                                         >
                                           {s.label}
                                         </button>
@@ -1298,35 +1297,35 @@ export default function CandidatesPage() {
                                 </div>
                                 <button
                                   onClick={() => { setOpenMenu(null); setNoteModal(c); }}
-                                  className="w-full text-left px-3 py-2 text-[13px] text-stone-700 hover:bg-stone-50 flex items-center gap-2 transition-colors"
+                                  className="w-full text-left px-3 py-2 text-[13px] text-[#37352F] hover:bg-[#F7F6F3] flex items-center gap-2 transition-colors"
                                 >
-                                  <MessageSquare size={13} className="text-stone-400" />
+                                  <MessageSquare size={13} className="text-[#9B9A97]" />
                                   Add Note
                                 </button>
                                 <button
                                   onClick={() => handleInviteInterview(c)}
-                                  className="w-full text-left px-3 py-2 text-[13px] text-stone-700 hover:bg-stone-50 flex items-center gap-2 transition-colors"
+                                  className="w-full text-left px-3 py-2 text-[13px] text-[#37352F] hover:bg-[#F7F6F3] flex items-center gap-2 transition-colors"
                                 >
-                                  <Mic size={13} className="text-stone-400" />
+                                  <Mic size={13} className="text-[#9B9A97]" />
                                   {c.interview_status ? "Copy Interview Link" : "Invite to Interview"}
                                 </button>
                                 {c.has_resume && (
                                   <button
                                     onClick={() => { setOpenMenu(null); setResumeModal(c); }}
-                                    className="w-full text-left px-3 py-2 text-[13px] text-stone-700 hover:bg-stone-50 flex items-center gap-2 transition-colors"
+                                    className="w-full text-left px-3 py-2 text-[13px] text-[#37352F] hover:bg-[#F7F6F3] flex items-center gap-2 transition-colors"
                                   >
-                                    <FileText size={13} className="text-stone-400" />
+                                    <FileText size={13} className="text-[#9B9A97]" />
                                     View Resume
                                   </button>
                                 )}
                                 <button
                                   onClick={() => handleCopyLink(c)}
-                                  className="w-full text-left px-3 py-2 text-[13px] text-stone-700 hover:bg-stone-50 flex items-center gap-2 transition-colors"
+                                  className="w-full text-left px-3 py-2 text-[13px] text-[#37352F] hover:bg-[#F7F6F3] flex items-center gap-2 transition-colors"
                                 >
-                                  <Copy size={13} className="text-stone-400" />
+                                  <Copy size={13} className="text-[#9B9A97]" />
                                   Copy Profile Link
                                 </button>
-                                <div className="border-t border-stone-100 my-1" />
+                                <div className="border-t border-[#E9E9E7] my-1" />
                                 {c.status !== "rejected" && (
                                   <button
                                     onClick={() => handleReject(c)}
@@ -1348,15 +1347,15 @@ export default function CandidatesPage() {
             </table>
 
             {/* Pagination */}
-            <div className="px-5 py-3 border-t border-stone-100 flex items-center justify-between">
-              <span className="text-[12px] text-stone-400">
+            <div className="px-5 py-3 border-t border-[#E9E9E7] flex items-center justify-between">
+              <span className="text-[12px] text-[#9B9A97]">
                 Showing {(page - 1) * 20 + 1}-{Math.min(page * 20, total)} of {total} candidates
               </span>
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="px-3 py-1 rounded text-[12px] font-medium border border-stone-200 text-stone-600 hover:bg-stone-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-3 py-1 rounded text-[12px] font-medium border border-[#E9E9E7] text-[#37352F] hover:bg-[#F7F6F3] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   Prev
                 </button>
@@ -1368,8 +1367,8 @@ export default function CandidatesPage() {
                       onClick={() => setPage(pageNum)}
                       className={`w-8 h-8 rounded text-[12px] font-medium transition-colors ${
                         page === pageNum
-                          ? "bg-amber-50 text-amber-700 border border-amber-200"
-                          : "text-stone-600 hover:bg-stone-50"
+                          ? "bg-blue-50 text-blue-700 border border-blue-200"
+                          : "text-[#37352F] hover:bg-[#F7F6F3]"
                       }`}
                     >
                       {pageNum}
@@ -1379,7 +1378,7 @@ export default function CandidatesPage() {
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page >= totalPages}
-                  className="px-3 py-1 rounded text-[12px] font-medium border border-stone-200 text-stone-600 hover:bg-stone-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-3 py-1 rounded text-[12px] font-medium border border-[#E9E9E7] text-[#37352F] hover:bg-[#F7F6F3] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   Next
                 </button>
@@ -1391,9 +1390,9 @@ export default function CandidatesPage() {
 
       {/* ─── Bulk Actions ─── */}
       {selected.size > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-stone-900 text-white rounded-xl px-6 py-3 flex items-center gap-4 shadow-xl">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#37352F] text-white rounded-lg px-6 py-3 flex items-center gap-4 shadow-xl">
           <span className="text-[13px] font-medium">{selected.size} selected</span>
-          <div className="w-px h-5 bg-stone-700" />
+          <div className="w-px h-5 bg-[#73726E]" />
           <button
             onClick={handleBulkReject}
             disabled={bulkLoading}
@@ -1410,7 +1409,7 @@ export default function CandidatesPage() {
           </button>
           <button
             onClick={() => setSelected(new Set())}
-            className="p-1 rounded hover:bg-stone-700 transition-colors"
+            className="p-1 rounded hover:bg-[#73726E] transition-colors"
           >
             <X size={14} />
           </button>
@@ -1440,18 +1439,18 @@ export default function CandidatesPage() {
       )}
       {stageConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-          <div className="bg-white rounded-xl shadow-xl border border-stone-200 max-w-md w-full mx-4 p-6">
-            <h3 className="text-[16px] font-semibold text-stone-900 mb-2">
+          <div className="bg-white rounded-lg shadow-xl border border-[#E9E9E7] max-w-md w-full mx-4 p-6">
+            <h3 className="text-[16px] font-semibold text-[#37352F] mb-2">
               Move {stageConfirm.candidate.name} to &ldquo;{STAGE_MOVES.find(s => s.value === stageConfirm.targetStage)?.label || stageConfirm.targetStage}&rdquo;?
             </h3>
-            <p className="text-[14px] text-stone-500 mb-6 leading-relaxed">
+            <p className="text-[14px] text-[#9B9A97] mb-6 leading-relaxed">
               {stageChangeMessage(stageConfirm.targetStage)}
             </p>
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setStageConfirm(null)}
                 disabled={stageConfirmLoading}
-                className="px-4 py-2 rounded-lg text-[13px] font-medium border border-stone-200 text-stone-600 hover:bg-stone-50 transition-colors disabled:opacity-50"
+                className="px-4 py-2 rounded-lg text-[13px] font-medium border border-[#E9E9E7] text-[#37352F] hover:bg-[#F7F6F3] transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -1488,7 +1487,7 @@ export default function CandidatesPage() {
                 }}
                 disabled={stageConfirmLoading}
                 className="px-4 py-2 rounded-lg text-[13px] font-medium text-white transition-colors disabled:opacity-50"
-                style={{ background: "#D97706" }}
+                style={{ background: "#2383E2" }}
               >
                 {stageConfirmLoading ? "Updating..." : "Confirm & Send"}
               </button>

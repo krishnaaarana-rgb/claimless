@@ -85,7 +85,7 @@ function stagePill(stage: string): string {
     case "stage_1_passed":
       return "bg-emerald-50 text-emerald-700 border-emerald-200";
     case "interview_invited":
-      return "bg-amber-50 text-amber-700 border-amber-200";
+      return "bg-blue-50 text-blue-700 border-blue-200";
     case "interview_completed":
       return "bg-cyan-50 text-cyan-700 border-cyan-200";
     case "hired":
@@ -94,14 +94,14 @@ function stagePill(stage: string): string {
     case "stage_1_failed":
       return "bg-red-50 text-red-600 border-red-200";
     default:
-      return "bg-stone-100 text-stone-600 border-stone-200";
+      return "bg-[#F7F6F3] text-[#37352F] border-[#E9E9E7]";
   }
 }
 
 function scoreColor(score: number | null): string {
-  if (score == null) return "text-stone-400";
+  if (score == null) return "text-[#9B9A97]";
   if (score >= 60) return "text-emerald-600";
-  if (score >= 40) return "text-amber-600";
+  if (score >= 40) return "text-[#2383E2]";
   return "text-red-600";
 }
 
@@ -226,15 +226,15 @@ export default function JobDetailPage({
   const SortIcon = ({ field }: { field: string }) => {
     if (sortField !== field)
       return (
-        <span className="text-stone-300 ml-1 inline-flex flex-col leading-none">
+        <span className="text-[#D3D1CB] ml-1 inline-flex flex-col leading-none">
           <ChevronUp size={10} />
           <ChevronDown size={10} className="-mt-0.5" />
         </span>
       );
     return sortOrder === "asc" ? (
-      <ChevronUp size={12} className="text-amber-600 ml-1" />
+      <ChevronUp size={12} className="text-[#2383E2] ml-1" />
     ) : (
-      <ChevronDown size={12} className="text-amber-600 ml-1" />
+      <ChevronDown size={12} className="text-[#2383E2] ml-1" />
     );
   };
 
@@ -296,12 +296,12 @@ export default function JobDetailPage({
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="h-8 bg-stone-100 rounded w-48 animate-pulse" />
+        <div className="h-8 bg-[#F7F6F3] rounded w-48 animate-pulse" />
         <div className="grid grid-cols-4 gap-5">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-white border border-stone-200 rounded-xl p-5 animate-pulse">
-              <div className="h-3 bg-stone-100 rounded w-20 mb-4" />
-              <div className="h-8 bg-stone-100 rounded w-16" />
+            <div key={i} className="bg-white border border-[#E9E9E7] rounded-lg p-5 animate-pulse">
+              <div className="h-3 bg-[#F7F6F3] rounded w-20 mb-4" />
+              <div className="h-8 bg-[#F7F6F3] rounded w-16" />
             </div>
           ))}
         </div>
@@ -311,7 +311,7 @@ export default function JobDetailPage({
 
   if (!job) {
     return (
-      <div className="text-center py-16 text-stone-500">Job not found</div>
+      <div className="text-center py-16 text-[#9B9A97]">Job not found</div>
     );
   }
 
@@ -327,7 +327,7 @@ export default function JobDetailPage({
       {/* Back link */}
       <Link
         href="/jobs"
-        className="inline-flex items-center text-[13px] text-stone-500 hover:text-amber-600 transition-colors"
+        className="inline-flex items-center text-[13px] text-[#9B9A97] hover:text-[#2383E2] transition-colors"
       >
         <span className="mr-1">&larr;</span> Back to Jobs
       </Link>
@@ -335,25 +335,25 @@ export default function JobDetailPage({
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-bold text-stone-900 leading-tight">
+          <h1 className="text-[28px] font-bold text-[#37352F] leading-tight">
             {job.title}
           </h1>
-          <div className="flex items-center gap-1.5 mt-1 text-[13px] text-stone-500">
+          <div className="flex items-center gap-1.5 mt-1 text-[13px] text-[#9B9A97]">
             {job.department && <span>{job.department}</span>}
             {job.department && job.location && (
-              <span className="text-stone-300">&middot;</span>
+              <span className="text-[#D3D1CB]">&middot;</span>
             )}
             {job.location && <span>{job.location}</span>}
             {(job.department || job.location) && (
-              <span className="text-stone-300">&middot;</span>
+              <span className="text-[#D3D1CB]">&middot;</span>
             )}
             <span>
               {TYPE_LABELS[job.employment_type] || job.employment_type}
             </span>
-            <span className="text-stone-300">&middot;</span>
+            <span className="text-[#D3D1CB]">&middot;</span>
             <span className="capitalize">{job.status}</span>
           </div>
-          <div className="text-[12px] text-stone-400 mt-1">
+          <div className="text-[12px] text-[#9B9A97] mt-1">
             Created {relativeTime(job.created_at)} &middot;{" "}
             {job.applicant_count} applicant
             {job.applicant_count !== 1 ? "s" : ""}
@@ -362,7 +362,7 @@ export default function JobDetailPage({
         <div className="flex items-center gap-2 shrink-0">
           <Link
             href={`/jobs/${id}/edit`}
-            className="px-4 py-2 rounded-lg text-[13px] font-medium border border-stone-200 text-stone-600 hover:bg-stone-50 transition-colors"
+            className="px-4 py-2 rounded-lg text-[13px] font-medium border border-[#E9E9E7] text-[#37352F] hover:bg-[#F7F6F3] transition-colors"
           >
             Edit Job
           </Link>
@@ -376,16 +376,15 @@ export default function JobDetailPage({
           return (
             <div
               key={metric.label}
-              className="bg-white border border-stone-200 rounded-xl p-5"
-              style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}
+              className="bg-white border border-[#E9E9E7] rounded-lg p-5"
             >
               <div className="flex items-center justify-between mb-3">
-                <span className="text-[13px] text-stone-500">
+                <span className="text-[13px] text-[#9B9A97]">
                   {metric.label}
                 </span>
-                <Icon size={16} className="text-stone-300" />
+                <Icon size={16} className="text-[#D3D1CB]" />
               </div>
-              <div className="text-[32px] font-bold text-stone-900 leading-none">
+              <div className="text-[32px] font-bold text-[#37352F] leading-none">
                 {metric.value}
               </div>
             </div>
@@ -394,37 +393,37 @@ export default function JobDetailPage({
       </div>
 
       {/* Candidates section header */}
-      <h2 className="text-[16px] font-semibold text-stone-900">Candidates</h2>
+      <h2 className="text-[16px] font-semibold text-[#37352F]">Candidates</h2>
 
       {/* Filters */}
-      <div className="bg-white border border-stone-200 rounded-xl p-4 flex items-center gap-3 flex-wrap">
+      <div className="bg-white border border-[#E9E9E7] rounded-lg p-4 flex items-center gap-3 flex-wrap">
         <div className="relative flex-1 min-w-[200px]">
           <Search
             size={14}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9B9A97]"
           />
           <input
             type="text"
             placeholder="Search..."
             value={search}
             onChange={(e) => handleSearch(e.target.value)}
-            className="w-full pl-8 pr-3 py-2 rounded-lg border border-stone-200 bg-white text-[13px] text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+            className="w-full pl-8 pr-3 py-2 rounded-lg border border-[#E9E9E7] bg-white text-[13px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2]"
           />
         </div>
 
         <div className="relative">
           <button
             onClick={() => setStatusOpen(!statusOpen)}
-            className="px-3 py-2 rounded-lg border border-stone-200 bg-white text-[13px] text-stone-700 hover:bg-stone-50 transition-colors"
+            className="px-3 py-2 rounded-lg border border-[#E9E9E7] bg-white text-[13px] text-[#37352F] hover:bg-[#F7F6F3] transition-colors"
           >
             Status{statusFilter.length > 0 ? ` (${statusFilter.length})` : ""}
           </button>
           {statusOpen && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setStatusOpen(false)} />
-              <div className="absolute left-0 top-full mt-1 z-20 bg-white border border-stone-200 rounded-lg shadow-lg py-1 min-w-[180px]">
+              <div className="absolute left-0 top-full mt-1 z-20 bg-white border border-[#E9E9E7] rounded-lg shadow-lg py-1 min-w-[180px]">
                 {STATUS_OPTIONS.map((opt) => (
-                  <label key={opt.value} className="flex items-center gap-2 px-3 py-1.5 hover:bg-stone-50 cursor-pointer">
+                  <label key={opt.value} className="flex items-center gap-2 px-3 py-1.5 hover:bg-[#F7F6F3] cursor-pointer">
                     <input
                       type="checkbox"
                       checked={statusFilter.includes(opt.value)}
@@ -436,9 +435,9 @@ export default function JobDetailPage({
                         );
                         setPage(1);
                       }}
-                      className="rounded border-stone-300"
+                      className="rounded border-[#E9E9E7]"
                     />
-                    <span className="text-[13px] text-stone-700">{opt.label}</span>
+                    <span className="text-[13px] text-[#37352F]">{opt.label}</span>
                   </label>
                 ))}
               </div>
@@ -449,7 +448,7 @@ export default function JobDetailPage({
         <select
           value={scoreFilter}
           onChange={(e) => { setScoreFilter(e.target.value); setPage(1); }}
-          className="px-3 py-2 rounded-lg border border-stone-200 bg-white text-[13px] text-stone-700 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+          className="px-3 py-2 rounded-lg border border-[#E9E9E7] bg-white text-[13px] text-[#37352F] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2]"
         >
           {SCORE_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -459,7 +458,7 @@ export default function JobDetailPage({
         {hasFilters && (
           <button
             onClick={() => { setSearch(""); setStatusFilter([]); setScoreFilter(""); setPage(1); }}
-            className="text-[12px] text-amber-600 hover:text-amber-700 font-medium flex items-center gap-1"
+            className="text-[12px] text-[#2383E2] hover:text-[#2383E2] font-medium flex items-center gap-1"
           >
             <X size={12} /> Clear
           </button>
@@ -468,16 +467,15 @@ export default function JobDetailPage({
 
       {/* Table */}
       <div
-        className="bg-white border border-stone-200 rounded-xl overflow-hidden"
-        style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}
+        className="bg-white border border-[#E9E9E7] rounded-lg overflow-hidden"
       >
         {tableLoading ? (
           <div className="p-8 text-center">
-            <div className="w-6 h-6 border-2 border-amber-600 border-t-transparent rounded-full animate-spin mx-auto" />
+            <div className="w-6 h-6 border-2 border-[#2383E2] border-t-transparent rounded-full animate-spin mx-auto" />
           </div>
         ) : candidates.length === 0 ? (
           <div className="px-5 py-16 text-center">
-            <p className="text-[14px] text-stone-500">
+            <p className="text-[14px] text-[#9B9A97]">
               {hasFilters ? "No candidates match your filters." : "No candidates for this job yet."}
             </p>
           </div>
@@ -485,19 +483,19 @@ export default function JobDetailPage({
           <>
             <table className="w-full">
               <thead>
-                <tr className="bg-stone-50/80">
+                <tr className="bg-[#F7F6F3]/80">
                   <th className="w-10 px-4 py-2.5">
                     <input
                       type="checkbox"
                       checked={candidates.length > 0 && selected.size === candidates.length}
                       onChange={toggleSelectAll}
-                      className="rounded border-stone-300"
+                      className="rounded border-[#E9E9E7]"
                     />
                   </th>
                   <th className="text-left px-4 py-2.5">
                     <button
                       onClick={() => toggleSort("created_at")}
-                      className="text-[11px] font-medium text-stone-400 uppercase tracking-[0.04em] flex items-center hover:text-stone-600"
+                      className="text-[11px] font-medium text-[#9B9A97] uppercase tracking-[0.04em] flex items-center hover:text-[#37352F]"
                     >
                       Name <SortIcon field="created_at" />
                     </button>
@@ -505,21 +503,21 @@ export default function JobDetailPage({
                   <th className="text-center px-4 py-2.5">
                     <button
                       onClick={() => toggleSort("match_score")}
-                      className="text-[11px] font-medium text-stone-400 uppercase tracking-[0.04em] flex items-center justify-center hover:text-stone-600"
+                      className="text-[11px] font-medium text-[#9B9A97] uppercase tracking-[0.04em] flex items-center justify-center hover:text-[#37352F]"
                     >
                       Score <SortIcon field="match_score" />
                     </button>
                   </th>
                   <th className="text-center px-4 py-2.5">
-                    <span className="text-[11px] font-medium text-stone-400 uppercase tracking-[0.04em]">Status</span>
+                    <span className="text-[11px] font-medium text-[#9B9A97] uppercase tracking-[0.04em]">Status</span>
                   </th>
                   <th className="text-left px-4 py-2.5 hidden xl:table-cell">
-                    <span className="text-[11px] font-medium text-stone-400 uppercase tracking-[0.04em]">AI Summary</span>
+                    <span className="text-[11px] font-medium text-[#9B9A97] uppercase tracking-[0.04em]">AI Summary</span>
                   </th>
                   <th className="text-right px-4 py-2.5">
                     <button
                       onClick={() => toggleSort("created_at")}
-                      className="text-[11px] font-medium text-stone-400 uppercase tracking-[0.04em] flex items-center justify-end hover:text-stone-600 ml-auto"
+                      className="text-[11px] font-medium text-[#9B9A97] uppercase tracking-[0.04em] flex items-center justify-end hover:text-[#37352F] ml-auto"
                     >
                       Applied <SortIcon field="created_at" />
                     </button>
@@ -528,19 +526,19 @@ export default function JobDetailPage({
               </thead>
               <tbody>
                 {candidates.map((c) => (
-                  <tr key={c.application_id} className="border-t border-stone-100 hover:bg-stone-50/50 transition-colors">
+                  <tr key={c.application_id} className="border-t border-[#E9E9E7] hover:bg-[#F7F6F3]/50 transition-colors">
                     <td className="w-10 px-4 py-3">
                       <input
                         type="checkbox"
                         checked={selected.has(c.application_id)}
                         onChange={() => toggleSelect(c.application_id)}
-                        className="rounded border-stone-300"
+                        className="rounded border-[#E9E9E7]"
                       />
                     </td>
                     <td className="px-4 py-3">
                       <button onClick={() => router.push(`/candidates/${c.id}`)} className="text-left hover:underline">
-                        <div className="text-[14px] font-medium text-stone-900">{c.name}</div>
-                        <div className="text-[11px] text-stone-400 mt-0.5">{c.email}</div>
+                        <div className="text-[14px] font-medium text-[#37352F]">{c.name}</div>
+                        <div className="text-[11px] text-[#9B9A97] mt-0.5">{c.email}</div>
                       </button>
                     </td>
                     <td className="px-4 py-3 text-center">
@@ -558,15 +556,15 @@ export default function JobDetailPage({
                     </td>
                     <td className="px-4 py-3 hidden xl:table-cell">
                       {c.ai_summary ? (
-                        <span className="text-[12px] text-stone-500 block truncate max-w-[200px]" title={c.ai_summary}>
+                        <span className="text-[12px] text-[#9B9A97] block truncate max-w-[200px]" title={c.ai_summary}>
                           {c.ai_summary.length > 60 ? c.ai_summary.slice(0, 60) + "..." : c.ai_summary}
                         </span>
                       ) : (
-                        <span className="text-[12px] text-stone-300">--</span>
+                        <span className="text-[12px] text-[#D3D1CB]">--</span>
                       )}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <span className="text-[13px] text-stone-400">{relativeTime(c.applied_at)}</span>
+                      <span className="text-[13px] text-[#9B9A97]">{relativeTime(c.applied_at)}</span>
                     </td>
                   </tr>
                 ))}
@@ -574,15 +572,15 @@ export default function JobDetailPage({
             </table>
 
             {/* Pagination */}
-            <div className="px-5 py-3 border-t border-stone-100 flex items-center justify-between">
-              <span className="text-[12px] text-stone-400">
+            <div className="px-5 py-3 border-t border-[#E9E9E7] flex items-center justify-between">
+              <span className="text-[12px] text-[#9B9A97]">
                 Showing {(page - 1) * 20 + 1}-{Math.min(page * 20, total)} of {total}
               </span>
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="px-3 py-1 rounded text-[12px] font-medium border border-stone-200 text-stone-600 hover:bg-stone-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-3 py-1 rounded text-[12px] font-medium border border-[#E9E9E7] text-[#37352F] hover:bg-[#F7F6F3] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   Prev
                 </button>
@@ -590,7 +588,7 @@ export default function JobDetailPage({
                   <button
                     key={i + 1}
                     onClick={() => setPage(i + 1)}
-                    className={`w-8 h-8 rounded text-[12px] font-medium transition-colors ${page === i + 1 ? "bg-amber-50 text-amber-700 border border-amber-200" : "text-stone-600 hover:bg-stone-50"}`}
+                    className={`w-8 h-8 rounded text-[12px] font-medium transition-colors ${page === i + 1 ? "bg-blue-50 text-[#2383E2] border border-blue-200" : "text-[#37352F] hover:bg-[#F7F6F3]"}`}
                   >
                     {i + 1}
                   </button>
@@ -598,7 +596,7 @@ export default function JobDetailPage({
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page >= totalPages}
-                  className="px-3 py-1 rounded text-[12px] font-medium border border-stone-200 text-stone-600 hover:bg-stone-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-3 py-1 rounded text-[12px] font-medium border border-[#E9E9E7] text-[#37352F] hover:bg-[#F7F6F3] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   Next
                 </button>
@@ -609,22 +607,22 @@ export default function JobDetailPage({
       </div>
 
       {/* Job Description (collapsible) */}
-      <div className="bg-white border border-stone-200 rounded-xl overflow-hidden" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
+      <div className="bg-white border border-[#E9E9E7] rounded-lg overflow-hidden">
         <button
           onClick={() => setDescExpanded(!descExpanded)}
-          className="w-full px-5 py-4 flex items-center justify-between text-left hover:bg-stone-50 transition-colors"
+          className="w-full px-5 py-4 flex items-center justify-between text-left hover:bg-[#F7F6F3] transition-colors"
         >
-          <h3 className="text-[14px] font-semibold text-stone-900">
+          <h3 className="text-[14px] font-semibold text-[#37352F]">
             Job Description
           </h3>
           <ChevronRight
             size={16}
-            className={`text-stone-400 transition-transform ${descExpanded ? "rotate-90" : ""}`}
+            className={`text-[#9B9A97] transition-transform ${descExpanded ? "rotate-90" : ""}`}
           />
         </button>
         {descExpanded && (
-          <div className="px-5 pb-5 border-t border-stone-100 pt-4">
-            <p className="text-[14px] text-stone-600 whitespace-pre-wrap leading-relaxed">
+          <div className="px-5 pb-5 border-t border-[#E9E9E7] pt-4">
+            <p className="text-[14px] text-[#37352F] whitespace-pre-wrap leading-relaxed">
               {job.description}
             </p>
           </div>
@@ -633,9 +631,9 @@ export default function JobDetailPage({
 
       {/* Bulk Actions */}
       {selected.size > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-stone-900 text-white rounded-xl px-6 py-3 flex items-center gap-4 shadow-xl">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#37352F] text-white rounded-lg px-6 py-3 flex items-center gap-4 shadow-xl">
           <span className="text-[13px] font-medium">{selected.size} selected</span>
-          <div className="w-px h-5 bg-stone-700" />
+          <div className="w-px h-5 bg-[#73726E]" />
           <button
             onClick={handleBulkReject}
             disabled={bulkLoading}
@@ -650,7 +648,7 @@ export default function JobDetailPage({
           >
             Advance
           </button>
-          <button onClick={() => setSelected(new Set())} className="p-1 rounded hover:bg-stone-700 transition-colors">
+          <button onClick={() => setSelected(new Set())} className="p-1 rounded hover:bg-[#73726E] transition-colors">
             <X size={14} />
           </button>
         </div>

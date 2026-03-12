@@ -26,7 +26,7 @@ export function ScreenButton({ applicationId }: { applicationId: string }) {
     <button
       onClick={handleScreen}
       disabled={loading}
-      className="px-4 py-2 rounded-lg text-[13px] font-medium border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-50"
+      className="px-4 py-2 rounded-lg text-[13px] font-medium border border-[#E9E9E7] text-[#37352F] hover:bg-[#F7F6F3] transition-colors disabled:opacity-50"
     >
       {loading ? "Screening..." : "Run ATS Screening"}
     </button>

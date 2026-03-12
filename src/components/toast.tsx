@@ -32,7 +32,7 @@ export function useToast() {
 const TOAST_STYLES: Record<ToastType, string> = {
   success: "bg-emerald-600 text-white",
   error: "bg-red-600 text-white",
-  info: "bg-stone-800 text-white",
+  info: "bg-[#37352F] text-white",
 };
 
 export function ToastProvider({ children }: { children: ReactNode }) {

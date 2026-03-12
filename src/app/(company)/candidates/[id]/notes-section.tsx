@@ -90,13 +90,13 @@ export function NotesSection({
               handleAdd();
             }
           }}
-          className="flex-1 px-3 py-2 rounded-lg border border-stone-200 bg-white text-[13px] text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+          className="flex-1 px-3 py-2 rounded-lg border border-[#E9E9E7] bg-white text-[13px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2]"
         />
         <button
           onClick={handleAdd}
           disabled={saving || !content.trim()}
           className="px-4 py-2 rounded-lg text-[13px] font-medium text-white transition-colors disabled:opacity-50 shrink-0"
-          style={{ background: "#D97706" }}
+          style={{ background: "#2383E2" }}
         >
           {saving ? "..." : "Add"}
         </button>
@@ -105,10 +105,10 @@ export function NotesSection({
       {/* Notes list */}
       {loading ? (
         <div className="py-4 text-center">
-          <div className="w-4 h-4 border-2 border-amber-600 border-t-transparent rounded-full animate-spin mx-auto" />
+          <div className="w-4 h-4 border-2 border-[#2383E2] border-t-transparent rounded-full animate-spin mx-auto" />
         </div>
       ) : notes.length === 0 ? (
-        <p className="text-[13px] text-stone-400">No notes yet.</p>
+        <p className="text-[13px] text-[#9B9A97]">No notes yet.</p>
       ) : (
         <div className="space-y-0">
           {notes.map((note, i) => (
@@ -117,19 +117,19 @@ export function NotesSection({
               className="py-3"
               style={
                 i < notes.length - 1
-                  ? { borderBottom: "1px solid #F5F5F4" }
+                  ? { borderBottom: "1px solid #E9E9E7" }
                   : undefined
               }
             >
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-[12px] font-medium text-stone-700">
+                <span className="text-[12px] font-medium text-[#37352F]">
                   {note.author_name || "Team member"}
                 </span>
-                <span className="text-[11px] text-stone-400">
+                <span className="text-[11px] text-[#9B9A97]">
                   {relativeTime(note.created_at)}
                 </span>
               </div>
-              <p className="text-[13px] text-stone-600 whitespace-pre-wrap">
+              <p className="text-[13px] text-[#37352F] whitespace-pre-wrap">
                 {note.content}
               </p>
             </div>

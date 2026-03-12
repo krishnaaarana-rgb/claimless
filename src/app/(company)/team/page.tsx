@@ -38,8 +38,8 @@ const ROLE_CONFIG: Record<
   owner: {
     label: "Owner",
     icon: Crown,
-    color: "#D97706",
-    bg: "#FEF3C7",
+    color: "#2383E2",
+    bg: "#DBEAFE",
   },
   admin: {
     label: "Admin",
@@ -195,8 +195,8 @@ export default function TeamPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-stone-900">Team</h1>
-        <div className="h-64 bg-stone-100 rounded-xl animate-pulse" />
+        <h1 className="text-2xl font-bold text-[#37352F]">Team</h1>
+        <div className="h-64 bg-[#F7F6F3] rounded-lg animate-pulse" />
       </div>
     );
   }
@@ -206,8 +206,8 @@ export default function TeamPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-stone-900">Team</h1>
-          <p className="text-[13px] text-stone-500 mt-1">
+          <h1 className="text-2xl font-bold text-[#37352F]">Team</h1>
+          <p className="text-[13px] text-[#9B9A97] mt-1">
             {members.length} member{members.length !== 1 ? "s" : ""}
             {invites.length > 0 &&
               ` · ${invites.length} pending invite${invites.length !== 1 ? "s" : ""}`}
@@ -220,7 +220,7 @@ export default function TeamPage() {
               setInviteError("");
             }}
             className="flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium text-white transition-colors hover:opacity-90"
-            style={{ background: "#D97706" }}
+            style={{ background: "#2383E2" }}
           >
             <UserPlus size={14} />
             Invite Member
@@ -229,9 +229,9 @@ export default function TeamPage() {
       </div>
 
       {/* Members List */}
-      <div className="bg-white rounded-xl border border-stone-200">
-        <div className="px-5 py-3 border-b border-stone-100">
-          <span className="text-[11px] font-semibold text-stone-400 uppercase tracking-wider">
+      <div className="bg-white rounded-lg border border-[#E9E9E7]">
+        <div className="px-5 py-3 border-b border-[#E9E9E7]">
+          <span className="text-[11px] font-semibold text-[#9B9A97] uppercase tracking-wider">
             Members
           </span>
         </div>
@@ -245,7 +245,7 @@ export default function TeamPage() {
                 className="flex items-center gap-4 px-5 py-3.5"
                 style={{
                   borderBottom:
-                    i < members.length - 1 ? "1px solid #F5F5F4" : "none",
+                    i < members.length - 1 ? "1px solid #E9E9E7" : "none",
                 }}
               >
                 {/* Avatar */}
@@ -262,11 +262,11 @@ export default function TeamPage() {
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-[14px] font-medium text-stone-900 truncate">
+                    <span className="text-[14px] font-medium text-[#37352F] truncate">
                       {member.full_name || member.email}
                     </span>
                   </div>
-                  <span className="text-[12px] text-stone-400 truncate block">
+                  <span className="text-[12px] text-[#9B9A97] truncate block">
                     {member.email}
                   </span>
                 </div>
@@ -284,7 +284,7 @@ export default function TeamPage() {
                 </div>
 
                 {/* Joined */}
-                <span className="text-[12px] text-stone-400 shrink-0 w-16 text-right">
+                <span className="text-[12px] text-[#9B9A97] shrink-0 w-16 text-right">
                   {timeAgo(member.created_at)}
                 </span>
 
@@ -301,18 +301,18 @@ export default function TeamPage() {
                               : member.user_id
                           );
                         }}
-                        className="w-8 h-8 rounded-lg flex items-center justify-center text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors"
+                        className="w-8 h-8 rounded-lg flex items-center justify-center text-[#9B9A97] hover:text-[#37352F] hover:bg-[#F7F6F3] transition-colors"
                       >
                         <MoreHorizontal size={14} />
                       </button>
                       {menuOpen === member.user_id && (
                         <div
-                          className="absolute right-0 top-9 w-44 bg-white rounded-lg border border-stone-200 shadow-lg py-1 z-50"
+                          className="absolute right-0 top-9 w-44 bg-white rounded-lg border border-[#E9E9E7] shadow-lg py-1 z-50"
                           onClick={(e) => e.stopPropagation()}
                         >
                           {isOwner && (
                             <>
-                              <div className="px-3 py-1.5 text-[11px] text-stone-400 font-medium">
+                              <div className="px-3 py-1.5 text-[11px] text-[#9B9A97] font-medium">
                                 Change role
                               </div>
                               {["admin", "member", "viewer"]
@@ -326,18 +326,18 @@ export default function TeamPage() {
                                       onClick={() =>
                                         handleChangeRole(member.user_id, r)
                                       }
-                                      className="w-full flex items-center gap-2 px-3 py-2 text-[13px] text-stone-700 hover:bg-stone-50 transition-colors"
+                                      className="w-full flex items-center gap-2 px-3 py-2 text-[13px] text-[#37352F] hover:bg-[#F7F6F3] transition-colors"
                                     >
                                       <ArrowUpDown
                                         size={12}
-                                        className="text-stone-400"
+                                        className="text-[#9B9A97]"
                                       />
                                       <Icon size={12} style={{ color: rc.color }} />
                                       {rc.label}
                                     </button>
                                   );
                                 })}
-                              <div className="border-t border-stone-100 my-1" />
+                              <div className="border-t border-[#E9E9E7] my-1" />
                             </>
                           )}
                           <button
@@ -360,7 +360,7 @@ export default function TeamPage() {
             );
           })}
           {members.length === 0 && (
-            <div className="px-5 py-8 text-center text-[13px] text-stone-400">
+            <div className="px-5 py-8 text-center text-[13px] text-[#9B9A97]">
               No team members yet.
             </div>
           )}
@@ -369,9 +369,9 @@ export default function TeamPage() {
 
       {/* Pending Invites */}
       {invites.length > 0 && (
-        <div className="bg-white rounded-xl border border-stone-200">
-          <div className="px-5 py-3 border-b border-stone-100">
-            <span className="text-[11px] font-semibold text-stone-400 uppercase tracking-wider">
+        <div className="bg-white rounded-lg border border-[#E9E9E7]">
+          <div className="px-5 py-3 border-b border-[#E9E9E7]">
+            <span className="text-[11px] font-semibold text-[#9B9A97] uppercase tracking-wider">
               Pending Invites
             </span>
           </div>
@@ -388,21 +388,21 @@ export default function TeamPage() {
                   className="flex items-center gap-4 px-5 py-3.5"
                   style={{
                     borderBottom:
-                      i < invites.length - 1 ? "1px solid #F5F5F4" : "none",
+                      i < invites.length - 1 ? "1px solid #E9E9E7" : "none",
                   }}
                 >
                   {/* Avatar placeholder */}
-                  <div className="w-9 h-9 rounded-full bg-stone-100 flex items-center justify-center text-[12px] font-semibold text-stone-400 shrink-0">
+                  <div className="w-9 h-9 rounded-full bg-[#F7F6F3] flex items-center justify-center text-[12px] font-semibold text-[#9B9A97] shrink-0">
                     {invite.email.slice(0, 2).toUpperCase()}
                   </div>
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <span className="text-[14px] text-stone-700 truncate block">
+                    <span className="text-[14px] text-[#37352F] truncate block">
                       {invite.email}
                     </span>
                     <span
-                      className={`text-[12px] ${expired ? "text-red-400" : "text-stone-400"}`}
+                      className={`text-[12px] ${expired ? "text-red-400" : "text-[#9B9A97]"}`}
                     >
                       {expired
                         ? "Expired"
@@ -428,7 +428,7 @@ export default function TeamPage() {
                   {canManage && (
                     <button
                       onClick={() => handleCancelInvite(invite.id)}
-                      className="text-[12px] text-stone-400 hover:text-red-500 transition-colors shrink-0"
+                      className="text-[12px] text-[#9B9A97] hover:text-red-500 transition-colors shrink-0"
                     >
                       Cancel
                     </button>
@@ -441,9 +441,9 @@ export default function TeamPage() {
       )}
 
       {/* Note about email */}
-      <p className="text-[12px] text-stone-400">
+      <p className="text-[12px] text-[#9B9A97]">
         Invite notifications require an email provider configured in{" "}
-        <a href="/settings" className="text-amber-600 hover:text-amber-700">
+        <a href="/settings" className="text-[#2383E2] hover:text-[#2383E2]">
           Settings → Email Provider
         </a>
         .
@@ -459,14 +459,14 @@ export default function TeamPage() {
           />
 
           {/* Modal */}
-          <div className="relative bg-white rounded-xl border border-stone-200 shadow-xl w-full max-w-md mx-4 p-6">
+          <div className="relative bg-white rounded-lg border border-[#E9E9E7] shadow-xl w-full max-w-md mx-4 p-6">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-[16px] font-semibold text-stone-900">
+              <h2 className="text-[16px] font-semibold text-[#37352F]">
                 Invite Team Member
               </h2>
               <button
                 onClick={() => setShowInvite(false)}
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors"
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-[#9B9A97] hover:text-[#37352F] hover:bg-[#F7F6F3] transition-colors"
               >
                 <X size={16} />
               </button>
@@ -474,7 +474,7 @@ export default function TeamPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-[13px] font-medium text-stone-700 mb-1.5">
+                <label className="block text-[13px] font-medium text-[#37352F] mb-1.5">
                   Email address
                 </label>
                 <input
@@ -484,7 +484,7 @@ export default function TeamPage() {
                     setInviteEmail(e.target.value);
                     setInviteError("");
                   }}
-                  className="w-full rounded-lg border border-stone-200 px-4 py-2.5 text-[14px] text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+                  className="w-full rounded-lg border border-[#E9E9E7] px-4 py-2.5 text-[14px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2]"
                   placeholder="colleague@company.com"
                   autoFocus
                   onKeyDown={(e) => {
@@ -494,13 +494,13 @@ export default function TeamPage() {
               </div>
 
               <div>
-                <label className="block text-[13px] font-medium text-stone-700 mb-1.5">
+                <label className="block text-[13px] font-medium text-[#37352F] mb-1.5">
                   Role
                 </label>
                 <select
                   value={inviteRole}
                   onChange={(e) => setInviteRole(e.target.value)}
-                  className="w-full rounded-lg border border-stone-200 px-3 py-2.5 text-[14px] text-stone-700 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+                  className="w-full rounded-lg border border-[#E9E9E7] px-3 py-2.5 text-[14px] text-[#37352F] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2]"
                 >
                   <option value="member">Member — can view and manage candidates</option>
                   <option value="admin">Admin — can also manage team and settings</option>
@@ -514,7 +514,7 @@ export default function TeamPage() {
               <div className="flex justify-end gap-3 pt-2">
                 <button
                   onClick={() => setShowInvite(false)}
-                  className="px-4 py-2 rounded-lg text-[13px] font-medium text-stone-600 hover:bg-stone-100 transition-colors"
+                  className="px-4 py-2 rounded-lg text-[13px] font-medium text-[#37352F] hover:bg-[#F7F6F3] transition-colors"
                 >
                   Cancel
                 </button>
@@ -522,7 +522,7 @@ export default function TeamPage() {
                   onClick={handleInvite}
                   disabled={inviting || !inviteEmail.trim()}
                   className="px-5 py-2 rounded-lg text-[13px] font-medium text-white transition-colors hover:opacity-90 disabled:opacity-50"
-                  style={{ background: "#D97706" }}
+                  style={{ background: "#2383E2" }}
                 >
                   {inviting ? "Inviting..." : "Send Invite"}
                 </button>

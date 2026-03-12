@@ -66,7 +66,7 @@ export interface IndustrySkillPickerProps {
 
 const LEVELS: { value: SkillRequirement["level"]; label: string; color: string }[] = [
   { value: "basic", label: "Basic", color: "#A8A29E" },
-  { value: "intermediate", label: "Intermediate", color: "#D97706" },
+  { value: "intermediate", label: "Intermediate", color: "#2383E2" },
   { value: "advanced", label: "Advanced", color: "#2563EB" },
   { value: "expert", label: "Expert", color: "#7C3AED" },
 ];
@@ -248,10 +248,10 @@ export default function IndustrySkillPicker({
     <div className="space-y-5">
       {/* ── INDUSTRY SELECTOR ── */}
       <div>
-        <label className="block text-[13px] font-semibold text-stone-800 mb-2">
+        <label className="block text-[13px] font-semibold text-[#37352F] mb-2">
           Industry
         </label>
-        <p className="text-[12px] text-stone-400 mb-3">
+        <p className="text-[12px] text-[#9B9A97] mb-3">
           Select an industry to get tailored skill suggestions and AI interview context
         </p>
 
@@ -262,7 +262,7 @@ export default function IndustrySkillPicker({
               {Array.from({ length: 9 }).map((_, i) => (
                 <div
                   key={i}
-                  className="h-[52px] rounded-lg bg-stone-50 animate-pulse"
+                  className="h-[52px] rounded-lg bg-[#F7F6F3] animate-pulse"
                 />
               ))}
             </div>
@@ -273,13 +273,13 @@ export default function IndustrySkillPicker({
                   key={ind.id}
                   type="button"
                   onClick={() => selectIndustry(ind.id)}
-                  className="group flex items-center gap-2.5 px-3 py-2.5 rounded-lg border border-stone-150 text-left transition-all duration-150 hover:border-stone-300 hover:bg-stone-50 active:scale-[0.98]"
+                  className="group flex items-center gap-2.5 px-3 py-2.5 rounded-lg border border-[#E9E9E7] text-left transition-all duration-150 hover:border-[#E9E9E7] hover:bg-[#F7F6F3] active:scale-[0.98]"
                   style={{ borderColor: "#E7E5E4" }}
                 >
                   <span className="text-[16px] shrink-0 group-hover:scale-110 transition-transform duration-150">
                     {ind.icon}
                   </span>
-                  <span className="text-[13px] font-medium text-stone-700 truncate">
+                  <span className="text-[13px] font-medium text-[#37352F] truncate">
                     {ind.label}
                   </span>
                 </button>
@@ -298,7 +298,7 @@ export default function IndustrySkillPicker({
               <button
                 type="button"
                 onClick={clearIndustry}
-                className="ml-0.5 p-0.5 rounded hover:bg-amber-200/50 transition-colors"
+                className="ml-0.5 p-0.5 rounded hover:bg-blue-200/50 transition-colors"
               >
                 <X size={12} />
               </button>
@@ -307,7 +307,7 @@ export default function IndustrySkillPicker({
             {/* Sub-niche pills */}
             {industryData?.sub_niches && industryData.sub_niches.length > 0 && (
               <>
-                <span className="text-[11px] text-stone-300 mx-1">•</span>
+                <span className="text-[11px] text-[#D3D1CB] mx-1">•</span>
                 {industryData.sub_niches.map((niche) => (
                   <button
                     key={niche.id}
@@ -315,8 +315,8 @@ export default function IndustrySkillPicker({
                     onClick={() => selectNiche(niche.id)}
                     className={`px-2.5 py-1 rounded-md text-[12px] font-medium border transition-all duration-150 active:scale-[0.97] ${
                       industryNiche === niche.id
-                        ? "border-amber-300 bg-amber-50 text-amber-800"
-                        : "border-stone-200 text-stone-500 hover:border-stone-300 hover:text-stone-700"
+                        ? "border-blue-300 bg-blue-50 text-blue-800"
+                        : "border-[#E9E9E7] text-[#9B9A97] hover:border-[#E9E9E7] hover:text-[#37352F]"
                     }`}
                   >
                     {niche.label}
@@ -332,17 +332,17 @@ export default function IndustrySkillPicker({
       {industry && (
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="text-[13px] font-semibold text-stone-800">
+            <label className="text-[13px] font-semibold text-[#37352F]">
               Skills to assess
             </label>
-            <span className="text-[11px] text-stone-400">
+            <span className="text-[11px] text-[#9B9A97]">
               {skills.length} skill{skills.length !== 1 ? "s" : ""} added
             </span>
           </div>
 
           {/* ── Added Skills List ── */}
           {skills.length > 0 && (
-            <div className="mb-3 space-y-0 rounded-lg border border-stone-200 overflow-hidden">
+            <div className="mb-3 space-y-0 rounded-lg border border-[#E9E9E7] overflow-hidden">
               {skills.map((skill, idx) => (
                 <div
                   key={`${skill.skill}-${idx}`}
@@ -354,14 +354,14 @@ export default function IndustrySkillPicker({
                   }}
                   onDragEnd={handleDragEnd}
                   className={`group flex items-center gap-2 px-3 py-2 transition-colors ${
-                    idx > 0 ? "border-t border-stone-100" : ""
-                  } ${dragOverIdx === idx ? "bg-amber-50/50" : "bg-white hover:bg-stone-25"}`}
+                    idx > 0 ? "border-t border-[#E9E9E7]" : ""
+                  } ${dragOverIdx === idx ? "bg-blue-50/50" : "bg-white hover:bg-white"}`}
                   style={{ cursor: "grab" }}
                 >
                   {/* Drag handle */}
                   <GripVertical
                     size={14}
-                    className="text-stone-300 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="text-[#D3D1CB] shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
                   />
 
                   {/* Category indicator */}
@@ -385,7 +385,7 @@ export default function IndustrySkillPicker({
                   />
 
                   {/* Skill name */}
-                  <span className="text-[13px] text-stone-800 font-medium flex-1 truncate">
+                  <span className="text-[13px] text-[#37352F] font-medium flex-1 truncate">
                     {skill.skill}
                   </span>
 
@@ -402,7 +402,7 @@ export default function IndustrySkillPicker({
                     className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider transition-all duration-150 ${
                       skill.required
                         ? "bg-red-50 text-red-600 border border-red-200"
-                        : "bg-stone-50 text-stone-400 border border-stone-200"
+                        : "bg-[#F7F6F3] text-[#9B9A97] border border-[#E9E9E7]"
                     }`}
                   >
                     {skill.required ? "Req" : "Nice"}
@@ -412,7 +412,7 @@ export default function IndustrySkillPicker({
                   <button
                     type="button"
                     onClick={() => removeSkill(idx)}
-                    className="p-1 rounded text-stone-300 hover:text-red-500 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
+                    className="p-1 rounded text-[#D3D1CB] hover:text-red-500 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
                   >
                     <X size={13} />
                   </button>
@@ -429,26 +429,26 @@ export default function IndustrySkillPicker({
                 setShowSkillPanel(true);
                 setTimeout(() => skillSearchRef.current?.focus(), 100);
               }}
-              className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg border border-dashed border-stone-200 text-[13px] text-stone-400 hover:border-stone-300 hover:text-stone-600 hover:bg-stone-50/50 transition-all duration-150"
+              className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg border border-dashed border-[#E9E9E7] text-[13px] text-[#9B9A97] hover:border-[#E9E9E7] hover:text-[#37352F] hover:bg-[#F7F6F3]/50 transition-all duration-150"
             >
               <Plus size={14} />
               Add skills...
             </button>
           ) : (
             <div
-              className="rounded-lg border border-stone-200 overflow-hidden"
+              className="rounded-lg border border-[#E9E9E7] overflow-hidden"
               style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.06)" }}
             >
               {/* Search + Filter bar */}
-              <div className="flex items-center gap-2 px-3 py-2 border-b border-stone-100 bg-stone-50/50">
-                <Search size={14} className="text-stone-400 shrink-0" />
+              <div className="flex items-center gap-2 px-3 py-2 border-b border-[#E9E9E7] bg-[#F7F6F3]/50">
+                <Search size={14} className="text-[#9B9A97] shrink-0" />
                 <input
                   ref={skillSearchRef}
                   type="text"
                   value={skillSearch}
                   onChange={(e) => setSkillSearch(e.target.value)}
                   placeholder="Search skills..."
-                  className="flex-1 text-[13px] text-stone-700 bg-transparent outline-none placeholder:text-stone-300"
+                  className="flex-1 text-[13px] text-[#37352F] bg-transparent outline-none placeholder:text-[#D3D1CB]"
                 />
                 {/* Category filters */}
                 <div className="flex gap-1">
@@ -465,8 +465,8 @@ export default function IndustrySkillPicker({
                       onClick={() => setActiveCategory(cat.key)}
                       className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors ${
                         activeCategory === cat.key
-                          ? "bg-stone-800 text-white"
-                          : "text-stone-400 hover:text-stone-600"
+                          ? "bg-[#37352F] text-white"
+                          : "text-[#9B9A97] hover:text-[#37352F]"
                       }`}
                     >
                       {cat.label}
@@ -479,7 +479,7 @@ export default function IndustrySkillPicker({
                     setShowSkillPanel(false);
                     setSkillSearch("");
                   }}
-                  className="p-1 rounded text-stone-400 hover:text-stone-600 transition-colors"
+                  className="p-1 rounded text-[#9B9A97] hover:text-[#37352F] transition-colors"
                 >
                   <X size={14} />
                 </button>
@@ -489,10 +489,10 @@ export default function IndustrySkillPicker({
               <div className="max-h-[240px] overflow-y-auto">
                 {loadingSkills ? (
                   <div className="px-3 py-8 text-center">
-                    <div className="w-5 h-5 border-2 border-stone-200 border-t-amber-500 rounded-full animate-spin mx-auto" />
+                    <div className="w-5 h-5 border-2 border-[#E9E9E7] border-t-blue-500 rounded-full animate-spin mx-auto" />
                   </div>
                 ) : filteredSuggestions.length === 0 ? (
-                  <div className="px-3 py-6 text-center text-[12px] text-stone-400">
+                  <div className="px-3 py-6 text-center text-[12px] text-[#9B9A97]">
                     {skillSearch
                       ? "No matching skills. Press Enter below to add a custom one."
                       : "No skills available for this category."}
@@ -509,7 +509,7 @@ export default function IndustrySkillPicker({
                         className={`flex items-center gap-3 w-full px-3 py-2 text-left transition-colors ${
                           added
                             ? "opacity-40 cursor-default"
-                            : "hover:bg-stone-50 active:bg-stone-100"
+                            : "hover:bg-[#F7F6F3] active:bg-[#F7F6F3]"
                         }`}
                       >
                         {/* Category dot */}
@@ -523,11 +523,11 @@ export default function IndustrySkillPicker({
                           }}
                         />
                         <div className="flex-1 min-w-0">
-                          <span className="text-[13px] font-medium text-stone-700">
+                          <span className="text-[13px] font-medium text-[#37352F]">
                             {s.name}
                           </span>
                           {s.description && (
-                            <p className="text-[11px] text-stone-400 truncate mt-0.5">
+                            <p className="text-[11px] text-[#9B9A97] truncate mt-0.5">
                               {s.description}
                             </p>
                           )}
@@ -537,7 +537,7 @@ export default function IndustrySkillPicker({
                         ) : (
                           <Plus
                             size={14}
-                            className="text-stone-300 shrink-0 group-hover:text-stone-500"
+                            className="text-[#D3D1CB] shrink-0 group-hover:text-[#9B9A97]"
                           />
                         )}
                       </button>
@@ -547,8 +547,8 @@ export default function IndustrySkillPicker({
               </div>
 
               {/* Custom skill input */}
-              <div className="flex items-center gap-2 px-3 py-2 border-t border-stone-100 bg-stone-50/30">
-                <Sparkles size={13} className="text-stone-300 shrink-0" />
+              <div className="flex items-center gap-2 px-3 py-2 border-t border-[#E9E9E7] bg-[#F7F6F3]/30">
+                <Sparkles size={13} className="text-[#D3D1CB] shrink-0" />
                 <input
                   ref={customInputRef}
                   type="text"
@@ -556,10 +556,10 @@ export default function IndustrySkillPicker({
                   onChange={(e) => setCustomSkillInput(e.target.value)}
                   onKeyDown={handleAddCustom}
                   placeholder="Type a custom skill and press Enter"
-                  className="flex-1 text-[12px] text-stone-700 bg-transparent outline-none placeholder:text-stone-300"
+                  className="flex-1 text-[12px] text-[#37352F] bg-transparent outline-none placeholder:text-[#D3D1CB]"
                 />
                 {customSkillInput.trim() && (
-                  <span className="text-[10px] text-stone-300">
+                  <span className="text-[10px] text-[#D3D1CB]">
                     ⏎ Enter
                   </span>
                 )}
@@ -572,18 +572,18 @@ export default function IndustrySkillPicker({
             <div className="flex items-center gap-4 mt-3 px-1">
               <div className="flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                <span className="text-[11px] text-stone-400">Hard skill</span>
+                <span className="text-[11px] text-[#9B9A97]">Hard skill</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-violet-500" />
-                <span className="text-[11px] text-stone-400">Soft skill</span>
+                <span className="text-[11px] text-[#9B9A97]">Soft skill</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-stone-400" />
-                <span className="text-[11px] text-stone-400">Custom</span>
+                <div className="w-1.5 h-1.5 rounded-full bg-[#9B9A97]" />
+                <span className="text-[11px] text-[#9B9A97]">Custom</span>
               </div>
               <div className="flex-1" />
-              <span className="text-[11px] text-stone-300">
+              <span className="text-[11px] text-[#D3D1CB]">
                 Drag to reorder priority
               </span>
             </div>
@@ -596,12 +596,12 @@ export default function IndustrySkillPicker({
               style={{ background: "#FFFBEB", border: "1px solid #FDE68A" }}
             >
               <div className="flex items-start gap-2">
-                <Zap size={14} className="text-amber-500 shrink-0 mt-0.5" />
+                <Zap size={14} className="text-blue-500 shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-[12px] font-medium text-amber-800">
+                  <p className="text-[12px] font-medium text-blue-800">
                     AI Interview Context Active
                   </p>
-                  <p className="text-[11px] text-amber-600 mt-0.5 leading-relaxed">
+                  <p className="text-[11px] text-blue-600 mt-0.5 leading-relaxed">
                     The AI interviewer will use {industryData?.industry?.label} domain expertise to assess{" "}
                     {skills.filter((s) => s.category === "hard_skill").length} hard skill
                     {skills.filter((s) => s.category === "hard_skill").length !== 1 ? "s" : ""} and{" "}
@@ -652,7 +652,7 @@ function LevelPicker({
           e.stopPropagation();
           setOpen(!open);
         }}
-        className="flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium border transition-all duration-100 hover:border-stone-300"
+        className="flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium border transition-all duration-100 hover:border-[#E9E9E7]"
         style={{
           borderColor: open ? current.color : "#E7E5E4",
           color: current.color,
@@ -669,7 +669,7 @@ function LevelPicker({
 
       {open && (
         <div
-          className="absolute right-0 top-full mt-1 z-50 rounded-lg border border-stone-200 bg-white py-1 min-w-[130px]"
+          className="absolute right-0 top-full mt-1 z-50 rounded-lg border border-[#E9E9E7] bg-white py-1 min-w-[130px]"
           style={{ boxShadow: "0 8px 24px rgba(0,0,0,0.08)" }}
         >
           {LEVELS.map((level) => (
@@ -683,8 +683,8 @@ function LevelPicker({
               }}
               className={`flex items-center gap-2 w-full px-3 py-1.5 text-left text-[12px] transition-colors ${
                 value === level.value
-                  ? "bg-stone-50 font-medium"
-                  : "hover:bg-stone-50"
+                  ? "bg-[#F7F6F3] font-medium"
+                  : "hover:bg-[#F7F6F3]"
               }`}
             >
               <div
@@ -693,7 +693,7 @@ function LevelPicker({
               />
               <span style={{ color: level.color }}>{level.label}</span>
               {value === level.value && (
-                <Check size={12} className="ml-auto text-stone-400" />
+                <Check size={12} className="ml-auto text-[#9B9A97]" />
               )}
             </button>
           ))}

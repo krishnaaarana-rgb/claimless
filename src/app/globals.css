@@ -42,41 +42,41 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* Claimless — Warm light theme with dark sidebar */
+/* Claimless — Notion-inspired clean theme */
 :root {
-  --background: #FAFAF9;
-  --foreground: #1C1917;
+  --background: #FFFFFF;
+  --foreground: #37352F;
   --card: #FFFFFF;
-  --card-foreground: #1C1917;
+  --card-foreground: #37352F;
   --popover: #FFFFFF;
-  --popover-foreground: #1C1917;
-  --primary: #D97706;
+  --popover-foreground: #37352F;
+  --primary: #2383E2;
   --primary-foreground: #FFFFFF;
-  --secondary: #F5F5F4;
-  --secondary-foreground: #1C1917;
-  --muted: #F5F5F4;
-  --muted-foreground: #78716C;
-  --accent: #FEF3C7;
-  --accent-foreground: #92400E;
+  --secondary: #F7F6F3;
+  --secondary-foreground: #37352F;
+  --muted: #F7F6F3;
+  --muted-foreground: #9B9A97;
+  --accent: #F7F6F3;
+  --accent-foreground: #37352F;
   --destructive: #DC2626;
   --destructive-foreground: #FFFFFF;
-  --border: #E7E5E4;
-  --input: #E7E5E4;
-  --ring: #D97706;
-  --chart-1: #D97706;
+  --border: #E9E9E7;
+  --input: #E9E9E7;
+  --ring: #2383E2;
+  --chart-1: #2383E2;
   --chart-2: #059669;
   --chart-3: #2563EB;
   --chart-4: #7C3AED;
   --chart-5: #DC2626;
-  --radius: 0.625rem;
-  --sidebar-background: #1A1A1A;
-  --sidebar-foreground: #A8A29E;
-  --sidebar-primary: #D97706;
+  --radius: 0.375rem;
+  --sidebar-background: #F7F6F3;
+  --sidebar-foreground: #73726E;
+  --sidebar-primary: #37352F;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #2A2A2A;
-  --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: #2A2A2A;
-  --sidebar-ring: #D97706;
+  --sidebar-accent: #EFEFEF;
+  --sidebar-accent-foreground: #37352F;
+  --sidebar-border: #E9E9E7;
+  --sidebar-ring: #2383E2;
 }
 
 @layer base {
@@ -85,14 +85,14 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
 }
 
-/* Custom scrollbar — light theme */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -100,30 +100,14 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D6D3D1;
+  background: #D3D1CB;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #A8A29E;
+  background: #9B9A97;
 }
 
 /* Smooth transitions */
 a, button {
-  transition: all 0.15s ease;
-}
-
-/* Fade-in animation for cards */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in-up {
-  animation: fadeInUp 0.3s ease-out forwards;
+  transition: all 0.1s ease;
 }

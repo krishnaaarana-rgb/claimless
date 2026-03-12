@@ -146,7 +146,7 @@ export function ActionButtons({
     <div className="flex flex-col items-end gap-2 shrink-0">
       {/* Toast */}
       {toastMessage && (
-        <div className="fixed top-4 right-4 z-50 bg-stone-900 text-white text-[13px] px-4 py-2.5 rounded-lg shadow-lg animate-in fade-in slide-in-from-top-2">
+        <div className="fixed top-4 right-4 z-50 bg-[#37352F] text-white text-[13px] px-4 py-2.5 rounded-lg shadow-lg animate-in fade-in slide-in-from-top-2">
           {toastMessage}
         </div>
       )}
@@ -166,7 +166,7 @@ export function ActionButtons({
             onClick={handleInvite}
             disabled={loading}
             className="px-5 py-2 rounded-lg text-[13px] font-semibold text-white transition-colors disabled:opacity-50 hover:opacity-90"
-            style={{ background: "#D97706" }}
+            style={{ background: "#2383E2" }}
           >
             {inviteLoading ? "Sending..." : "Invite to Interview"}
           </button>
@@ -177,7 +177,7 @@ export function ActionButtons({
           <button
             onClick={handleCopyLink}
             disabled={loading}
-            className="px-4 py-2 rounded-lg text-[13px] font-medium border border-amber-200 text-amber-600 hover:bg-amber-50 transition-colors disabled:opacity-50"
+            className="px-4 py-2 rounded-lg text-[13px] font-medium border border-blue-200 text-[#2383E2] hover:bg-blue-50 transition-colors disabled:opacity-50"
           >
             {copied ? "Copied!" : inviteLoading ? "Loading..." : "Copy Interview Link"}
           </button>
@@ -186,7 +186,7 @@ export function ActionButtons({
         <button
           onClick={handleAdvance}
           disabled={loading}
-          className="px-4 py-2 rounded-lg text-[13px] font-medium border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-50"
+          className="px-4 py-2 rounded-lg text-[13px] font-medium border border-[#E9E9E7] text-[#37352F] hover:bg-[#F7F6F3] transition-colors disabled:opacity-50"
         >
           {advanceLoading ? "Sending..." : `${advanceLabel} \u2192`}
         </button>
@@ -198,7 +198,7 @@ export function ActionButtons({
           <input
             readOnly
             value={interviewUrl}
-            className="text-[12px] text-stone-500 bg-stone-50 border border-stone-200 rounded px-2 py-1 w-[280px] truncate"
+            className="text-[12px] text-[#9B9A97] bg-[#F7F6F3] border border-[#E9E9E7] rounded px-2 py-1 w-[280px] truncate"
           />
           <button
             onClick={handleCopyLink}
@@ -210,7 +210,7 @@ export function ActionButtons({
       )}
 
       {notificationSent && notificationType && (
-        <span className="text-[12px] text-stone-400 flex items-center gap-1">
+        <span className="text-[12px] text-[#9B9A97] flex items-center gap-1">
           <span className="text-emerald-500">{"\u2709"}</span>
           {notificationType === "acceptance" ? "Acceptance" : "Rejection"} email
           sent{" "}

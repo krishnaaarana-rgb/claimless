@@ -123,8 +123,8 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-stone-900">Settings</h1>
-        <div className="h-64 bg-stone-100 rounded-xl animate-pulse" />
+        <h1 className="text-2xl font-bold text-[#37352F]">Settings</h1>
+        <div className="h-64 bg-[#F7F6F3] rounded-lg animate-pulse" />
       </div>
     );
   }
@@ -132,8 +132,8 @@ export default function SettingsPage() {
   if (!settings) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-stone-900">Settings</h1>
-        <p className="text-stone-500">No company settings found.</p>
+        <h1 className="text-2xl font-bold text-[#37352F]">Settings</h1>
+        <p className="text-[#9B9A97]">No company settings found.</p>
       </div>
     );
   }
@@ -142,10 +142,10 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-stone-900">Settings</h1>
+      <h1 className="text-2xl font-bold text-[#37352F]">Settings</h1>
 
       {/* Tab Bar */}
-      <div className="flex gap-1 border-b border-stone-200">
+      <div className="flex gap-1 border-b border-[#E9E9E7]">
         {TABS.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -155,8 +155,8 @@ export default function SettingsPage() {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-2.5 text-[13px] font-medium border-b-2 transition-colors ${
                 isActive
-                  ? "border-amber-600 text-amber-700"
-                  : "border-transparent text-stone-500 hover:text-stone-700"
+                  ? "border-[#2383E2] text-[#2383E2]"
+                  : "border-transparent text-[#9B9A97] hover:text-[#37352F]"
               }`}
             >
               <Icon size={14} />
@@ -185,12 +185,12 @@ export default function SettingsPage() {
         )}
 
         {/* Save Button */}
-        <div className="flex items-center gap-3 mt-8 pt-6 border-t border-stone-200">
+        <div className="flex items-center gap-3 mt-8 pt-6 border-t border-[#E9E9E7]">
           <button
             onClick={handleSave}
             disabled={saving || !hasDraft}
             className="px-5 py-2 rounded-lg text-[13px] font-medium text-white transition-colors disabled:opacity-50"
-            style={{ background: "#D97706" }}
+            style={{ background: "#2383E2" }}
           >
             {saving ? "Saving..." : "Save Changes"}
           </button>
@@ -200,7 +200,7 @@ export default function SettingsPage() {
             </span>
           )}
           {hasDraft && !saved && (
-            <span className="text-[11px] text-stone-400">Unsaved changes</span>
+            <span className="text-[11px] text-[#9B9A97]">Unsaved changes</span>
           )}
         </div>
       </div>
@@ -222,14 +222,14 @@ interface TabProps {
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="text-[13px] font-semibold text-stone-900 mb-3">
+    <h3 className="text-[13px] font-semibold text-[#37352F] mb-3">
       {children}
     </h3>
   );
 }
 
 function HelperText({ children }: { children: React.ReactNode }) {
-  return <p className="text-[12px] text-stone-400 mt-1">{children}</p>;
+  return <p className="text-[12px] text-[#9B9A97] mt-1">{children}</p>;
 }
 
 /* ── General ── */
@@ -246,7 +246,7 @@ function GeneralTab({ getValue, updateDraft }: TabProps) {
         <SectionLabel>ATS Screening</SectionLabel>
         <div className="space-y-4">
           <div>
-            <label className="block text-[13px] font-medium text-stone-700 mb-1.5">
+            <label className="block text-[13px] font-medium text-[#37352F] mb-1.5">
               Pass Threshold
             </label>
             <div className="flex items-center gap-3">
@@ -258,10 +258,10 @@ function GeneralTab({ getValue, updateDraft }: TabProps) {
                 onChange={(e) =>
                   updateDraft("ats_pass_threshold", Number(e.target.value))
                 }
-                className="flex-1 accent-amber-600"
+                className="flex-1 accent-[#2383E2]"
               />
               <span
-                className="text-[14px] font-semibold text-stone-900 w-12 text-center tabular-nums"
+                className="text-[14px] font-semibold text-[#37352F] w-12 text-center tabular-nums"
                 style={{ fontFamily: "'JetBrains Mono', monospace" }}
               >
                 {threshold}
@@ -274,7 +274,7 @@ function GeneralTab({ getValue, updateDraft }: TabProps) {
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <label className="text-[13px] font-medium text-stone-700">
+              <label className="text-[13px] font-medium text-[#37352F]">
                 Auto-reject below threshold
               </label>
               <HelperText>
@@ -289,11 +289,11 @@ function GeneralTab({ getValue, updateDraft }: TabProps) {
         </div>
       </div>
 
-      <div className="border-t border-stone-200 pt-6">
+      <div className="border-t border-[#E9E9E7] pt-6">
         <SectionLabel>Branding</SectionLabel>
         <div className="space-y-4">
           <div>
-            <label className="block text-[13px] font-medium text-stone-700 mb-1.5">
+            <label className="block text-[13px] font-medium text-[#37352F] mb-1.5">
               Accent Color
             </label>
             <div className="flex items-center gap-3">
@@ -303,7 +303,7 @@ function GeneralTab({ getValue, updateDraft }: TabProps) {
                 onChange={(e) =>
                   updateDraft("brand_accent_color", e.target.value)
                 }
-                className="w-10 h-10 rounded-lg border border-stone-200 cursor-pointer"
+                className="w-10 h-10 rounded-lg border border-[#E9E9E7] cursor-pointer"
               />
               <input
                 type="text"
@@ -311,8 +311,8 @@ function GeneralTab({ getValue, updateDraft }: TabProps) {
                 onChange={(e) =>
                   updateDraft("brand_accent_color", e.target.value)
                 }
-                className="w-28 rounded-lg border border-stone-200 px-3 py-2 text-[13px] text-stone-700 font-mono"
-                placeholder="#D97706"
+                className="w-28 rounded-lg border border-[#E9E9E7] px-3 py-2 text-[13px] text-[#37352F] font-mono"
+                placeholder="#2383E2"
               />
               <div
                 className="w-20 h-10 rounded-lg"
@@ -321,7 +321,7 @@ function GeneralTab({ getValue, updateDraft }: TabProps) {
             </div>
           </div>
           <div>
-            <label className="block text-[13px] font-medium text-stone-700 mb-1.5">
+            <label className="block text-[13px] font-medium text-[#37352F] mb-1.5">
               Logo URL
             </label>
             <input
@@ -330,19 +330,19 @@ function GeneralTab({ getValue, updateDraft }: TabProps) {
               onChange={(e) =>
                 updateDraft("brand_logo_url", e.target.value || null)
               }
-              className="w-full rounded-lg border border-stone-200 px-4 py-2.5 text-[14px] text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+              className="w-full rounded-lg border border-[#E9E9E7] px-4 py-2.5 text-[14px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2]"
               placeholder="https://your-cdn.com/logo.png"
             />
           </div>
         </div>
       </div>
 
-      <div className="border-t border-stone-200 pt-6">
+      <div className="border-t border-[#E9E9E7] pt-6">
         <SectionLabel>Pipeline Stage Labels</SectionLabel>
         <div className="space-y-3">
           {STAGE_KEYS.map((s) => (
             <div key={s.key} className="flex items-center gap-3">
-              <label className="text-[13px] text-stone-500 w-44 shrink-0">
+              <label className="text-[13px] text-[#9B9A97] w-44 shrink-0">
                 {s.label}
               </label>
               <input
@@ -356,7 +356,7 @@ function GeneralTab({ getValue, updateDraft }: TabProps) {
                     [s.key]: e.target.value,
                   })
                 }
-                className="flex-1 rounded-lg border border-stone-200 px-3 py-2 text-[13px] text-stone-700 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+                className="flex-1 rounded-lg border border-[#E9E9E7] px-3 py-2 text-[13px] text-[#37352F] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2]"
               />
             </div>
           ))}
@@ -397,7 +397,7 @@ function EmailTemplatesTab({ getValue, updateDraft }: TabProps) {
       <div>
         <div className="flex items-center justify-between mb-3">
           <SectionLabel>Acceptance Email</SectionLabel>
-          <button onClick={() => resetTemplate("acceptance")} className="text-[12px] text-stone-400 hover:text-amber-600">
+          <button onClick={() => resetTemplate("acceptance")} className="text-[12px] text-[#9B9A97] hover:text-[#2383E2]">
             Reset to default
           </button>
         </div>
@@ -406,20 +406,20 @@ function EmailTemplatesTab({ getValue, updateDraft }: TabProps) {
             type="text"
             value={getValue("email_acceptance_subject")}
             onChange={(e) => updateDraft("email_acceptance_subject", e.target.value)}
-            className="w-full rounded-lg border border-stone-200 px-4 py-2.5 text-[14px] text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+            className="w-full rounded-lg border border-[#E9E9E7] px-4 py-2.5 text-[14px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2]"
             placeholder="Subject line"
           />
           <textarea
             value={getValue("email_acceptance_body")}
             onChange={(e) => updateDraft("email_acceptance_body", e.target.value)}
             rows={8}
-            className="w-full rounded-lg border border-stone-200 px-4 py-3 text-[14px] text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 resize-none"
+            className="w-full rounded-lg border border-[#E9E9E7] px-4 py-3 text-[14px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2] resize-none"
           />
-          <button onClick={() => setPreview(preview === "acceptance" ? null : "acceptance")} className="text-[12px] text-amber-600 hover:text-amber-700 font-medium">
+          <button onClick={() => setPreview(preview === "acceptance" ? null : "acceptance")} className="text-[12px] text-[#2383E2] hover:text-[#2383E2] font-medium">
             {preview === "acceptance" ? "Hide preview" : "Preview"}
           </button>
           {preview === "acceptance" && (
-            <div className="bg-stone-50 rounded-lg border border-stone-200 p-4 text-[13px] text-stone-700">
+            <div className="bg-[#F7F6F3] rounded-lg border border-[#E9E9E7] p-4 text-[13px] text-[#37352F]">
               <div className="font-semibold mb-2">{fillTemplate(getValue("email_acceptance_subject"))}</div>
               <div className="whitespace-pre-wrap">{fillTemplate(getValue("email_acceptance_body"))}</div>
             </div>
@@ -427,10 +427,10 @@ function EmailTemplatesTab({ getValue, updateDraft }: TabProps) {
         </div>
       </div>
 
-      <div className="border-t border-stone-200 pt-6">
+      <div className="border-t border-[#E9E9E7] pt-6">
         <div className="flex items-center justify-between mb-3">
           <SectionLabel>Rejection Email</SectionLabel>
-          <button onClick={() => resetTemplate("rejection")} className="text-[12px] text-stone-400 hover:text-amber-600">
+          <button onClick={() => resetTemplate("rejection")} className="text-[12px] text-[#9B9A97] hover:text-[#2383E2]">
             Reset to default
           </button>
         </div>
@@ -439,20 +439,20 @@ function EmailTemplatesTab({ getValue, updateDraft }: TabProps) {
             type="text"
             value={getValue("email_rejection_subject")}
             onChange={(e) => updateDraft("email_rejection_subject", e.target.value)}
-            className="w-full rounded-lg border border-stone-200 px-4 py-2.5 text-[14px] text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+            className="w-full rounded-lg border border-[#E9E9E7] px-4 py-2.5 text-[14px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2]"
             placeholder="Subject line"
           />
           <textarea
             value={getValue("email_rejection_body")}
             onChange={(e) => updateDraft("email_rejection_body", e.target.value)}
             rows={8}
-            className="w-full rounded-lg border border-stone-200 px-4 py-3 text-[14px] text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 resize-none"
+            className="w-full rounded-lg border border-[#E9E9E7] px-4 py-3 text-[14px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2] resize-none"
           />
-          <button onClick={() => setPreview(preview === "rejection" ? null : "rejection")} className="text-[12px] text-amber-600 hover:text-amber-700 font-medium">
+          <button onClick={() => setPreview(preview === "rejection" ? null : "rejection")} className="text-[12px] text-[#2383E2] hover:text-[#2383E2] font-medium">
             {preview === "rejection" ? "Hide preview" : "Preview"}
           </button>
           {preview === "rejection" && (
-            <div className="bg-stone-50 rounded-lg border border-stone-200 p-4 text-[13px] text-stone-700">
+            <div className="bg-[#F7F6F3] rounded-lg border border-[#E9E9E7] p-4 text-[13px] text-[#37352F]">
               <div className="font-semibold mb-2">{fillTemplate(getValue("email_rejection_subject"))}</div>
               <div className="whitespace-pre-wrap">{fillTemplate(getValue("email_rejection_body"))}</div>
             </div>
@@ -481,21 +481,21 @@ function ApplicationFormTab({ getValue, updateDraft }: TabProps) {
           const config = (fields as Record<string, { enabled: boolean; required: boolean }>)[f.key] || { enabled: false, required: false };
           const locked = "locked" in f && f.locked;
           return (
-            <div key={f.key} className="flex items-center justify-between py-3" style={{ borderBottom: "1px solid #F5F5F4" }}>
-              <span className="text-[14px] text-stone-700">{f.label}</span>
+            <div key={f.key} className="flex items-center justify-between py-3" style={{ borderBottom: "1px solid #E9E9E7" }}>
+              <span className="text-[14px] text-[#37352F]">{f.label}</span>
               <div className="flex items-center gap-4">
-                <label className="flex items-center gap-2 text-[12px] text-stone-500">
+                <label className="flex items-center gap-2 text-[12px] text-[#9B9A97]">
                   Enabled
                   <Toggle checked={config.enabled} onChange={(v) => updateField(f.key, "enabled", v)} disabled={locked} />
                 </label>
-                <label className="flex items-center gap-2 text-[12px] text-stone-500">
+                <label className="flex items-center gap-2 text-[12px] text-[#9B9A97]">
                   Required
                   <input
                     type="checkbox"
                     checked={config.required}
                     onChange={(e) => updateField(f.key, "required", e.target.checked)}
                     disabled={locked || !config.enabled}
-                    className="w-3.5 h-3.5 rounded border-stone-300 text-amber-600 focus:ring-amber-500/20"
+                    className="w-3.5 h-3.5 rounded border-[#E9E9E7] text-[#2383E2] focus:ring-[#2383E2]/20"
                   />
                 </label>
               </div>
@@ -513,11 +513,11 @@ function AIInterviewTab({ getValue, updateDraft }: TabProps) {
     <div className="space-y-6">
       <HelperText>These settings will be used when we launch AI voice interviews.</HelperText>
       <div>
-        <label className="block text-[13px] font-medium text-stone-700 mb-1.5">Duration</label>
+        <label className="block text-[13px] font-medium text-[#37352F] mb-1.5">Duration</label>
         <select
           value={getValue("interview_duration_minutes") ?? 15}
           onChange={(e) => updateDraft("interview_duration_minutes", Number(e.target.value))}
-          className="w-48 rounded-lg border border-stone-200 px-3 py-2.5 text-[14px] text-stone-700 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+          className="w-48 rounded-lg border border-[#E9E9E7] px-3 py-2.5 text-[14px] text-[#37352F] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2]"
         >
           {DURATION_OPTIONS.map((d) => (
             <option key={d} value={d}>{d} minutes</option>
@@ -525,7 +525,7 @@ function AIInterviewTab({ getValue, updateDraft }: TabProps) {
         </select>
       </div>
       <div>
-        <label className="block text-[13px] font-medium text-stone-700 mb-2">Style</label>
+        <label className="block text-[13px] font-medium text-[#37352F] mb-2">Style</label>
         <RadioGroup
           value={getValue("interview_style") ?? "conversational"}
           options={[
@@ -537,7 +537,7 @@ function AIInterviewTab({ getValue, updateDraft }: TabProps) {
         />
       </div>
       <div>
-        <label className="block text-[13px] font-medium text-stone-700 mb-2">Focus</label>
+        <label className="block text-[13px] font-medium text-[#37352F] mb-2">Focus</label>
         <RadioGroup
           value={getValue("interview_focus") ?? "technical_and_behavioral"}
           options={[
@@ -549,12 +549,12 @@ function AIInterviewTab({ getValue, updateDraft }: TabProps) {
         />
       </div>
       <div>
-        <label className="block text-[13px] font-medium text-stone-700 mb-1.5">Custom Instructions</label>
+        <label className="block text-[13px] font-medium text-[#37352F] mb-1.5">Custom Instructions</label>
         <textarea
           value={getValue("interview_custom_instructions") || ""}
           onChange={(e) => updateDraft("interview_custom_instructions", e.target.value || null)}
           rows={4}
-          className="w-full rounded-lg border border-stone-200 px-4 py-3 text-[14px] text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 resize-none"
+          className="w-full rounded-lg border border-[#E9E9E7] px-4 py-3 text-[14px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2] resize-none"
           placeholder="Additional instructions for the AI interviewer..."
         />
       </div>
@@ -589,11 +589,11 @@ function EmailProviderTab({ getValue, updateDraft }: TabProps) {
   return (
     <div className="space-y-6">
       <div>
-        <label className="block text-[13px] font-medium text-stone-700 mb-1.5">Provider</label>
+        <label className="block text-[13px] font-medium text-[#37352F] mb-1.5">Provider</label>
         <select
           value={provider}
           onChange={(e) => updateDraft("email_provider", e.target.value)}
-          className="w-48 rounded-lg border border-stone-200 px-3 py-2.5 text-[14px] text-stone-700 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+          className="w-48 rounded-lg border border-[#E9E9E7] px-3 py-2.5 text-[14px] text-[#37352F] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2]"
         >
           <option value="none">None (emails disabled)</option>
           <option value="resend">Resend</option>
@@ -603,41 +603,41 @@ function EmailProviderTab({ getValue, updateDraft }: TabProps) {
       {provider !== "none" && (
         <>
           <div>
-            <label className="block text-[13px] font-medium text-stone-700 mb-1.5">API Key</label>
+            <label className="block text-[13px] font-medium text-[#37352F] mb-1.5">API Key</label>
             <input
               type="password"
               value={getValue("email_api_key") || ""}
               onChange={(e) => updateDraft("email_api_key", e.target.value || null)}
-              className="w-full rounded-lg border border-stone-200 px-4 py-2.5 text-[14px] text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+              className="w-full rounded-lg border border-[#E9E9E7] px-4 py-2.5 text-[14px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2]"
               placeholder="re_xxxxxxxx or SG.xxxxxxxx"
             />
           </div>
           <div>
-            <label className="block text-[13px] font-medium text-stone-700 mb-1.5">From Email</label>
+            <label className="block text-[13px] font-medium text-[#37352F] mb-1.5">From Email</label>
             <input
               type="email"
               value={getValue("email_from_address") || ""}
               onChange={(e) => updateDraft("email_from_address", e.target.value || null)}
-              className="w-full rounded-lg border border-stone-200 px-4 py-2.5 text-[14px] text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+              className="w-full rounded-lg border border-[#E9E9E7] px-4 py-2.5 text-[14px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2]"
               placeholder="noreply@yourcompany.com"
             />
           </div>
           <div>
-            <label className="block text-[13px] font-medium text-stone-700 mb-1.5">From Name</label>
+            <label className="block text-[13px] font-medium text-[#37352F] mb-1.5">From Name</label>
             <input
               type="text"
               value={getValue("email_from_name") || ""}
               onChange={(e) => updateDraft("email_from_name", e.target.value || null)}
-              className="w-full rounded-lg border border-stone-200 px-4 py-2.5 text-[14px] text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+              className="w-full rounded-lg border border-[#E9E9E7] px-4 py-2.5 text-[14px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2]"
               placeholder="Your Company"
             />
           </div>
-          <div className="border-t border-stone-200 pt-4">
+          <div className="border-t border-[#E9E9E7] pt-4">
             <div className="flex items-center gap-3">
               <button
                 onClick={handleTestEmail}
                 disabled={testSending}
-                className="px-4 py-2 rounded-lg text-[13px] font-medium border border-stone-200 text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-50"
+                className="px-4 py-2 rounded-lg text-[13px] font-medium border border-[#E9E9E7] text-[#37352F] hover:bg-[#F7F6F3] transition-colors disabled:opacity-50"
               >
                 {testSending ? "Sending..." : "Send Test Email"}
               </button>
@@ -647,7 +647,7 @@ function EmailProviderTab({ getValue, updateDraft }: TabProps) {
                 </span>
               )}
             </div>
-            <p className="text-[12px] text-stone-400 mt-2">
+            <p className="text-[12px] text-[#9B9A97] mt-2">
               Sends a test email to your account email address. Save your settings first.
             </p>
           </div>
@@ -670,7 +670,7 @@ function Toggle({ checked, onChange, disabled }: { checked: boolean; onChange: (
       aria-checked={checked}
       disabled={disabled}
       onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"} ${checked ? "bg-amber-600" : "bg-stone-300"}`}
+      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"} ${checked ? "bg-[#2383E2]" : "bg-[#D3D1CB]"}`}
     >
       <span className={`inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform ${checked ? "translate-x-[18px]" : "translate-x-[3px]"}`} />
     </button>
@@ -682,8 +682,8 @@ function RadioGroup({ value, options, onChange }: { value: string; options: { va
     <div className="flex gap-4">
       {options.map((opt) => (
         <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
-          <input type="radio" name={opt.value} checked={value === opt.value} onChange={() => onChange(opt.value)} className="w-3.5 h-3.5 text-amber-600 border-stone-300 focus:ring-amber-500/20" />
-          <span className="text-[13px] text-stone-700">{opt.label}</span>
+          <input type="radio" name={opt.value} checked={value === opt.value} onChange={() => onChange(opt.value)} className="w-3.5 h-3.5 text-[#2383E2] border-[#E9E9E7] focus:ring-[#2383E2]/20" />
+          <span className="text-[13px] text-[#37352F]">{opt.label}</span>
         </label>
       ))}
     </div>

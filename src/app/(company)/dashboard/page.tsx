@@ -37,9 +37,9 @@ interface ActivityItem {
 }
 
 const PIPELINE_STAGES = [
-  { key: "applied", label: "Applied", color: "#A8A29E" },
+  { key: "applied", label: "Applied", color: "#9B9A97" },
   { key: "stage_1_passed", label: "Passed", color: "#059669" },
-  { key: "interview_invited", label: "Interview", color: "#D97706" },
+  { key: "interview_invited", label: "Interview", color: "#2383E2" },
   { key: "interview_completed", label: "Done", color: "#0891B2" },
   { key: "hired", label: "Hired", color: "#16A34A" },
   { key: "rejected", label: "Rejected", color: "#DC2626" },
@@ -51,7 +51,7 @@ function activityIcon(type: string) {
     case "email":
       return <span className="text-blue-500 text-[14px]">{"\u2709"}</span>;
     case "interview":
-      return <Mic size={14} className="text-amber-500" />;
+      return <Mic size={14} className="text-blue-500" />;
     case "rejection":
       return <span className="text-red-500 text-[14px]">{"\u2716"}</span>;
     default:
@@ -85,15 +85,15 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="space-y-8">
-        <h1 className="text-2xl font-bold text-stone-900">Dashboard</h1>
+        <h1 className="text-2xl font-bold text-[#37352F]">Dashboard</h1>
         <div className="grid grid-cols-4 gap-5">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
             <div
               key={i}
-              className="bg-white border border-stone-200 rounded-xl p-5 animate-pulse"
+              className="bg-white border border-[#E9E9E7] rounded-lg p-5 animate-pulse"
             >
-              <div className="h-3 bg-stone-100 rounded w-20 mb-4" />
-              <div className="h-8 bg-stone-100 rounded w-16" />
+              <div className="h-3 bg-[#F7F6F3] rounded w-20 mb-4" />
+              <div className="h-8 bg-[#F7F6F3] rounded w-16" />
             </div>
           ))}
         </div>
@@ -110,23 +110,22 @@ export default function DashboardPage() {
   if (isEmpty) {
     return (
       <div className="space-y-8">
-        <h1 className="text-2xl font-bold text-stone-900">Dashboard</h1>
+        <h1 className="text-2xl font-bold text-[#37352F]">Dashboard</h1>
         <div
-          className="bg-white border border-stone-200 rounded-xl p-16 text-center animate-fade-in-up"
-          style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}
+          className="bg-white border border-[#E9E9E7] rounded-lg p-16 text-center"
         >
-          <Briefcase size={48} className="text-stone-200 mx-auto mb-6" />
-          <h2 className="text-[20px] font-bold text-stone-900 mb-2">
+          <Briefcase size={48} className="text-[#D3D1CB] mx-auto mb-6" />
+          <h2 className="text-[20px] font-bold text-[#37352F] mb-2">
             Welcome to Claimless
           </h2>
-          <p className="text-[14px] text-stone-500 mb-6 max-w-md mx-auto">
+          <p className="text-[14px] text-[#9B9A97] mb-6 max-w-md mx-auto">
             Create your first job posting to start receiving applications.
             Candidates will appear here as they apply.
           </p>
           <button
             onClick={() => router.push("/jobs/new")}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-[14px] font-medium text-white transition-colors"
-            style={{ background: "#D97706" }}
+            style={{ background: "#2383E2" }}
           >
             <Briefcase size={16} />
             Create Job
@@ -191,7 +190,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-bold text-stone-900">Dashboard</h1>
+      <h1 className="text-2xl font-bold text-[#37352F]">Dashboard</h1>
 
       {/* Top Metric Cards */}
       <div className="grid grid-cols-4 gap-5">
@@ -200,19 +199,15 @@ export default function DashboardPage() {
           return (
             <div
               key={metric.label}
-              className="bg-white border border-stone-200 rounded-xl p-5 animate-fade-in-up"
-              style={{
-                animationDelay: `${i * 0.05}s`,
-                boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
-              }}
+              className="bg-white border border-[#E9E9E7] rounded-lg p-5"
             >
               <div className="flex items-center justify-between mb-3">
-                <span className="text-[13px] text-stone-500">
+                <span className="text-[13px] text-[#9B9A97]">
                   {metric.label}
                 </span>
-                <Icon size={16} className="text-stone-300" />
+                <Icon size={16} className="text-[#D3D1CB]" />
               </div>
-              <div className="text-[32px] font-bold text-stone-900 leading-none">
+              <div className="text-[32px] font-bold text-[#37352F] leading-none">
                 {metric.value}
               </div>
               {metric.trend && (
@@ -232,19 +227,15 @@ export default function DashboardPage() {
           return (
             <div
               key={metric.label}
-              className="bg-white border border-stone-200 rounded-xl p-5 animate-fade-in-up"
-              style={{
-                animationDelay: `${(i + 4) * 0.05}s`,
-                boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
-              }}
+              className="bg-white border border-[#E9E9E7] rounded-lg p-5"
             >
               <div className="flex items-center justify-between mb-3">
-                <span className="text-[13px] text-stone-500">
+                <span className="text-[13px] text-[#9B9A97]">
                   {metric.label}
                 </span>
-                <Icon size={16} className="text-stone-300" />
+                <Icon size={16} className="text-[#D3D1CB]" />
               </div>
-              <div className="text-[32px] font-bold text-stone-900 leading-none">
+              <div className="text-[32px] font-bold text-[#37352F] leading-none">
                 {metric.value}
               </div>
             </div>
@@ -256,13 +247,9 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Pipeline Overview */}
         <div
-          className="bg-white border border-stone-200 rounded-xl p-6 animate-fade-in-up"
-          style={{
-            animationDelay: "0.4s",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
-          }}
+          className="bg-white border border-[#E9E9E7] rounded-lg p-6"
         >
-          <h2 className="text-[15px] font-semibold text-stone-900 mb-5">
+          <h2 className="text-[15px] font-semibold text-[#37352F] mb-5">
             Pipeline Overview
           </h2>
           <div className="space-y-3">
@@ -274,10 +261,10 @@ export default function DashboardPage() {
                   : 0;
               return (
                 <div key={stage.key} className="flex items-center gap-3">
-                  <span className="text-[12px] text-stone-500 w-[72px] text-right shrink-0">
+                  <span className="text-[12px] text-[#9B9A97] w-[72px] text-right shrink-0">
                     {stage.label}
                   </span>
-                  <div className="flex-1 h-5 bg-stone-50 rounded overflow-hidden">
+                  <div className="flex-1 h-5 bg-[#F7F6F3] rounded overflow-hidden">
                     <div
                       className="h-full rounded transition-all duration-500"
                       style={{
@@ -288,7 +275,7 @@ export default function DashboardPage() {
                     />
                   </div>
                   <span
-                    className="text-[13px] font-medium text-stone-700 w-8 text-right tabular-nums"
+                    className="text-[13px] font-medium text-[#37352F] w-8 text-right tabular-nums"
                     style={{ fontFamily: "'JetBrains Mono', monospace" }}
                   >
                     {count}
@@ -301,17 +288,13 @@ export default function DashboardPage() {
 
         {/* Recent Activity */}
         <div
-          className="bg-white border border-stone-200 rounded-xl p-6 animate-fade-in-up"
-          style={{
-            animationDelay: "0.45s",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
-          }}
+          className="bg-white border border-[#E9E9E7] rounded-lg p-6"
         >
-          <h2 className="text-[15px] font-semibold text-stone-900 mb-5">
+          <h2 className="text-[15px] font-semibold text-[#37352F] mb-5">
             Recent Activity
           </h2>
           {(!stats?.recent_activity || stats.recent_activity.length === 0) ? (
-            <p className="text-[13px] text-stone-400 text-center py-8">
+            <p className="text-[13px] text-[#9B9A97] text-center py-8">
               No activity yet. Candidates will appear here as they apply.
             </p>
           ) : (
@@ -323,10 +306,10 @@ export default function DashboardPage() {
                     if (item.candidate_id)
                       router.push(`/candidates/${item.candidate_id}`);
                   }}
-                  className="w-full text-left flex items-start gap-3 py-2.5 hover:bg-stone-50 rounded-lg px-2 -mx-2 transition-colors"
+                  className="w-full text-left flex items-start gap-3 py-2.5 hover:bg-[#F7F6F3] rounded-lg px-2 -mx-2 transition-colors"
                   style={
                     i < stats.recent_activity.length - 1
-                      ? { borderBottom: "1px solid #F5F5F4" }
+                      ? { borderBottom: "1px solid #E9E9E7" }
                       : undefined
                   }
                 >
@@ -334,11 +317,11 @@ export default function DashboardPage() {
                     {activityIcon(item.type)}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[13px] text-stone-800">
+                    <div className="text-[13px] text-[#37352F]">
                       <span className="font-medium">{item.candidate}</span>{" "}
-                      <span className="text-stone-500">{item.detail}</span>
+                      <span className="text-[#9B9A97]">{item.detail}</span>
                     </div>
-                    <div className="text-[11px] text-stone-400 mt-0.5">
+                    <div className="text-[11px] text-[#9B9A97] mt-0.5">
                       {item.job} &middot; {item.time}
                     </div>
                   </div>

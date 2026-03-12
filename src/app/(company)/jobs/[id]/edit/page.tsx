@@ -433,7 +433,6 @@ export default function EditJobPage({
           Cancel
         </Button>
         <Button
-          className="glow-primary"
           onClick={handleSave}
           disabled={saving}
         >
