@@ -104,9 +104,14 @@ export function ActionButtons({
   const handleAdvance = async () => {
     setAdvanceLoading(true);
     try {
-      await fetch(`/api/dashboard/applications/${applicationId}/advance`, {
+      const res = await fetch(`/api/dashboard/applications/${applicationId}/advance`, {
         method: "POST",
       });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        showToast(data.error || "Failed to advance");
+        return;
+      }
       await fetch(`/api/dashboard/applications/${applicationId}/notify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -124,11 +129,16 @@ export function ActionButtons({
     }
     setRejectLoading(true);
     try {
-      await fetch(`/api/dashboard/applications/${applicationId}/reject`, {
+      const res = await fetch(`/api/dashboard/applications/${applicationId}/reject`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ reason: "Rejected from candidate detail view" }),
       });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        showToast(data.error || "Failed to reject");
+        return;
+      }
       await fetch(`/api/dashboard/applications/${applicationId}/notify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

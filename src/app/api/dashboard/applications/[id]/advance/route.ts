@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const STAGE_ORDER = [
   "applied",
+  "pending_review",
   "stage_1_passed",
   "interview_invited",
   "interview_completed",
@@ -14,12 +16,34 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const supabase = createAdminClient();
 
-  const { data: application, error: fetchError } = await supabase
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const admin = createAdminClient();
+
+  // Verify user belongs to a company
+  const { data: membership } = await admin
+    .from("company_users")
+    .select("company_id")
+    .eq("user_id", user.id)
+    .single();
+
+  if (!membership) {
+    return NextResponse.json({ error: "No company found" }, { status: 404 });
+  }
+
+  const { data: application, error: fetchError } = await admin
     .from("applications")
     .select("*, candidates (full_name, email), jobs (title)")
     .eq("id", id)
+    .eq("company_id", membership.company_id)
     .single();
 
   if (fetchError || !application) {
@@ -65,7 +89,7 @@ export async function POST(
     updates.shortlisted_at = new Date().toISOString();
   }
 
-  const { data: updated, error: updateError } = await supabase
+  const { data: updated, error: updateError } = await admin
     .from("applications")
     .update(updates)
     .eq("id", id)

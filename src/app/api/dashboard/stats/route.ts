@@ -116,30 +116,29 @@ export async function GET() {
     (a) => new Date(a.created_at) >= weekStart
   ).length;
 
-  // Email stats - query directly since the subquery approach is complex
-  const { data: allEmailLogs } = await admin
+  // Email stats - filter by company's application IDs
+  const appIds = new Set(apps.map((a) => a.id));
+  const appIdArray = Array.from(appIds);
+
+  const { data: companyEmailLogs } = await admin
     .from("email_logs")
     .select("id, status, email_type, candidate_email, created_at, application_id")
+    .in("application_id", appIdArray)
     .order("created_at", { ascending: false });
 
-  // Filter to company's applications
-  const appIds = new Set(apps.map((a) => a.id));
-  const companyEmails = (allEmailLogs || []).filter((e) =>
-    appIds.has(e.application_id)
-  );
+  const companyEmails = companyEmailLogs || [];
   const emailsSent = companyEmails.length;
   const emailsDelivered = companyEmails.filter(
     (e) => e.status === "sent" || e.status === "delivered"
   ).length;
 
-  // Interview stats
-  const { data: allTokens } = await admin
+  // Interview stats - filter by company's application IDs
+  const { data: companyTokenData } = await admin
     .from("interview_tokens")
-    .select("id, status, application_id");
+    .select("id, status, application_id")
+    .in("application_id", appIdArray);
 
-  const companyTokens = (allTokens || []).filter((t) =>
-    appIds.has(t.application_id)
-  );
+  const companyTokens = companyTokenData || [];
   const interviewsScheduled = companyTokens.length;
   const interviewsCompleted = companyTokens.filter(
     (t) => t.status === "used"

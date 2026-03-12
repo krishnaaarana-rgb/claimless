@@ -64,9 +64,12 @@ export default function CompanyLayout({
 
   const handleSignOut = async () => {
     setSigningOut(true);
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push("/");
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+    } finally {
+      router.push("/");
+    }
   };
 
   const initials = userName

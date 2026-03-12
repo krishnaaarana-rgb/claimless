@@ -86,7 +86,7 @@ export default function DashboardPage() {
     return (
       <div className="space-y-8">
         <h1 className="text-2xl font-bold text-[#37352F]">Dashboard</h1>
-        <div className="grid grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
             <div
               key={i}
@@ -193,7 +193,7 @@ export default function DashboardPage() {
       <h1 className="text-2xl font-bold text-[#37352F]">Dashboard</h1>
 
       {/* Top Metric Cards */}
-      <div className="grid grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {topMetrics.map((metric, i) => {
           const Icon = metric.icon;
           return (
@@ -221,7 +221,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Bottom Metric Cards */}
-      <div className="grid grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {bottomMetrics.map((metric, i) => {
           const Icon = metric.icon;
           return (

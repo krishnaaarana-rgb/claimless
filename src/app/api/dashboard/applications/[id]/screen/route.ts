@@ -21,6 +21,17 @@ export async function POST(
 
   const admin = createAdminClient();
 
+  // Verify user belongs to a company
+  const { data: membership } = await admin
+    .from("company_users")
+    .select("company_id")
+    .eq("user_id", user.id)
+    .single();
+
+  if (!membership) {
+    return NextResponse.json({ error: "No company found" }, { status: 404 });
+  }
+
   const { data: app, error: appError } = await admin
     .from("applications")
     .select(
@@ -32,6 +43,7 @@ export async function POST(
     `
     )
     .eq("id", id)
+    .eq("company_id", membership.company_id)
     .single();
 
   if (appError || !app) {
