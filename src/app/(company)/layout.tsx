@@ -90,7 +90,7 @@ export default function CompanyLayout({
           className="flex-shrink-0 flex flex-col fixed top-0 left-0 h-screen z-30"
           style={{
             background: "#F7F6F3",
-            width: expanded ? 220 : 48,
+            width: expanded ? 220 : 56,
             transition: "width 200ms ease-in-out",
           }}
         >
@@ -115,20 +115,16 @@ export default function CompanyLayout({
           {/* Navigation */}
           <nav className="flex-1 px-2">
             {NAV_SECTIONS.map((section) => (
-              <div key={section.label} className="mt-6 first:mt-2">
+              <div key={section.label} style={{ marginTop: expanded ? 24 : 12 }} className="first:!mt-2">
                 {/* Section label */}
-                <div
-                  className="px-3 mb-2 text-[10px] font-medium uppercase tracking-[0.05em] whitespace-nowrap"
-                  style={{
-                    color: "#9B9A97",
-                    opacity: expanded ? 1 : 0,
-                    height: expanded ? "auto" : 0,
-                    overflow: "hidden",
-                    transition: "opacity 200ms ease-in-out",
-                  }}
-                >
-                  {section.label}
-                </div>
+                {expanded && (
+                  <div
+                    className="px-3 mb-2 text-[10px] font-medium uppercase tracking-[0.05em] whitespace-nowrap"
+                    style={{ color: "#9B9A97" }}
+                  >
+                    {section.label}
+                  </div>
+                )}
                 <div className="space-y-0.5">
                   {section.items.map((item) => {
                     const isActive =
@@ -139,45 +135,38 @@ export default function CompanyLayout({
                       <div key={item.href} className="relative group/nav">
                         <Link
                           href={item.href}
-                          className={`flex items-center gap-3 py-2 rounded-md text-[13px] font-medium transition-colors ${
+                          className={`flex items-center rounded-md text-[13px] font-medium transition-colors ${
                             isActive ? "text-[#37352F]" : "hover:bg-[#EFEFEF]"
                           }`}
                           style={{
-                            ...(isActive
-                              ? expanded
-                                ? {
-                                    background: "#EFEFEF",
-                                    paddingLeft: 12,
-                                    color: "#37352F",
-                                    fontWeight: 600,
-                                    justifyContent: "flex-start",
-                                  }
-                                : {
-                                    background: "#EFEFEF",
-                                    color: "#37352F",
-                                    justifyContent: "center",
-                                    paddingLeft: 0,
-                                  }
+                            ...(expanded
+                              ? {
+                                  gap: 12,
+                                  paddingLeft: 12,
+                                  paddingTop: 8,
+                                  paddingBottom: 8,
+                                  justifyContent: "flex-start",
+                                  ...(isActive
+                                    ? { background: "#EFEFEF", color: "#37352F", fontWeight: 600 }
+                                    : { color: "#73726E" }),
+                                }
                               : {
-                                  color: "#73726E",
-                                  paddingLeft: expanded ? 12 : 0,
-                                  justifyContent: expanded ? "flex-start" : "center",
+                                  justifyContent: "center",
+                                  paddingTop: 8,
+                                  paddingBottom: 8,
+                                  ...(isActive
+                                    ? { background: "#EFEFEF", color: "#37352F" }
+                                    : { color: "#73726E" }),
                                 }),
-                            transition: "padding 200ms ease-in-out",
+                            transition: "all 200ms ease-in-out",
                           }}
                         >
-                          <Icon size={16} strokeWidth={1.8} className="shrink-0" />
-                          <span
-                            className="flex-1 whitespace-nowrap"
-                            style={{
-                              opacity: expanded ? 1 : 0,
-                              width: expanded ? "auto" : 0,
-                              overflow: "hidden",
-                              transition: "opacity 200ms ease-in-out",
-                            }}
-                          >
-                            {item.label}
-                          </span>
+                          <Icon size={18} strokeWidth={1.8} className="shrink-0" />
+                          {expanded && (
+                            <span className="flex-1 whitespace-nowrap">
+                              {item.label}
+                            </span>
+                          )}
                           {item.label === "Candidates" && candidateCount != null && candidateCount > 0 && expanded && (
                             <span
                               className="text-[11px] font-medium px-1.5 py-0.5 rounded-full leading-none mr-1"
@@ -202,11 +191,14 @@ export default function CompanyLayout({
           </nav>
 
           {/* User card */}
-          <div className="px-2 py-4" style={{ borderTop: "1px solid #E9E9E7" }}>
+          <div className="px-2 py-3" style={{ borderTop: "1px solid #E9E9E7" }}>
             {userEmail ? (
               <div
-                className="flex items-center gap-3 px-2"
-                style={{ justifyContent: expanded ? "flex-start" : "center" }}
+                className="flex items-center gap-3"
+                style={{
+                  justifyContent: expanded ? "flex-start" : "center",
+                  padding: expanded ? "0 8px" : "0",
+                }}
               >
                 <div
                   className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-semibold text-white flex-shrink-0"
@@ -214,46 +206,35 @@ export default function CompanyLayout({
                 >
                   {initials}
                 </div>
-                <div
-                  className="flex-1 min-w-0"
-                  style={{
-                    opacity: expanded ? 1 : 0,
-                    width: expanded ? "auto" : 0,
-                    overflow: "hidden",
-                    transition: "opacity 200ms ease-in-out",
-                  }}
-                >
-                  <div className="text-[13px] font-medium text-[#37352F] truncate">
-                    {userName || userEmail}
-                  </div>
-                  {userName && (
-                    <div className="text-[11px] truncate" style={{ color: "#9B9A97" }}>
-                      {userEmail}
-                    </div>
-                  )}
-                </div>
                 {expanded && (
-                  <button
-                    onClick={handleSignOut}
-                    disabled={signingOut}
-                    className="p-1 rounded hover:bg-[#EFEFEF] transition-colors flex-shrink-0"
-                    title="Sign out"
-                  >
-                    <LogOut size={14} style={{ color: "#9B9A97" }} />
-                  </button>
+                  <>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[13px] font-medium text-[#37352F] truncate">
+                        {userName || userEmail}
+                      </div>
+                      {userName && (
+                        <div className="text-[11px] truncate" style={{ color: "#9B9A97" }}>
+                          {userEmail}
+                        </div>
+                      )}
+                    </div>
+                    <button
+                      onClick={handleSignOut}
+                      disabled={signingOut}
+                      className="p-1 rounded hover:bg-[#EFEFEF] transition-colors flex-shrink-0"
+                      title="Sign out"
+                    >
+                      <LogOut size={14} style={{ color: "#9B9A97" }} />
+                    </button>
+                  </>
                 )}
               </div>
             ) : (
-              <div
-                className="px-2 text-[11px]"
-                style={{
-                  color: "#9B9A97",
-                  opacity: expanded ? 1 : 0,
-                  transition: "opacity 200ms ease-in-out",
-                }}
-              >
-                Claimless v0.1
-              </div>
+              expanded && (
+                <div className="px-2 text-[11px]" style={{ color: "#9B9A97" }}>
+                  Claimless v0.1
+                </div>
+              )
             )}
           </div>
         </aside>
@@ -263,7 +244,7 @@ export default function CompanyLayout({
           className="flex-1 min-w-0"
           style={{
             background: "#FFFFFF",
-            marginLeft: expanded ? 220 : 48,
+            marginLeft: expanded ? 220 : 56,
             transition: "margin-left 200ms ease-in-out",
           }}
         >
