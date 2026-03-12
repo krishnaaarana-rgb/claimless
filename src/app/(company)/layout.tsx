@@ -267,7 +267,7 @@ export default function CompanyLayout({
             transition: "margin-left 200ms ease-in-out",
           }}
         >
-          <div className="px-10 py-8 max-w-[900px]">{children}</div>
+          <div className="px-10 py-8">{children}</div>
         </main>
       </div>
     </ToastProvider>
