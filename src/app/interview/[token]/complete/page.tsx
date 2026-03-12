@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { CheckCircle2 } from "lucide-react";
+import { Check } from "lucide-react";
 
 interface CompletionData {
   candidate_name: string;
   job_title: string;
-  duration_minutes: number;
+  company_name: string;
 }
 
 export default function InterviewComplete() {
@@ -15,55 +15,45 @@ export default function InterviewComplete() {
   const [data, setData] = useState<CompletionData | null>(null);
 
   useEffect(() => {
-    // Fetch interview data to get candidate name and job title
     fetch(`/api/interview/${token}`)
-      .then((res) => {
-        if (res.ok) return res.json();
-        return null;
-      })
+      .then((res) => (res.ok ? res.json() : null))
       .then((json) => {
         if (json) {
           setData({
-            candidate_name: json.candidate_name || "there",
+            candidate_name: json.candidate_name || "",
             job_title: json.job_title || "",
-            duration_minutes: json.interview_duration || 0,
+            company_name: json.company_name || "",
           });
         }
       })
-      .catch(() => {
-        // Gracefully handle -- still show completion page
-      });
+      .catch(() => {});
   }, [token]);
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center"
-      style={{ background: "#FAFAF9" }}
-    >
+    <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="text-center max-w-md px-6">
-        {/* Green checkmark */}
-        <div className="w-20 h-20 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center mx-auto mb-6">
-          <CheckCircle2 size={40} className="text-emerald-500" />
+        {/* Checkmark */}
+        <div className="w-14 h-14 rounded-full bg-emerald-500 flex items-center justify-center mx-auto mb-6">
+          <Check size={28} strokeWidth={2.5} className="text-white" />
         </div>
 
-        <h1 className="text-[24px] font-bold text-stone-900 mb-3">
-          Interview Complete!
+        <h1 className="text-[22px] font-bold text-[#37352F] mb-3 tracking-tight">
+          You&apos;re all done{data?.candidate_name ? `, ${data.candidate_name}` : ""}!
         </h1>
 
-        <p className="text-[15px] text-stone-600 leading-relaxed mb-6">
-          Thank you for your time
-          {data?.candidate_name ? `, ${data.candidate_name}` : ""}.
-          {"\n"}We&apos;ll review your interview and be in touch with next
-          steps.
+        <p className="text-[15px] text-[#9B9A97] leading-relaxed mb-8">
+          Thank you for taking the time to interview
+          {data?.job_title ? ` for ${data.job_title}` : ""}
+          {data?.company_name ? ` at ${data.company_name}` : ""}.
+          We&apos;ll review your interview and be in touch with next steps.
         </p>
 
-        {data?.job_title && (
-          <p className="text-[13px] text-stone-400 mb-2">
-            {data.job_title}
-          </p>
-        )}
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#F7F6F3] text-[13px] text-[#9B9A97]">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          Interview submitted successfully
+        </div>
 
-        <p className="text-[12px] text-stone-400 mt-10">
+        <p className="text-[11px] text-[#D3D1CB] mt-16">
           Powered by Claimless
         </p>
       </div>
