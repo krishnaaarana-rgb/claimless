@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import IndustrySkillPicker, { type SkillRequirement } from "@/components/IndustrySkillPicker";
 import { use } from "react";
 
 const EMPLOYMENT_TYPES = [
@@ -67,6 +68,9 @@ export default function EditJobPage({
   const [employmentType, setEmploymentType] = useState("full_time");
   const [status, setStatus] = useState("active");
   const [githubRequired, setGithubRequired] = useState(false);
+  const [industry, setIndustry] = useState<string | null>(null);
+  const [industryNiche, setIndustryNiche] = useState<string | null>(null);
+  const [skillRequirements, setSkillRequirements] = useState<SkillRequirement[]>([]);
   const [formFields, setFormFields] = useState<FormField[]>([]);
   const [customQuestions, setCustomQuestions] = useState<CustomQuestion[]>([]);
   const [loading, setLoading] = useState(true);
@@ -93,6 +97,9 @@ export default function EditJobPage({
         setEmploymentType(job.employment_type || "full_time");
         setGithubRequired(job.github_required ?? false);
         setStatus(job.status || "active");
+        setIndustry(job.industry || null);
+        setIndustryNiche(job.industry_niche || null);
+        setSkillRequirements(job.skill_requirements || []);
 
         // Parse form config
         const config = job.application_form_config;
@@ -169,6 +176,9 @@ export default function EditJobPage({
             fields: fieldsConfig,
             custom_questions: customQuestions.filter((q) => q.question.trim()),
           },
+          industry: industry || null,
+          industry_niche: industryNiche || null,
+          skill_requirements: skillRequirements.length > 0 ? skillRequirements : null,
         }),
       });
       const data = await res.json();
@@ -248,7 +258,20 @@ export default function EditJobPage({
             className="bg-background border-border resize-none"
           />
         </div>
+      </div>
 
+      <IndustrySkillPicker
+        industry={industry}
+        industryNiche={industryNiche}
+        skills={skillRequirements}
+        onChange={({ industry: ind, industryNiche: niche, skills }) => {
+          setIndustry(ind);
+          setIndustryNiche(niche);
+          setSkillRequirements(skills);
+        }}
+      />
+
+      <div className="bg-card border border-border rounded-lg p-6 space-y-5">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="department">Department</Label>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { buildIndustryInterviewContext } from "@/lib/industry-skills";
 
 async function getCompanyId(userId: string) {
   const admin = createAdminClient();
@@ -126,9 +127,19 @@ export async function PATCH(
     "application_form_config",
     "github_required",
     "stage_config",
+    "industry",
+    "industry_niche",
+    "skill_requirements",
   ];
   for (const key of allowed) {
     if (body[key] !== undefined) updates[key] = body[key];
+  }
+
+  // Re-generate industry interview context when industry changes
+  if (body.industry !== undefined) {
+    updates.industry_interview_context = body.industry
+      ? buildIndustryInterviewContext(body.industry, body.industry_niche || undefined)
+      : null;
   }
 
   if (body.status === "active") {

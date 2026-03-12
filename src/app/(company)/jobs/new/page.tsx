@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import IndustrySkillPicker, { type SkillRequirement } from "@/components/IndustrySkillPicker";
 
 const EMPLOYMENT_TYPES = [
   { value: "full_time", label: "Full-time" },
@@ -49,6 +50,9 @@ export default function NewJobPage() {
   const [githubRequired, setGithubRequired] = useState(false);
   const [formFields, setFormFields] = useState<FormField[]>(DEFAULT_FIELDS);
   const [customQuestions, setCustomQuestions] = useState<CustomQuestion[]>([]);
+  const [industry, setIndustry] = useState<string | null>(null);
+  const [industryNiche, setIndustryNiche] = useState<string | null>(null);
+  const [skillRequirements, setSkillRequirements] = useState<SkillRequirement[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<{ id: string; title: string } | null>(null);
@@ -117,6 +121,9 @@ export default function NewJobPage() {
           employment_type: employmentType,
           github_required: githubRequired,
           application_form_config: buildFormConfig(),
+          industry: industry || null,
+          industry_niche: industryNiche || null,
+          skill_requirements: skillRequirements.length > 0 ? skillRequirements : null,
           status,
         }),
       });
@@ -236,7 +243,20 @@ export default function NewJobPage() {
             candidates and prepare interview questions.
           </p>
         </div>
+      </div>
 
+      <IndustrySkillPicker
+        industry={industry}
+        industryNiche={industryNiche}
+        skills={skillRequirements}
+        onChange={({ industry: ind, industryNiche: niche, skills }) => {
+          setIndustry(ind);
+          setIndustryNiche(niche);
+          setSkillRequirements(skills);
+        }}
+      />
+
+      <div className="bg-card border border-border rounded-lg p-6 space-y-5">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="department">Department</Label>

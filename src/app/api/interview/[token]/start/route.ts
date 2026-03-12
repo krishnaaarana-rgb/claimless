@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { buildIndustryInterviewPrompt } from "@/lib/claude/prompts/industry-interview";
+import type { SkillRequirement } from "@/types/industry-skills";
 
 export async function POST(
   request: NextRequest,
@@ -52,6 +54,10 @@ export async function POST(
       title: string;
       description: string | null;
       company_id: string;
+      industry: string | null;
+      industry_niche: string | null;
+      skill_requirements: SkillRequirement[] | null;
+      industry_interview_context: string | null;
     };
   };
 
@@ -125,7 +131,37 @@ export async function POST(
   const candidateName =
     preferredName || candidate.full_name || "the candidate";
 
-  const systemPrompt = `You are an AI interviewer for the role of "${job.title}" at the company. You are conducting a ${duration}-minute ${style} interview.
+  // Use industry-aware prompt if job has industry set, otherwise fall back to generic
+  let systemPrompt: string;
+
+  if (job.industry && job.skill_requirements && job.skill_requirements.length > 0) {
+    systemPrompt = buildIndustryInterviewPrompt({
+      job: {
+        title: job.title,
+        description: job.description || "No description provided",
+        industry: job.industry,
+        industry_niche: job.industry_niche,
+        skill_requirements: job.skill_requirements,
+        industry_interview_context: job.industry_interview_context,
+      },
+      candidate: {
+        name: candidateName,
+        resume_text: resumeText,
+        github_context: githubContext || undefined,
+        strengths: strengths.length > 0 ? strengths : undefined,
+        concerns: concerns.length > 0 ? concerns : undefined,
+        suggested_topics: interviewTopics.length > 0 ? interviewTopics : undefined,
+      },
+      settings: {
+        duration_minutes: duration,
+        style,
+        focus,
+        custom_instructions: settings?.interview_custom_instructions || undefined,
+      },
+    });
+  } else {
+    // Generic prompt fallback for jobs without industry configuration
+    systemPrompt = `You are an AI interviewer for the role of "${job.title}" at the company. You are conducting a ${duration}-minute ${style} interview.
 
 YOUR PERSONA:
 - Warm, professional, and encouraging
@@ -166,6 +202,7 @@ RULES:
 - The interview should last approximately ${duration} minutes
 - Ask 5-8 main questions total, with follow-ups as needed
 - End the interview naturally when you've covered the key topics`;
+  }
 
   // 7. Create Vapi assistant via API
   const name = `IV: ${candidateName} - ${job.title}`.slice(0, 40);

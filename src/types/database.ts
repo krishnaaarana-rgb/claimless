@@ -1,6 +1,8 @@
 // Core database types — these will be auto-generated from Supabase later
 // For now, manual types matching our schema
 
+import type { SkillRequirement } from "@/types/industry-skills";
+
 export interface Company {
   id: string;
   name: string;
@@ -40,6 +42,10 @@ export interface Job {
   employment_type: "full_time" | "contract" | "part_time";
   stage_config: StageConfig;
   voice_interview_config: VoiceInterviewConfig;
+  industry: string | null;
+  industry_niche: string | null;
+  skill_requirements: SkillRequirement[];
+  industry_interview_context: string | null;
   status: "draft" | "active" | "paused" | "closed";
   published_at: string | null;
   closed_at: string | null;

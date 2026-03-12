@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { buildIndustryInterviewContext } from "@/lib/industry-skills";
 
 async function getCompanyId(userId: string) {
   const admin = createAdminClient();
@@ -110,6 +111,11 @@ export async function POST(request: NextRequest) {
   const admin = createAdminClient();
   const isDraft = body.status === "draft";
 
+  // Auto-generate industry interview context if industry is set
+  const industryInterviewContext = body.industry
+    ? buildIndustryInterviewContext(body.industry, body.industry_niche || undefined)
+    : null;
+
   const { data: job, error } = await admin
     .from("jobs")
     .insert({
@@ -131,6 +137,10 @@ export async function POST(request: NextRequest) {
       },
       application_form_config: body.application_form_config || null,
       github_required: body.github_required ?? false,
+      industry: body.industry || null,
+      industry_niche: body.industry_niche || null,
+      skill_requirements: body.skill_requirements || [],
+      industry_interview_context: industryInterviewContext,
       status: isDraft ? "draft" : "active",
       published_at: isDraft ? null : new Date().toISOString(),
     })

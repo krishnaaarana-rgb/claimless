@@ -56,6 +56,16 @@ export async function POST() {
           { skill: "TypeScript", level: "advanced", required: true },
           { skill: "System Design", level: "intermediate", required: false },
         ],
+        industry: "technology",
+        skill_requirements: [
+          { skill: "React", category: "hard_skill", level: "advanced", required: true, weight: 3 },
+          { skill: "Node.js", category: "hard_skill", level: "advanced", required: true, weight: 3 },
+          { skill: "PostgreSQL", category: "hard_skill", level: "intermediate", required: true, weight: 3 },
+          { skill: "TypeScript", category: "hard_skill", level: "advanced", required: true, weight: 3 },
+          { skill: "System Design", category: "hard_skill", level: "intermediate", required: false, weight: 3 },
+          { skill: "Problem Solving", category: "soft_skill", level: "advanced", required: true, weight: 3 },
+          { skill: "Communication", category: "soft_skill", level: "intermediate", required: true, weight: 3 },
+        ],
         department: "Engineering",
         location: "Remote",
         employment_type: "full_time",
@@ -83,6 +93,15 @@ export async function POST() {
           { skill: "CSS/Tailwind", level: "advanced", required: true },
           { skill: "Next.js", level: "intermediate", required: false },
         ],
+        industry: "technology",
+        skill_requirements: [
+          { skill: "React", category: "hard_skill", level: "advanced", required: true, weight: 3 },
+          { skill: "TypeScript", category: "hard_skill", level: "intermediate", required: true, weight: 3 },
+          { skill: "CSS/Tailwind", category: "hard_skill", level: "advanced", required: true, weight: 3 },
+          { skill: "Next.js", category: "hard_skill", level: "intermediate", required: false, weight: 3 },
+          { skill: "UI/UX Sensibility", category: "soft_skill", level: "advanced", required: true, weight: 3 },
+          { skill: "Communication", category: "soft_skill", level: "intermediate", required: true, weight: 3 },
+        ],
         department: "Engineering",
         location: "Remote",
         employment_type: "full_time",
@@ -103,6 +122,42 @@ export async function POST() {
         status: "active",
         published_at: new Date().toISOString(),
       },
+      {
+        company_id: company.id,
+        title: "Sales Development Representative",
+        description:
+          "We're hiring an SDR to drive outbound pipeline for our B2B SaaS product. You'll research target accounts, craft personalized outreach, run discovery calls, and qualify leads for our Account Executives. This is a high-energy role for someone who loves the hunt and wants to build a career in tech sales.",
+        requirements: [
+          { skill: "Outbound Prospecting", level: "intermediate", required: true },
+          { skill: "CRM Management", level: "basic", required: true },
+          { skill: "Cold Calling", level: "intermediate", required: true },
+        ],
+        industry: "sales",
+        skill_requirements: [
+          { skill: "Outbound Prospecting", category: "hard_skill", level: "intermediate", required: true, weight: 4 },
+          { skill: "CRM Management", category: "hard_skill", level: "basic", required: true, weight: 3 },
+          { skill: "Cold Calling", category: "hard_skill", level: "intermediate", required: true, weight: 4 },
+          { skill: "Email Sequencing", category: "hard_skill", level: "basic", required: false, weight: 3 },
+          { skill: "Objection Handling", category: "soft_skill", level: "intermediate", required: true, weight: 4 },
+          { skill: "Active Listening", category: "soft_skill", level: "intermediate", required: true, weight: 3 },
+          { skill: "Resilience & Grit", category: "soft_skill", level: "advanced", required: true, weight: 5 },
+        ],
+        department: "Sales",
+        location: "Remote",
+        employment_type: "full_time",
+        stage_config: {
+          stage_1_proof_of_work: false,
+          stage_2_loom: true,
+          stage_3_voice: true,
+        },
+        voice_interview_config: {
+          max_duration_minutes: 20,
+          focus_areas: ["prospecting strategy", "objection handling", "discovery questions"],
+          custom_questions: [],
+        },
+        status: "active",
+        published_at: new Date().toISOString(),
+      },
     ])
     .select();
 
@@ -113,7 +168,7 @@ export async function POST() {
     );
   }
 
-  const [fullStackJob, frontendJob] = createdJobs;
+  const [fullStackJob, frontendJob, _salesJob] = createdJobs;
 
   // 3. Create 8 candidates
   const { data: candidates, error: candidatesError } = await supabase
@@ -622,7 +677,7 @@ export async function POST() {
     company_id: company.id,
     created: {
       company: 1,
-      jobs: 2,
+      jobs: 3,
       candidates: 8,
       profiles: 8,
       applications: 8,

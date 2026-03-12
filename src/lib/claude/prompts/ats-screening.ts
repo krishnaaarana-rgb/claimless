@@ -34,6 +34,8 @@ export interface ATSScreenInput {
   websiteContent?: string | null;
   customAnswers: { question: string; answer: string }[];
   threshold?: number;
+  industry?: string | null;
+  skillRequirements?: { skill: string; category: string; level: string; required: boolean; weight: number }[];
 }
 
 const SYSTEM_PROMPT = `You are an ATS screening system. Evaluate this candidate's application against the job description. Base your assessment ONLY on the information provided — do not make assumptions about information not given. If a resume is provided, weight it heavily. If portfolio/website content is provided, consider it as additional evidence of the candidate's work and expertise. If no resume is provided, evaluate based on whatever information IS available but note the limitation. Be fair and look for potential, not just keyword matches.
@@ -82,6 +84,41 @@ function buildUserPrompt(input: ATSScreenInput): string {
   lines.push("COVER LETTER:");
   lines.push(input.coverLetter || "No cover letter provided");
   lines.push("");
+  // Industry and skill requirements context
+  if (input.industry) {
+    lines.push(`INDUSTRY: ${input.industry}`);
+    lines.push("");
+  }
+
+  if (input.skillRequirements && input.skillRequirements.length > 0) {
+    lines.push("SKILL REQUIREMENTS:");
+    const hardSkills = input.skillRequirements.filter(s => s.category === "hard_skill");
+    const softSkills = input.skillRequirements.filter(s => s.category === "soft_skill");
+    const customSkills = input.skillRequirements.filter(s => s.category === "custom");
+
+    if (hardSkills.length > 0) {
+      lines.push("  Hard Skills (domain-specific):");
+      for (const s of hardSkills) {
+        lines.push(`    - ${s.skill} (${s.level}, ${s.required ? "required" : "nice-to-have"}, weight: ${s.weight}/5)`);
+      }
+    }
+    if (softSkills.length > 0) {
+      lines.push("  Soft Skills (behavioral):");
+      for (const s of softSkills) {
+        lines.push(`    - ${s.skill} (${s.level}, ${s.required ? "required" : "nice-to-have"}, weight: ${s.weight}/5)`);
+      }
+    }
+    if (customSkills.length > 0) {
+      lines.push("  Additional Skills:");
+      for (const s of customSkills) {
+        lines.push(`    - ${s.skill} (${s.level}, ${s.required ? "required" : "nice-to-have"}, weight: ${s.weight}/5)`);
+      }
+    }
+    lines.push("");
+    lines.push("Evaluate the candidate against EACH skill requirement above. In your key_qualifications array, include an entry for each skill requirement showing whether the candidate meets the expected level. Weight required skills and higher-weight skills more heavily in your match_score.");
+    lines.push("");
+  }
+
   lines.push("CUSTOM QUESTIONS:");
   if (input.customAnswers.length > 0) {
     for (const qa of input.customAnswers) {
