@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { buildIndustryInterviewPrompt } from "@/lib/claude/prompts/industry-interview";
+import { buildIndustryInterviewPrompt, buildAustralianComplianceBlock } from "@/lib/claude/prompts/industry-interview";
 import type { SkillRequirement } from "@/types/industry-skills";
 
 export async function POST(
@@ -15,7 +15,7 @@ export async function POST(
   // 1. Validate token
   const { data: tokenData } = await supabase
     .from("interview_tokens")
-    .select("*, applications(*, candidates(*), jobs(*))")
+    .select("*, applications(*, candidates(*), jobs(id, title, description, company_id, industry, industry_niche, skill_requirements, industry_interview_context, employment_type))")
     .eq("token", token)
     .single();
 
@@ -58,6 +58,7 @@ export async function POST(
       industry_niche: string | null;
       skill_requirements: SkillRequirement[] | null;
       industry_interview_context: string | null;
+      employment_type: string | null;
     };
   };
 
@@ -140,6 +141,7 @@ export async function POST(
       industry_niche: job.industry_niche,
       skill_requirements: job.skill_requirements || [],
       industry_interview_context: job.industry_interview_context,
+      employment_type: job.employment_type || undefined,
     },
     candidate: {
       name: candidateName,
@@ -155,6 +157,7 @@ export async function POST(
       focus,
       custom_instructions: settings?.interview_custom_instructions || undefined,
     },
+    region: "AU" as const,
   };
 
   // Use industry-aware prompt if job has industry set, otherwise fall back to generic
@@ -164,6 +167,7 @@ export async function POST(
     systemPrompt = buildIndustryInterviewPrompt(promptInput);
   } else {
     // Generic prompt for jobs without industry configuration — still uses advanced techniques
+    const auBlock = buildAustralianComplianceBlock("general", job.employment_type || undefined);
     systemPrompt = `You are an elite AI interviewer for the role of "${job.title}". You are conducting a ${duration}-minute ${style} interview.
 
 YOUR IDENTITY:
@@ -210,7 +214,8 @@ RULES:
 - Listen for RED FLAGS: vague answers, inability to go deeper, contradictions, deflecting to "the team"
 - Listen for GREEN FLAGS: specific examples with outcomes, discusses tradeoffs, admits what they don't know
 - Target 6-10 main questions with follow-ups based on response quality
-- End naturally around the ${duration}-minute mark`;
+- End naturally around the ${duration}-minute mark
+${auBlock}`;
   }
 
   // 7. Create Vapi assistant via API

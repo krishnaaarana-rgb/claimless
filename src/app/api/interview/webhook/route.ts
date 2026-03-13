@@ -114,6 +114,14 @@ export async function POST(request: NextRequest) {
       console.error("[vapi-webhook] Score trigger failed:", err)
     );
 
+    // Push results to ATS integrations (fire and forget)
+    const { pushResultsToATS } = await import("@/lib/integrations/outbound-push");
+    pushResultsToATS(
+      application.jobs.company_id,
+      application.id,
+      "interview_completed"
+    ).catch(() => {});
+
     // Dispatch webhook
     const { dispatchWebhook } = await import("@/lib/webhooks/dispatcher");
     dispatchWebhook(

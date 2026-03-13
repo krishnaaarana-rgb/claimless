@@ -31,6 +31,7 @@ export interface IndustryInterviewPromptInput {
     industry_niche: string | null;
     skill_requirements: SkillRequirement[];
     industry_interview_context: string | null;
+    employment_type?: string;
   };
   /** Candidate details */
   candidate: {
@@ -48,6 +49,8 @@ export interface IndustryInterviewPromptInput {
     focus: string;
     custom_instructions?: string;
   };
+  /** Regional compliance context */
+  region?: "AU" | null;
 }
 
 /**
@@ -87,6 +90,10 @@ export function buildIndustryInterviewPrompt(
   );
 
   const candidateContext = buildCandidateContext(candidate);
+
+  const auComplianceBlock = input.region === "AU"
+    ? buildAustralianComplianceBlock(industryId, job.employment_type)
+    : "";
 
   const prompt = `You are an elite AI interviewer for the role of "${job.title}". You are conducting a ${settings.duration_minutes}-minute ${settings.style} interview.
 
@@ -142,9 +149,74 @@ RULES:
 - If a candidate says "we" did something, ask "what was YOUR specific role in that?"
 - Keep the pace conversational — don't rush, but don't let one topic eat the whole interview
 - Target 6-10 main questions with 1-3 follow-ups each based on depth of answers
-- End naturally when key topics are covered, around the ${settings.duration_minutes}-minute mark`;
+- End naturally when key topics are covered, around the ${settings.duration_minutes}-minute mark
+${auComplianceBlock}`;
 
   return prompt;
+}
+
+// ────────────────────────────────────────────────────────
+// AUSTRALIAN COMPLIANCE
+// ────────────────────────────────────────────────────────
+
+const AU_INDUSTRY_REGULATIONS: Record<string, string> = {
+  healthcare: `AHPRA registration is required for all medical practitioners, nurses, and allied health professionals. Ask about registration status naturally: "Are you currently registered with AHPRA?" Understand Medicare provider numbers, PBS frameworks, and clinical governance. For aged care roles, be aware of the Aged Care Quality Standards and Royal Commission recommendations. Mental health roles should reference the Mental Health Act frameworks.`,
+  finance: `ASIC licensing (AFS licence) is critical for financial services. Ask about RG 146 compliance for financial advisers. Understand APRA prudential standards for banking/insurance. For accounting, CPA Australia or CA ANZ membership matters. Anti-money laundering (AML/CTF Act) knowledge is expected for compliance roles. Ask about familiarity with the Banking Code of Practice.`,
+  legal: `Practising certificates are issued by state Law Societies or Bar Associations. Ask about their admission jurisdiction. Understand the distinction between solicitors and barristers in AU. For migration law, MARA registration is required. Familiarise yourself with the Legal Profession Uniform Law for NSW/Vic practitioners.`,
+  technology: `Understand the Australian Signals Directorate (ASD) Essential Eight for cybersecurity roles. Privacy Act 1988 and APPs (Australian Privacy Principles) matter for data-handling roles. For government tech, understand the DTA (Digital Transformation Agency) guidelines and Protective Security Policy Framework (PSPF). IRAP assessments are relevant for cloud/security.`,
+  education: `Teacher registration is managed by state bodies (e.g., NESA in NSW, VIT in Victoria). Working With Children Check (WWCC) is mandatory. Understand the Australian Curriculum (ACARA) framework and AITSL professional standards. For higher ed, TEQSA accreditation matters. Ask about experience with NAPLAN data or differentiated learning.`,
+  sales: `Understand Australian Consumer Law (ACL) and the Competition and Consumer Act 2010. Real estate sales require state licensing (e.g., NSW Fair Trading). For pharmaceutical sales, TGA regulations and the Medicines Australia Code of Conduct apply. Insurance sales need Tier 1/Tier 2 compliance under ASIC.`,
+  human_resources: `Fair Work Act 2009 is the cornerstone — Modern Awards, NES (National Employment Standards), enterprise agreements. Understand unfair dismissal provisions and the Fair Work Commission process. For WHS, each state has its own regulator but the model WHS Act applies. Ask about experience with award interpretation and compliance audits.`,
+  operations: `SafeWork/WHS regulations vary by state. For construction, understand SWMS (Safe Work Method Statements) and white card requirements. Supply chain roles should know about ACCC regulations. For transport/logistics, Chain of Responsibility laws matter. ISO certification knowledge (9001, 14001, 45001) is valued.`,
+  marketing: `ACMA manages spam and telemarketing regulations (Spam Act 2003, Do Not Call Register). Understand AANA Code of Ethics for advertising standards. Privacy Act applies to customer data collection. For pharma/health marketing, TGA advertising guidelines are strict. Social media marketing must comply with ACCC influencer disclosure guidelines.`,
+  design: `Understand accessibility requirements under the Disability Discrimination Act (DDA) and WCAG compliance for digital products. For architecture/building, state registration boards apply. Industrial design protection via IP Australia. For UX in government, understand the Digital Service Standard.`,
+  customer_success: `Australian Consumer Law guarantees (consumer guarantees, warranties) are foundational. Understand the ACCC's role in consumer protection. Telecommunications roles need familiarity with the Telecommunications Consumer Protections (TCP) Code. Financial services CS roles need IDR/EDR knowledge (AFCA).`,
+  data_analytics: `Privacy Act 1988 and the 13 Australian Privacy Principles (APPs) are critical. Understand the CDR (Consumer Data Right) framework for open banking/energy. For health data, the My Health Records Act applies. Government data roles should know about the DATA.GOV.AU framework and the Australian Government's data sharing principles. Notifiable Data Breaches scheme is essential knowledge.`,
+};
+
+const AU_ANTI_DISCRIMINATION_BLOCK = `
+AUSTRALIAN ANTI-DISCRIMINATION COMPLIANCE (MANDATORY):
+You MUST NOT ask about or probe into any of the following protected attributes under Australian law (Fair Work Act 2009, Age Discrimination Act 2004, Sex Discrimination Act 1984, Racial Discrimination Act 1975, Disability Discrimination Act 1992):
+- Age, date of birth, or when they graduated
+- Marital or relationship status, pregnancy, or family plans
+- Race, colour, ethnic origin, or nationality (beyond right-to-work)
+- Religion or political opinion
+- Sexual orientation or gender identity
+- Physical or mental disability (unless inherent requirement of the role — and even then, focus on capability not condition)
+- Trade union membership or activity
+- Criminal record (unless inherent requirement — e.g., working with children)
+
+If the candidate voluntarily mentions any of these, do NOT follow up or factor it into assessment. Redirect to job-relevant topics.
+
+RIGHT TO WORK: You may ask "Do you have the right to work in Australia?" but NOT about visa type, citizenship, or country of origin.
+
+REASONABLE ADJUSTMENTS: If the candidate mentions needing accommodations, respond positively: "Absolutely, we're committed to making sure the process works for everyone."`;
+
+export function buildAustralianComplianceBlock(
+  industryId: string,
+  employmentType?: string
+): string {
+  let block = AU_ANTI_DISCRIMINATION_BLOCK;
+
+  const industryRegulation = AU_INDUSTRY_REGULATIONS[industryId];
+  if (industryRegulation) {
+    block += `\n\nAUSTRALIAN ${INDUSTRIES[industryId]?.label?.toUpperCase() || "INDUSTRY"} REGULATORY CONTEXT:\n${industryRegulation}`;
+  }
+
+  block += `\n\nAUSTRALIAN WORKPLACE CONTEXT:
+- The Fair Work Act 2009 governs employment. Modern Awards set minimum conditions by industry/occupation.
+- National Employment Standards (NES) provide 11 minimum entitlements (annual leave, personal leave, notice periods, etc.)
+- Superannuation is mandatory at 11.5% (2025-26 rate). Do not ask about salary expectations in ways that could anchor to current salary.
+- When discussing role expectations, use Australian terminology: "annual leave" not "vacation", "superannuation" not "401k", "Fair Work" not "labor board".`;
+
+  if (employmentType === "contract" || employmentType === "casual") {
+    block += `\n\nCONTRACTOR/CASUAL CONTEXT:
+- This is a ${employmentType} role. If the candidate will operate under an ABN (Australian Business Number), understand the sham contracting provisions of the Fair Work Act.
+- Ask about their experience with ABN/sole trader arrangements naturally: "Have you worked as an independent contractor before? How do you typically manage that?"
+- For casual roles, understand casual loading (typically 25%) in lieu of leave entitlements and the casual conversion provisions.`;
+  }
+
+  return block;
 }
 
 // ────────────────────────────────────────────────────────
@@ -294,6 +366,16 @@ export function buildInterviewScoringPrompt(
     industryId
   );
 
+  const auScoringContext = input.region === "AU"
+    ? `\n\nAUSTRALIAN CONTEXT FOR SCORING:
+- Evaluate based on Australian industry standards, not US/UK equivalents
+- Credit knowledge of Australian regulatory frameworks (Fair Work Act, relevant industry bodies like AHPRA, ASIC, APRA, ACCC)
+- Recognise Australian qualifications and professional bodies (CPA Australia, CA ANZ, Engineers Australia, etc.)
+- If the candidate demonstrated awareness of Modern Awards, NES, or industry-specific AU regulations, note this as a green flag
+- Do NOT penalise for unfamiliarity with US-centric frameworks (SOX, HIPAA, SEC) unless the role specifically requires it
+- Flag any anti-discrimination concerns: if the interviewer asked about protected attributes, note this as a process issue`
+    : "";
+
   const systemPrompt = `You are an elite interview evaluator specializing in ${INDUSTRIES[industryId]?.label || "professional"} hiring. You evaluate with the rigor of a senior hiring committee — no hand-waving, every score needs evidence from the transcript.
 
 You have advantages over human evaluators:
@@ -301,6 +383,7 @@ You have advantages over human evaluators:
 - You apply the exact same standard to every candidate
 - You detect inconsistencies between claimed and demonstrated knowledge
 - You separate confident delivery from actual substance
+${auScoringContext}
 
 You must respond with ONLY valid JSON matching the exact schema. No markdown, no explanation.`;
 

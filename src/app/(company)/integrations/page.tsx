@@ -18,6 +18,8 @@ import {
   X,
   RefreshCw,
   Circle,
+  Link2,
+  ArrowRightLeft,
 } from "lucide-react";
 import { useToast } from "@/components/toast";
 
@@ -42,6 +44,32 @@ interface WebhookItem {
   updated_at: string;
   stats_24h: { total: number; success: number; failed: number };
 }
+
+interface ATSIntegration {
+  id: string;
+  provider: string;
+  name: string;
+  is_active: boolean;
+  callback_url: string | null;
+  callback_events: string[];
+  last_inbound_at: string | null;
+  last_outbound_at: string | null;
+  inbound_count: number;
+  outbound_count: number;
+  created_at: string;
+}
+
+const ATS_PROVIDERS = [
+  { value: "jobadder", label: "JobAdder", description: "Australia's leading recruitment platform" },
+  { value: "bullhorn", label: "Bullhorn", description: "Global recruitment CRM & ATS" },
+  { value: "vincere", label: "Vincere", description: "Recruitment OS for staffing agencies" },
+  { value: "generic", label: "Generic / Custom", description: "Any ATS with API capabilities" },
+];
+
+const CALLBACK_EVENTS = [
+  { value: "screening_completed", label: "Screening Completed", description: "ATS screening results are ready" },
+  { value: "interview_completed", label: "Interview Completed", description: "Voice interview results are scored" },
+];
 
 interface WebhookLog {
   id: string;
@@ -119,6 +147,19 @@ export default function IntegrationsPage() {
   const [logs, setLogs] = useState<WebhookLog[]>([]);
   const [loadingLogs, setLoadingLogs] = useState(false);
   const [expandedLog, setExpandedLog] = useState<string | null>(null);
+
+  // ATS integrations state
+  const [atsIntegrations, setAtsIntegrations] = useState<ATSIntegration[]>([]);
+  const [loadingATS, setLoadingATS] = useState(true);
+  const [showATSModal, setShowATSModal] = useState(false);
+  const [atsForm, setAtsForm] = useState({
+    provider: "jobadder",
+    name: "",
+    callback_url: "",
+    callback_secret: "",
+    callback_events: ["screening_completed", "interview_completed"],
+  });
+  const [savingATS, setSavingATS] = useState(false);
 
   // API docs state
   const [showDocs, setShowDocs] = useState(false);
@@ -264,6 +305,55 @@ export default function IntegrationsPage() {
     setWebhookForm((prev) => ({ ...prev, secret }));
   };
 
+  /* ---------- ATS Integration methods ---------- */
+  const fetchATSIntegrations = useCallback(async () => {
+    setLoadingATS(true);
+    const res = await fetch("/api/v1/integrations");
+    const data = await res.json();
+    setAtsIntegrations(data.integrations || []);
+    setLoadingATS(false);
+  }, []);
+
+  const createATSIntegration = async () => {
+    if (!atsForm.provider) return;
+    setSavingATS(true);
+    const res = await fetch("/api/v1/integrations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(atsForm),
+    });
+    if (res.ok) {
+      toast("ATS integration created", "success");
+      setShowATSModal(false);
+      fetchATSIntegrations();
+    } else {
+      const data = await res.json();
+      toast(data.error || "Failed to create integration", "error");
+    }
+    setSavingATS(false);
+  };
+
+  const toggleATSIntegration = async (id: string, isActive: boolean) => {
+    await fetch("/api/v1/integrations", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, is_active: !isActive }),
+    });
+    fetchATSIntegrations();
+  };
+
+  const deleteATSIntegration = async (id: string) => {
+    const res = await fetch("/api/v1/integrations", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    if (res.ok) {
+      toast("Integration deleted", "success");
+      fetchATSIntegrations();
+    }
+  };
+
   /* ---------- Logs methods ---------- */
   const fetchLogs = async (webhookId: string) => {
     setLoadingLogs(true);
@@ -278,7 +368,8 @@ export default function IntegrationsPage() {
   useEffect(() => {
     fetchKeys();
     fetchWebhooks();
-  }, [fetchKeys, fetchWebhooks]);
+    fetchATSIntegrations();
+  }, [fetchKeys, fetchWebhooks, fetchATSIntegrations]);
 
   /* ---------- render ---------- */
   return (
@@ -711,6 +802,233 @@ export default function IntegrationsPage() {
         </div>
       )}
 
+      {/* ===================== ATS INTEGRATIONS ===================== */}
+      <section className="mb-10">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <ArrowRightLeft size={16} className="text-[#9B9A97]" />
+            <h2 className="text-[15px] font-semibold text-[#37352F]">ATS Integrations</h2>
+          </div>
+          <button
+            onClick={() => {
+              setAtsForm({ provider: "jobadder", name: "", callback_url: "", callback_secret: "", callback_events: ["screening_completed", "interview_completed"] });
+              setShowATSModal(true);
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[13px] font-medium text-white transition-colors"
+            style={{ background: "#2383E2" }}
+          >
+            <Link2 size={14} /> Connect ATS
+          </button>
+        </div>
+
+        <p className="text-[12px] text-[#9B9A97] mb-4">
+          Push candidates from your ATS into Claimless for screening. Results are automatically sent back.
+        </p>
+
+        <div className="space-y-3">
+          {loadingATS ? (
+            <div className="border border-[#E9E9E7] rounded-lg p-6 bg-white text-center text-[13px] text-[#9B9A97]">Loading...</div>
+          ) : atsIntegrations.length === 0 ? (
+            <div className="border border-[#E9E9E7] rounded-lg p-8 bg-white text-center">
+              <ArrowRightLeft size={24} className="mx-auto text-[#D3D1CB] mb-2" />
+              <p className="text-[13px] text-[#9B9A97]">No ATS connected. Connect JobAdder, Bullhorn, or Vincere to sync candidates.</p>
+            </div>
+          ) : (
+            atsIntegrations.map((ats) => {
+              const providerInfo = ATS_PROVIDERS.find((p) => p.value === ats.provider);
+              return (
+                <div key={ats.id} className="border border-[#E9E9E7] rounded-lg bg-white p-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <Circle size={8} fill={ats.is_active ? "#10B981" : "#9CA3AF"} stroke="none" />
+                      <div>
+                        <div className="text-[13px] font-semibold text-[#37352F]">
+                          {ats.name}
+                          <span className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-medium bg-[#F7F6F3] text-[#9B9A97]">
+                            {providerInfo?.label || ats.provider}
+                          </span>
+                        </div>
+                        {ats.callback_url && (
+                          <div className="text-[12px] text-[#9B9A97] font-mono mt-0.5 truncate max-w-md">{ats.callback_url}</div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => toggleATSIntegration(ats.id, ats.is_active)}
+                        className="px-2 py-1 rounded text-[11px] font-medium text-[#37352F] hover:bg-[#F7F6F3] transition-colors"
+                      >
+                        {ats.is_active ? "Disable" : "Enable"}
+                      </button>
+                      <button
+                        onClick={() => deleteATSIntegration(ats.id)}
+                        className="p-1 rounded text-[#9B9A97] hover:text-red-500 hover:bg-red-50 transition-colors"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Stats */}
+                  <div className="flex items-center gap-6 mt-3 pt-3 border-t border-[#E9E9E7]">
+                    <div>
+                      <span className="text-[11px] text-[#9B9A97]">Inbound: </span>
+                      <span className="text-[11px] font-medium text-[#37352F]">{ats.inbound_count}</span>
+                      <span className="text-[10px] text-[#9B9A97] ml-1">({timeAgo(ats.last_inbound_at)})</span>
+                    </div>
+                    <div>
+                      <span className="text-[11px] text-[#9B9A97]">Outbound: </span>
+                      <span className="text-[11px] font-medium text-[#37352F]">{ats.outbound_count}</span>
+                      <span className="text-[10px] text-[#9B9A97] ml-1">({timeAgo(ats.last_outbound_at)})</span>
+                    </div>
+                    <div className="flex gap-1.5">
+                      {ats.callback_events.map((ev) => (
+                        <span key={ev} className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#F7F6F3] text-[#9B9A97]">
+                          {ev}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+      </section>
+
+      {/* ===================== ATS INTEGRATION MODAL ===================== */}
+      {showATSModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setShowATSModal(false)}>
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-lg p-6 max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-[15px] font-semibold text-[#37352F]">Connect ATS</h3>
+              <button onClick={() => setShowATSModal(false)} className="p-1 rounded hover:bg-[#F7F6F3]">
+                <X size={16} className="text-[#9B9A97]" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {/* Provider Selection */}
+              <div>
+                <label className="block text-[12px] font-medium text-[#37352F] mb-2">ATS Provider</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {ATS_PROVIDERS.map((p) => (
+                    <button
+                      key={p.value}
+                      onClick={() => setAtsForm((prev) => ({ ...prev, provider: p.value, name: prev.name || `${p.label} Integration` }))}
+                      className={`p-3 rounded-lg border text-left transition-colors ${
+                        atsForm.provider === p.value
+                          ? "border-[#2383E2] bg-blue-50"
+                          : "border-[#E9E9E7] hover:bg-[#F7F6F3]"
+                      }`}
+                    >
+                      <div className="text-[12px] font-semibold text-[#37352F]">{p.label}</div>
+                      <div className="text-[11px] text-[#9B9A97]">{p.description}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Name */}
+              <div>
+                <label className="block text-[12px] font-medium text-[#37352F] mb-1">Integration Name</label>
+                <input
+                  type="text"
+                  value={atsForm.name}
+                  onChange={(e) => setAtsForm((p) => ({ ...p, name: e.target.value }))}
+                  placeholder="e.g. JobAdder Production"
+                  className="w-full px-3 py-2 border border-[#E9E9E7] rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2]"
+                />
+              </div>
+
+              {/* Callback URL */}
+              <div>
+                <label className="block text-[12px] font-medium text-[#37352F] mb-1">
+                  Callback URL <span className="text-[#9B9A97]">(results pushed here)</span>
+                </label>
+                <input
+                  type="url"
+                  value={atsForm.callback_url}
+                  onChange={(e) => setAtsForm((p) => ({ ...p, callback_url: e.target.value }))}
+                  placeholder="https://your-ats.com/webhook/claimless"
+                  className="w-full px-3 py-2 border border-[#E9E9E7] rounded-md text-[13px] font-mono focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2]"
+                />
+              </div>
+
+              {/* Callback Secret */}
+              <div>
+                <label className="block text-[12px] font-medium text-[#37352F] mb-1">
+                  Signing Secret <span className="text-[#9B9A97]">(optional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={atsForm.callback_secret}
+                  onChange={(e) => setAtsForm((p) => ({ ...p, callback_secret: e.target.value }))}
+                  placeholder="Optional HMAC signing secret"
+                  className="w-full px-3 py-2 border border-[#E9E9E7] rounded-md text-[13px] font-mono focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2]"
+                />
+              </div>
+
+              {/* Callback Events */}
+              <div>
+                <label className="block text-[12px] font-medium text-[#37352F] mb-2">Push Results When</label>
+                <div className="space-y-2">
+                  {CALLBACK_EVENTS.map((ev) => (
+                    <label key={ev.value} className="flex items-start gap-3 p-2 rounded hover:bg-[#F7F6F3] cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={atsForm.callback_events.includes(ev.value)}
+                        onChange={() => {
+                          setAtsForm((prev) => ({
+                            ...prev,
+                            callback_events: prev.callback_events.includes(ev.value)
+                              ? prev.callback_events.filter((e) => e !== ev.value)
+                              : [...prev.callback_events, ev.value],
+                          }));
+                        }}
+                        className="mt-0.5 accent-[#2383E2]"
+                      />
+                      <div>
+                        <div className="text-[12px] font-medium text-[#37352F]">{ev.label}</div>
+                        <div className="text-[11px] text-[#9B9A97]">{ev.description}</div>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Inbound instructions */}
+              <div className="p-3 rounded-md bg-[#F7F6F3]">
+                <div className="text-[12px] font-medium text-[#37352F] mb-1">Inbound Endpoint</div>
+                <p className="text-[11px] text-[#9B9A97] mb-2">
+                  Configure your ATS to push candidates to this URL:
+                </p>
+                <code className="text-[11px] font-mono text-[#37352F] break-all">
+                  POST {typeof window !== "undefined" ? window.location.origin : ""}/api/v1/inbound?provider={atsForm.provider}
+                </code>
+              </div>
+            </div>
+
+            <div className="flex gap-2 mt-6">
+              <button
+                onClick={() => setShowATSModal(false)}
+                className="flex-1 py-2 rounded-md text-[13px] font-medium text-[#37352F] border border-[#E9E9E7] hover:bg-[#F7F6F3]"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={createATSIntegration}
+                disabled={savingATS}
+                className="flex-1 py-2 rounded-md text-[13px] font-medium text-white disabled:opacity-50"
+                style={{ background: "#2383E2" }}
+              >
+                {savingATS ? "Connecting..." : "Connect"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ===================== API DOCUMENTATION ===================== */}
       <section className="mb-10">
         <button
@@ -766,6 +1084,20 @@ export default function IntegrationsPage() {
                   </div>
                   <p className="text-[11px] text-[#9B9A97]">View delivery logs. Params: webhook_id, limit, offset</p>
                 </div>
+                <div className="border border-[#E9E9E7] rounded p-3 border-l-2 border-l-[#2383E2]">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold text-[#2383E2] bg-blue-50">POST</span>
+                    <code className="text-[12px] font-mono text-[#37352F]">/api/v1/inbound</code>
+                  </div>
+                  <p className="text-[11px] text-[#9B9A97]">Push a candidate from an external ATS. Params: provider, job_id. Auto-triggers screening.</p>
+                </div>
+                <div className="border border-[#E9E9E7] rounded p-3 border-l-2 border-l-[#2383E2]">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50">GET</span>
+                    <code className="text-[12px] font-mono text-[#37352F]">/api/v1/results/:application_id</code>
+                  </div>
+                  <p className="text-[11px] text-[#9B9A97]">Fetch full screening + interview results for an application</p>
+                </div>
               </div>
             </div>
 
@@ -785,6 +1117,36 @@ export default function IntegrationsPage() {
   }
 }`}
               </pre>
+            </div>
+
+            {/* Inbound payload */}
+            <div>
+              <h4 className="text-[13px] font-semibold text-[#37352F] mb-2">Inbound Payload (ATS → Claimless)</h4>
+              <pre className="bg-[#F7F6F3] rounded p-3 text-[12px] font-mono text-[#37352F] overflow-x-auto">
+{`POST /api/v1/inbound?provider=jobadder&job_id=uuid
+Authorization: Bearer clm_your_api_key
+
+{
+  "candidate": {
+    "full_name": "Jane Doe",
+    "email": "jane@example.com",
+    "phone": "+61 412 345 678",
+    "linkedin_url": "https://linkedin.com/in/janedoe",
+    "github_username": "janedoe",
+    "portfolio_url": "https://janedoe.dev",
+    "resume_text": "Full resume text..."
+  },
+  "job": {
+    "title": "Senior Engineer",
+    "description": "Optional — matched by job_id"
+  },
+  "external_candidate_id": "JA-12345",
+  "external_application_id": "APP-67890"
+}`}
+              </pre>
+              <p className="text-[11px] text-[#9B9A97] mt-2">
+                Adapters for JobAdder, Bullhorn, and Vincere automatically map their field names. Use the <code>X-ATS-Provider</code> header or <code>?provider=</code> query param.
+              </p>
             </div>
 
             {/* Signature verification */}

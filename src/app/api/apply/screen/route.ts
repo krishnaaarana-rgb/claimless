@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { screenApplication } from "@/lib/claude/prompts/ats-screening";
 import { scrapeWebsite } from "@/lib/scraping/website";
 import { dispatchWebhook } from "@/lib/webhooks/dispatcher";
+import { pushResultsToATS } from "@/lib/integrations/outbound-push";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
@@ -178,6 +179,9 @@ export async function POST(request: NextRequest) {
         source: "ats_auto_reject",
       });
     }
+
+    // Push results to any connected ATS integrations (fire and forget)
+    pushResultsToATS(app.company_id, application_id, "screening_completed").catch(() => {});
 
     // Send email notification (fire and forget, non-fatal)
     const { sendATSNotification } = await import("@/lib/email/notifications");
