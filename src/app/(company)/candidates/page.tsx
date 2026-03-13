@@ -679,14 +679,27 @@ export default function CandidatesPage() {
   };
 
   const handleExportCSV = () => {
-    const headers = ["Name", "Email", "Phone", "Job", "Score", "Status", "LinkedIn", "GitHub", "Portfolio", "Applied"];
-    const rows = candidates.map((c) => [
-      c.name, c.email, c.phone || "", c.job_title,
-      c.ats_score != null ? String(c.ats_score) : "", stageLabel(c.status),
-      c.linkedin_url || "", c.github_username ? `github.com/${c.github_username}` : "",
-      c.portfolio_url || "", c.applied_at,
-    ]);
-    const csv = [headers, ...rows].map((r) => r.map((v) => `"${v}"`).join(",")).join("\n");
+    const headers = [
+      "Name", "Email", "Phone", "Job", "ATS Score", "Interview Score",
+      "Interview Recommendation", "Combined Score", "Status", "LinkedIn",
+      "GitHub", "Portfolio", "Applied",
+    ];
+    const rows = candidates.map((c) => {
+      const combined = c.ats_score != null && c.interview_score != null
+        ? Math.round(c.ats_score * 0.4 + c.interview_score * 0.6)
+        : c.interview_score ?? c.ats_score ?? null;
+      return [
+        c.name, c.email, c.phone || "", c.job_title,
+        c.ats_score != null ? String(c.ats_score) : "",
+        c.interview_score != null ? String(c.interview_score) : "",
+        c.interview_recommendation || "",
+        combined != null ? String(combined) : "",
+        stageLabel(c.status),
+        c.linkedin_url || "", c.github_username ? `github.com/${c.github_username}` : "",
+        c.portfolio_url || "", c.applied_at,
+      ];
+    });
+    const csv = [headers, ...rows].map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

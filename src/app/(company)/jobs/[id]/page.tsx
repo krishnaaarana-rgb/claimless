@@ -403,6 +403,15 @@ export default function JobDetailPage({
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          {shortlist.length >= 2 && (
+            <Link
+              href={`/jobs/${id}/compare`}
+              className="px-4 py-2 rounded-lg text-[13px] font-medium bg-[#2383E2] text-white hover:bg-[#1b6ec2] transition-colors flex items-center gap-1.5"
+            >
+              <Trophy size={14} />
+              Compare Top {shortlist.length}
+            </Link>
+          )}
           <Link
             href={`/jobs/${id}/edit`}
             className="px-4 py-2 rounded-lg text-[13px] font-medium border border-[#E9E9E7] text-[#37352F] hover:bg-[#F7F6F3] transition-colors"
