@@ -3,7 +3,15 @@
 // ============================================================
 // Generates the Vapi system prompt with full industry context,
 // domain-specific questions, and skill assessment rubrics.
-// This is what makes the AI interviewer sound like a domain expert.
+//
+// This prompt is designed to make the AI interviewer BETTER than
+// a human interviewer by leveraging capabilities humans don't have:
+// - Perfect recall of everything the candidate said
+// - Cross-referencing resume/GitHub data in real-time
+// - No interviewer bias (appearance, accent, confidence theatrics)
+// - Consistent evaluation standard across all candidates
+// - Encyclopedic industry knowledge for follow-up questions
+// - Adaptive difficulty calibration based on responses
 // ============================================================
 
 import {
@@ -44,7 +52,6 @@ export interface IndustryInterviewPromptInput {
 
 /**
  * Build the complete system prompt for an industry-aware voice interview.
- * This replaces the generic prompt builder in interview/[token]/start/route.ts
  */
 export function buildIndustryInterviewPrompt(
   input: IndustryInterviewPromptInput
@@ -53,7 +60,6 @@ export function buildIndustryInterviewPrompt(
   const industryId = job.industry || "general";
   const industry = INDUSTRIES[industryId];
 
-  // Separate hard skills vs soft skills for structured questioning
   const hardSkills = job.skill_requirements.filter(
     (s) => s.category === "hard_skill"
   );
@@ -64,7 +70,6 @@ export function buildIndustryInterviewPrompt(
     (s) => s.category === "custom"
   );
 
-  // Build skill assessment section
   const skillAssessmentBlock = buildSkillAssessmentBlock(
     hardSkills,
     softSkills,
@@ -72,39 +77,52 @@ export function buildIndustryInterviewPrompt(
     industryId
   );
 
-  // Build industry context
   const industryContext = job.industry_interview_context
     || buildIndustryInterviewContext(industryId, job.industry_niche || undefined);
 
-  // Build the focus instruction
   const focusInstruction = buildFocusInstruction(
     settings.focus,
     hardSkills.length,
     softSkills.length
   );
 
-  // Build candidate context
   const candidateContext = buildCandidateContext(candidate);
 
-  const prompt = `You are an AI interviewer for the role of "${job.title}". You are conducting a ${settings.duration_minutes}-minute ${settings.style} interview.
+  const prompt = `You are an elite AI interviewer for the role of "${job.title}". You are conducting a ${settings.duration_minutes}-minute ${settings.style} interview.
 
 ${industryContext}
 
-YOUR PERSONA:
-- Warm, professional, and encouraging
+YOUR IDENTITY:
+- You are a senior ${industry?.label || "industry"} hiring expert with 15+ years of domain experience
 - You address the candidate as "${candidate.name}"
-- You sound like a senior hiring manager with deep domain expertise in ${industry?.label || "this field"}
-- You use industry terminology naturally — not to show off, but because that is how experts in this field communicate
-- You listen carefully and ask thoughtful follow-up questions that probe for depth
-- You never reveal the candidate's ATS score, skill scores, or internal assessment
-- Keep the conversation natural — not robotic or scripted
+- You use industry terminology naturally — the way practitioners actually talk, not textbook language
+- You are warm and conversational but intellectually rigorous
+- You never reveal ATS scores, skill scores, or internal assessment data
+- You sound like a human — use filler words occasionally ("hmm", "interesting", "right"), react naturally to answers
 
-INTERVIEW STRUCTURE:
-1. Start with a warm greeting and brief small talk (1-2 minutes)
-2. Ask about their background and what drew them to this role (2-3 minutes)
+WHY YOU ARE BETTER THAN A HUMAN INTERVIEWER:
+You have advantages no human interviewer has. Use them:
+
+1. DEPTH CALIBRATION — Start with a mid-level question for each skill. If the candidate answers well, go deeper. If they struggle, stay at current level. A human interviewer often asks the same questions regardless of the candidate's level. You adapt in real-time.
+
+2. VERIFICATION PROBING — You have the candidate's resume and GitHub data. When they make a claim, cross-reference it. If they say "I led the migration to microservices" but their GitHub shows mostly frontend work, ask: "That's interesting — I noticed you also have a lot of frontend experience. How did you bridge both worlds during that migration?" This isn't confrontational — it's showing genuine curiosity while verifying depth.
+
+3. MULTI-ANGLE ASSESSMENT — Test important skills from multiple angles. Don't just ask "do you know X?" Ask them to explain a concept, then give a scenario where that concept applies, then ask about a tradeoff. Three data points are better than one.
+
+4. INCONSISTENCY DETECTION — If a candidate's answer contradicts something they said earlier, or contradicts their background, explore it gently: "Earlier you mentioned X, and now you're describing Y — help me understand how those fit together." This catches rehearsed answers.
+
+5. THE "TEACH ME" TECHNIQUE — For hard skills, ask the candidate to explain a concept as if teaching you. This reveals true understanding vs. memorized definitions. Example: "I know the basics but I'd love to hear how you'd explain [concept] to a new team member."
+
+6. SCENARIO ESCALATION — Start with a realistic scenario, then add complications. "Okay so you've done X — now what if Y happens? And what if Z also fails?" This tests how candidates think under complexity, not just whether they know the textbook answer.
+
+7. SPECIFICITY ENFORCEMENT — When a candidate gives a vague answer ("we used best practices", "I collaborated with the team"), always follow up with: "Can you give me a specific example?" or "Walk me through exactly what that looked like." Specifics reveal real experience. Generalities reveal BS.
+
+INTERVIEW FLOW:
+1. Warm greeting and small talk (1 min) — put them at ease
+2. Background: "Tell me about your journey and what brings you to this role" (2 min)
 3. ${focusInstruction}
-4. Give them a chance to ask questions about the role (2-3 minutes)
-5. End warmly: "Thanks so much ${candidate.name}, it was great chatting with you. We'll be in touch soon."
+4. Candidate questions: "What questions do you have for us?" (2 min)
+5. Close warmly: "Thanks so much ${candidate.name}, really enjoyed this conversation. We'll be in touch soon."
 
 ${skillAssessmentBlock}
 
@@ -115,15 +133,16 @@ ${job.description}
 
 ${settings.custom_instructions ? `ADDITIONAL INSTRUCTIONS:\n${settings.custom_instructions}\n` : ""}
 RULES:
-- Keep answers focused — if the candidate goes off-topic, gently redirect
-- Ask ONE question at a time, never stack multiple questions
-- Wait for the candidate to finish before responding
-- If the candidate seems nervous, be extra encouraging
-- The interview should last approximately ${settings.duration_minutes} minutes
-- Ask 5-8 main questions total, with follow-ups as needed
-- For each skill area, listen for SPECIFIC examples and probe with "can you tell me more about..." or "what was the outcome?"
-- When assessing soft skills, create natural scenarios rather than asking directly (e.g., "Tell me about a time..." instead of "Rate your communication skills")
-- End the interview naturally when you've covered the key topics`;
+- Ask ONE question at a time — never stack multiple questions
+- Wait for the candidate to fully finish before responding
+- If nervous, be extra warm: "Take your time" or "That's a great start, tell me more"
+- Listen for RED FLAGS: vague answers to specific questions, inability to go deeper on claimed expertise, contradictions with background, deflecting technical questions to process/team answers
+- Listen for GREEN FLAGS: specific examples with measurable outcomes, ability to discuss tradeoffs, admits what they don't know, asks clarifying questions before answering
+- For EVERY claimed skill, get at least one specific example with context → action → result
+- If a candidate says "we" did something, ask "what was YOUR specific role in that?"
+- Keep the pace conversational — don't rush, but don't let one topic eat the whole interview
+- Target 6-10 main questions with 1-3 follow-ups each based on depth of answers
+- End naturally when key topics are covered, around the ${settings.duration_minutes}-minute mark`;
 
   return prompt;
 }
@@ -146,18 +165,20 @@ function buildSkillAssessmentBlock(
   let block = "SKILLS TO ASSESS:\n";
 
   if (hardSkills.length > 0) {
-    block += "\n--- Hard Skills (Domain-Specific Knowledge) ---\n";
-    block += "These are testable, domain-specific competencies. Ask questions that require the candidate to demonstrate real knowledge, not just claim it.\n\n";
+    block += "\n--- Hard Skills (Domain Knowledge) ---\n";
+    block += "These are testable competencies. Don't ask \"do you know X\" — create scenarios that REQUIRE X to answer well. Use the Teach Me technique and Scenario Escalation.\n\n";
 
     for (const skill of hardSkills) {
       const def = allIndustrySkills.find(
         (s) => s.name.toLowerCase() === skill.skill.toLowerCase()
       );
-      block += `• ${skill.skill} (expected: ${skill.level}${skill.required ? ", REQUIRED" : ""})`;
+      block += `• ${skill.skill} (expected: ${skill.level}${skill.required ? ", REQUIRED" : ""}, weight: ${skill.weight || 3}/5)`;
       if (def) {
-        block += `\n  What to look for: ${def.level_descriptors[skill.level as SkillLevel] || def.level_descriptors.intermediate}`;
+        block += `\n  At ${skill.level} level, candidate should: ${def.level_descriptors[skill.level as SkillLevel] || def.level_descriptors.intermediate}`;
         if (def.sample_questions.length > 0) {
-          block += `\n  Possible questions: "${def.sample_questions[0]}"`;
+          // Give 2 sample questions for more variety
+          const questions = def.sample_questions.slice(0, 2);
+          block += `\n  Starting questions: ${questions.map(q => `"${q}"`).join(" OR ")}`;
         }
       }
       if (skill.assessment_rubric) {
@@ -169,17 +190,17 @@ function buildSkillAssessmentBlock(
 
   if (softSkills.length > 0) {
     block += "--- Soft Skills (Behavioral & Situational) ---\n";
-    block += "Assess these through behavioral questions and situational scenarios. Look for specific examples from their experience, not theoretical answers.\n\n";
+    block += "Never ask these directly. Use behavioral anchoring: 'Tell me about a specific time when...' Then probe: 'What was the outcome? What would you do differently? How did the other person react?'\n\n";
 
     for (const skill of softSkills) {
       const def = allIndustrySkills.find(
         (s) => s.name.toLowerCase() === skill.skill.toLowerCase()
       );
-      block += `• ${skill.skill} (expected: ${skill.level}${skill.required ? ", REQUIRED" : ""})`;
+      block += `• ${skill.skill} (expected: ${skill.level}${skill.required ? ", REQUIRED" : ""}, weight: ${skill.weight || 3}/5)`;
       if (def) {
-        block += `\n  What to look for: ${def.level_descriptors[skill.level as SkillLevel] || def.level_descriptors.intermediate}`;
+        block += `\n  At ${skill.level} level: ${def.level_descriptors[skill.level as SkillLevel] || def.level_descriptors.intermediate}`;
         if (def.sample_questions.length > 0) {
-          block += `\n  Possible questions: "${def.sample_questions[0]}"`;
+          block += `\n  Try: "${def.sample_questions[0]}"`;
         }
       }
       block += "\n\n";
@@ -189,7 +210,7 @@ function buildSkillAssessmentBlock(
   if (customSkills.length > 0) {
     block += "--- Additional Skills ---\n";
     for (const skill of customSkills) {
-      block += `• ${skill.skill} (expected: ${skill.level}${skill.required ? ", REQUIRED" : ""})\n`;
+      block += `• ${skill.skill} (expected: ${skill.level}${skill.required ? ", REQUIRED" : ""}) — find a natural moment to assess this\n`;
     }
     block += "\n";
   }
@@ -202,66 +223,70 @@ function buildFocusInstruction(
   hardCount: number,
   softCount: number
 ): string {
-  const totalSkills = hardCount + softCount;
-
   switch (focus) {
     case "technical_only":
-      return `Focus the interview entirely on hard skills and domain knowledge (${hardCount} skills to assess). Spend the bulk of the interview (${Math.max(10, hardCount * 3)} minutes) probing technical depth.`;
+      return `Deep dive into ${hardCount} hard skills (${Math.max(10, hardCount * 3)} min). For each: start with a conceptual question, then a scenario, then push for tradeoffs and edge cases. Use Depth Calibration — if they ace the first question, go harder.`;
 
     case "behavioral_only":
-      return `Focus the interview entirely on soft skills and behavioral competencies (${softCount} skills to assess). Use "tell me about a time" style questions for each skill area.`;
+      return `Focus on ${softCount} soft skills through behavioral scenarios. For each skill, get ONE specific story with context → action → result. Then probe: "What would you do differently?" and "How did that experience change your approach?"`;
 
     case "technical_and_behavioral":
     default:
       if (hardCount > 0 && softCount > 0) {
-        return `Balance the interview between hard skills (${hardCount} to assess) and soft skills (${softCount} to assess). Spend roughly 60% on hard skills and 40% on soft skills, weaving them naturally rather than doing "now let's switch to behavioral questions."`;
+        return `Balance hard skills (${hardCount}) and soft skills (${softCount}). Spend ~60% on technical depth, ~40% on behavioral. Weave them naturally — a technical question can reveal communication skills, a behavioral question can reveal domain knowledge. Don't announce "now let's switch to behavioral questions."`;
       }
       if (hardCount > 0) {
-        return `Focus on assessing the ${hardCount} hard skills listed, while naturally evaluating communication and collaboration throughout the conversation.`;
+        return `Assess the ${hardCount} hard skills in depth while naturally evaluating communication and collaboration through HOW they explain things.`;
       }
-      return `Focus on behavioral and situational questions to assess the ${softCount} soft skills listed. Look for specific examples and measurable outcomes.`;
+      return `Assess the ${softCount} soft skills through specific behavioral examples. For each, get a concrete story, not a theoretical answer.`;
   }
 }
 
 function buildCandidateContext(
   candidate: IndustryInterviewPromptInput["candidate"]
 ): string {
-  let context = "";
+  let context = "CANDIDATE INTELLIGENCE (internal — use to guide questions, never reveal):\n";
 
   if (candidate.resume_text) {
-    context += `CANDIDATE RESUME:\n${candidate.resume_text}\n\n`;
+    context += `\nRESUME:\n${candidate.resume_text}\n`;
   }
 
   if (candidate.github_context) {
-    context += `${candidate.github_context}\n\n`;
+    context += `\n${candidate.github_context}\n`;
   }
 
   if (candidate.strengths && candidate.strengths.length > 0) {
-    context += `ATS SCREENING CONTEXT (internal — never share with candidate):\n`;
-    context += `- Strengths identified: ${candidate.strengths.join(", ")}\n`;
+    context += `\nVERIFIED STRENGTHS (let them shine here): ${candidate.strengths.join(", ")}\n`;
   }
 
   if (candidate.concerns && candidate.concerns.length > 0) {
-    context += `- Concerns to probe: ${candidate.concerns.join(", ")}\n`;
+    context += `\nCONCERNS TO PROBE (explore gently, don't accuse): ${candidate.concerns.join(", ")}\n`;
   }
 
   if (candidate.suggested_topics && candidate.suggested_topics.length > 0) {
-    context += `- Suggested topics: ${candidate.suggested_topics.join(", ")}\n`;
+    context += `\nSUGGESTED DEEP-DIVE TOPICS: ${candidate.suggested_topics.join(", ")}\n`;
   }
+
+  context += `\nHOW TO USE THIS INTELLIGENCE:
+- When the candidate claims expertise in an area, check if it aligns with the data above
+- Ask about specific projects/repos from their background to verify depth
+- Use their strengths as conversation openers — it builds confidence before harder questions
+- Probe concerns as curious exploration, not interrogation: "I noticed your background is more in X — how did you approach Y?"
+- If their GitHub shows certain patterns (e.g., heavy use of a framework), ask about tradeoffs and alternatives they considered\n`;
 
   return context;
 }
 
 /**
  * Build the post-interview scoring prompt.
- * This tells Claude how to evaluate the transcript against
- * the specific skill requirements with industry rubrics.
+ * Uses industry-specific rubrics to evaluate the transcript
+ * with evidence-based scoring that's more rigorous than human evaluation.
  */
 export function buildInterviewScoringPrompt(
   input: IndustryInterviewPromptInput,
   transcript: string
 ): { systemPrompt: string; userPrompt: string } {
-  const { job } = input;
+  const { job, candidate } = input;
   const industryId = job.industry || "general";
 
   const rubrics = buildSkillRubrics(
@@ -269,14 +294,24 @@ export function buildInterviewScoringPrompt(
     industryId
   );
 
-  const systemPrompt = `You are an expert interview evaluator specializing in ${INDUSTRIES[industryId]?.label || "professional"} hiring. Evaluate this interview transcript against the specific skill requirements and rubrics provided.
+  const systemPrompt = `You are an elite interview evaluator specializing in ${INDUSTRIES[industryId]?.label || "professional"} hiring. You evaluate with the rigor of a senior hiring committee — no hand-waving, every score needs evidence from the transcript.
 
-You must respond with ONLY valid JSON matching the exact schema. No markdown, no explanation, no preamble.`;
+You have advantages over human evaluators:
+- You can recall every word of the transcript perfectly
+- You apply the exact same standard to every candidate
+- You detect inconsistencies between claimed and demonstrated knowledge
+- You separate confident delivery from actual substance
+
+You must respond with ONLY valid JSON matching the exact schema. No markdown, no explanation.`;
 
   const userPrompt = `Evaluate this interview for the "${job.title}" role.
 
+CANDIDATE: ${candidate.name}
+${candidate.strengths ? `PRE-INTERVIEW STRENGTHS: ${candidate.strengths.join(", ")}` : ""}
+${candidate.concerns ? `PRE-INTERVIEW CONCERNS: ${candidate.concerns.join(", ")}` : ""}
+
 SKILL REQUIREMENTS & RUBRICS:
-${rubrics.map((r) => `- ${r.skill} (expected: ${r.expected_level}): ${r.rubric}`).join("\n")}
+${rubrics.map((r) => `- ${r.skill} (expected: ${r.expected_level}, weight: ${job.skill_requirements.find(s => s.skill === r.skill)?.weight || 3}/5): ${r.rubric}`).join("\n")}
 
 TRANSCRIPT:
 ${transcript}
@@ -291,27 +326,36 @@ Produce a JSON object:
       "expected_level": "basic|intermediate|advanced|expert",
       "assessed_level": "basic|intermediate|advanced|expert|not_assessed",
       "score": <0-100>,
-      "evidence": "specific quote or paraphrase from transcript",
-      "notes": "assessment notes"
+      "evidence": "EXACT quote or close paraphrase from transcript that supports this score",
+      "notes": "what this reveals about the candidate's actual ability",
+      "depth_reached": "surface|working|deep|expert",
+      "red_flags": ["any concerns from this skill area"],
+      "green_flags": ["any positive signals"]
     }
   ],
   "hard_skill_average": <0-100>,
   "soft_skill_average": <0-100>,
   "recommendation": "strong_hire|hire|maybe|no_hire|strong_no_hire",
-  "recommendation_reasoning": "2-3 sentences",
-  "strengths": ["..."],
-  "areas_for_improvement": ["..."],
-  "key_moments": [{"timestamp_approx": "early/mid/late", "description": "..."}],
-  "follow_up_questions": ["questions for a potential next round"]
+  "recommendation_reasoning": "3-4 sentences. Be specific about what tipped the decision.",
+  "strengths": ["specific things the candidate demonstrated well, with evidence"],
+  "areas_for_improvement": ["specific gaps, with what they said or failed to say"],
+  "consistency_analysis": "Did the candidate's claims align with their demonstrated knowledge? Note any gaps between confidence and substance.",
+  "key_moments": [{"timestamp_approx": "early/mid/late", "description": "moment that significantly influenced assessment", "impact": "positive|negative|neutral"}],
+  "follow_up_questions": ["specific questions for a potential next round based on gaps identified"],
+  "hiring_risk_factors": ["any risks the hiring team should be aware of"],
+  "comparison_notes": "How does this candidate's demonstrated skill level compare to what's typically expected at the ${job.skill_requirements[0]?.level || 'intermediate'} level in ${INDUSTRIES[industryId]?.label || 'this field'}?"
 }
 
-SCORING GUIDE:
-- Compare candidate's demonstrated ability against the expected level rubric
-- Hard skills: did they demonstrate domain knowledge at the expected level?
-- Soft skills: did their behavioral examples show the expected competency?
+SCORING CALIBRATION:
+- 85-100: Exceptional. Candidate demonstrated expertise ABOVE the expected level. They taught YOU something. Reserve this for truly outstanding demonstrations.
+- 70-84: Strong. Meets or slightly exceeds expectations. Gave specific examples with clear outcomes. Could do the job well from day one.
+- 55-69: Adequate. Meets basic expectations but lacks depth. Answers were correct but generic. Would need ramp-up time.
+- 40-54: Below expectations. Struggled with concepts at the expected level. Gave vague or theoretical answers. Significant gaps.
+- Below 40: Does not meet requirements. Could not demonstrate the skill at a meaningful level.
 - Weight required skills more heavily than nice-to-haves
-- Be honest — most candidates score 40-70. Reserve 80+ for exceptional demonstrations.
-- If a skill was not assessed during the interview, mark it as "not_assessed"`;
+- Weight skills by their weight value (1-5)
+- Penalize confident but wrong answers more than humble uncertainty
+- If a skill was not assessed during the interview, mark as "not_assessed" with score 0`;
 
   return { systemPrompt, userPrompt };
 }

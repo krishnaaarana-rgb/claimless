@@ -131,81 +131,96 @@ export async function POST(
   const candidateName =
     preferredName || candidate.full_name || "the candidate";
 
+  // Build the prompt input — used for both industry and generic paths
+  const promptInput = {
+    job: {
+      title: job.title,
+      description: job.description || "No description provided",
+      industry: job.industry,
+      industry_niche: job.industry_niche,
+      skill_requirements: job.skill_requirements || [],
+      industry_interview_context: job.industry_interview_context,
+    },
+    candidate: {
+      name: candidateName,
+      resume_text: resumeText,
+      github_context: githubContext || undefined,
+      strengths: strengths.length > 0 ? strengths : undefined,
+      concerns: concerns.length > 0 ? concerns : undefined,
+      suggested_topics: interviewTopics.length > 0 ? interviewTopics : undefined,
+    },
+    settings: {
+      duration_minutes: duration,
+      style,
+      focus,
+      custom_instructions: settings?.interview_custom_instructions || undefined,
+    },
+  };
+
   // Use industry-aware prompt if job has industry set, otherwise fall back to generic
   let systemPrompt: string;
 
   if (job.industry && job.skill_requirements && job.skill_requirements.length > 0) {
-    systemPrompt = buildIndustryInterviewPrompt({
-      job: {
-        title: job.title,
-        description: job.description || "No description provided",
-        industry: job.industry,
-        industry_niche: job.industry_niche,
-        skill_requirements: job.skill_requirements,
-        industry_interview_context: job.industry_interview_context,
-      },
-      candidate: {
-        name: candidateName,
-        resume_text: resumeText,
-        github_context: githubContext || undefined,
-        strengths: strengths.length > 0 ? strengths : undefined,
-        concerns: concerns.length > 0 ? concerns : undefined,
-        suggested_topics: interviewTopics.length > 0 ? interviewTopics : undefined,
-      },
-      settings: {
-        duration_minutes: duration,
-        style,
-        focus,
-        custom_instructions: settings?.interview_custom_instructions || undefined,
-      },
-    });
+    systemPrompt = buildIndustryInterviewPrompt(promptInput);
   } else {
-    // Generic prompt fallback for jobs without industry configuration
-    systemPrompt = `You are an AI interviewer for the role of "${job.title}" at the company. You are conducting a ${duration}-minute ${style} interview.
+    // Generic prompt for jobs without industry configuration — still uses advanced techniques
+    systemPrompt = `You are an elite AI interviewer for the role of "${job.title}". You are conducting a ${duration}-minute ${style} interview.
 
-YOUR PERSONA:
-- Warm, professional, and encouraging
+YOUR IDENTITY:
+- You are a senior hiring expert who genuinely wants to find the right person for this role
 - You address the candidate as "${candidateName}"
-- You sound like a senior hiring manager who genuinely wants to learn about the candidate
-- You listen carefully and ask thoughtful follow-up questions
+- You are warm and conversational but intellectually rigorous
 - You never reveal the candidate's ATS score or internal assessment
-- Keep the conversation natural -- not robotic or scripted
+- You sound like a human — use natural reactions ("interesting", "I see", "tell me more about that")
 
-INTERVIEW STRUCTURE:
-1. Start with a warm greeting: "Hi ${candidateName}, thanks for taking the time to chat with us today. I'm excited to learn more about you and your experience. Let's keep this conversational -- no trick questions, just a chance to get to know each other."
-2. Ask about their background briefly (1-2 minutes)
-3. Move into role-specific questions (${focus === "technical_and_behavioral" ? "mix of technical and behavioral" : focus})
-4. Ask about ${interviewTopics.length > 0 ? "these specific topics: " + interviewTopics.join(", ") : "their experience related to the job description"}
-5. Probe into areas of concern: ${concerns.length > 0 ? concerns.join(", ") : "general fit for the role"}
-6. Give them a chance to ask questions about the role
-7. End warmly: "Thanks so much ${candidateName}, it was great chatting with you. We'll be in touch soon with next steps."
+ADVANCED INTERVIEWING TECHNIQUES:
+1. DEPTH CALIBRATION — Start mid-level. If they answer well, go deeper. If they struggle, stay at current level.
+2. VERIFICATION PROBING — Cross-reference their answers against their resume/background. When claims don't match, explore gently with curiosity.
+3. SPECIFICITY ENFORCEMENT — When they give vague answers ("we used best practices", "I collaborated with the team"), always follow up: "Can you give me a specific example?" Specifics reveal real experience.
+4. THE "TEACH ME" TECHNIQUE — Ask them to explain a concept as if teaching you. This reveals true understanding.
+5. "WE" TO "I" — When they say "we did X", ask "what was YOUR specific role in that?"
+
+INTERVIEW FLOW:
+1. Warm greeting (1 min)
+2. Background: "Tell me about your journey and what brings you to this role" (2 min)
+3. ${focus === "technical_and_behavioral" ? "Mix of technical depth and behavioral questions" : focus} (${duration - 6} min)
+4. ${interviewTopics.length > 0 ? "Deep-dive into: " + interviewTopics.join(", ") : "Role-specific questions based on the job description"}
+5. ${concerns.length > 0 ? "Gently explore: " + concerns.join(", ") : "General fit assessment"}
+6. Candidate questions (2 min)
+7. Close: "Thanks so much ${candidateName}, really enjoyed this conversation. We'll be in touch soon."
 
 JOB DESCRIPTION:
 ${job.description || "No description provided"}
 
-CANDIDATE RESUME:
+CANDIDATE INTELLIGENCE (internal — use to guide questions, never reveal):
+RESUME:
 ${resumeText}
 ${githubContext}
 
-ATS SCREENING CONTEXT (internal -- never share with candidate):
-- Strengths identified: ${strengths.join(", ") || "None noted"}
-- Concerns to probe: ${concerns.join(", ") || "None noted"}
-- Suggested topics: ${interviewTopics.join(", ") || "General role fit"}
+${strengths.length > 0 ? `VERIFIED STRENGTHS: ${strengths.join(", ")}` : ""}
+${concerns.length > 0 ? `CONCERNS TO PROBE: ${concerns.join(", ")}` : ""}
+${interviewTopics.length > 0 ? `SUGGESTED TOPICS: ${interviewTopics.join(", ")}` : ""}
 
 ${settings?.interview_custom_instructions ? `ADDITIONAL INSTRUCTIONS:\n${settings.interview_custom_instructions}` : ""}
 
 RULES:
-- Keep answers focused -- if the candidate goes off-topic, gently redirect
-- Ask ONE question at a time, never stack multiple questions
-- Wait for the candidate to finish before responding
-- If the candidate seems nervous, be extra encouraging
-- The interview should last approximately ${duration} minutes
-- Ask 5-8 main questions total, with follow-ups as needed
-- End the interview naturally when you've covered the key topics`;
+- Ask ONE question at a time
+- Wait for the candidate to fully finish before responding
+- If nervous, be extra warm: "Take your time" or "That's a great start"
+- Listen for RED FLAGS: vague answers, inability to go deeper, contradictions, deflecting to "the team"
+- Listen for GREEN FLAGS: specific examples with outcomes, discusses tradeoffs, admits what they don't know
+- Target 6-10 main questions with follow-ups based on response quality
+- End naturally around the ${duration}-minute mark`;
   }
 
   // 7. Create Vapi assistant via API
   const name = `IV: ${candidateName} - ${job.title}`.slice(0, 40);
+
+  // Build a contextual first message that references something specific
+  const firstMessageContext = strengths.length > 0
+    ? ` I had a chance to look over your background and it's really interesting`
+    : ``;
+
   const vapiPayload = {
     name,
     model: {
@@ -220,7 +235,7 @@ RULES:
       stability: 0.5,
       similarityBoost: 0.75,
     },
-    firstMessage: `Hi ${candidateName}, thanks for taking the time to chat with us today about the ${job.title} role. I'm really looking forward to learning more about you. Let's keep this super conversational -- just think of it as a friendly chat about your experience. So to kick things off, could you tell me a bit about yourself and what drew you to this role?`,
+    firstMessage: `Hi ${candidateName}! Thanks so much for taking the time to chat with us about the ${job.title} role.${firstMessageContext}. Let's keep this super conversational — just a friendly chat about your experience, no trick questions or anything like that. So to kick things off, tell me a bit about yourself and what drew you to this opportunity?`,
     transcriber: {
       provider: "deepgram",
       model: "nova-2",
@@ -282,7 +297,7 @@ RULES:
     })
     .eq("id", tokenData.id);
 
-  // Store the assistant ID on the application for later reference
+  // Store the assistant ID and injected prompt for audit trail
   await supabase
     .from("applications")
     .update({
@@ -292,6 +307,9 @@ RULES:
         vapi_assistant_id: assistant.id,
         interview_started_at: new Date().toISOString(),
         preferred_name: candidateName,
+        injected_prompt: systemPrompt,
+        injected_prompt_length: systemPrompt.length,
+        interview_model: "openai/gpt-4o-mini",
       },
     })
     .eq("id", application.id);
