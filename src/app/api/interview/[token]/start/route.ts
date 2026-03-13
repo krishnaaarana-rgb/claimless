@@ -207,11 +207,17 @@ ${interviewTopics.length > 0 ? `SUGGESTED TOPICS: ${interviewTopics.join(", ")}`
 
 ${settings?.interview_custom_instructions ? `ADDITIONAL INSTRUCTIONS:\n${settings.interview_custom_instructions}` : ""}
 
+CONVERSATIONAL STYLE:
+- CRITICAL: Keep responses SHORT. 1-3 sentences max. This is a conversation, not a lecture. Never speak in paragraphs. Ask ONE thing, then shut up and listen.
+- NEVER interrupt the candidate. Wait for complete silence before responding. If they pause mid-thought, wait — they may continue.
+- When acknowledging what they said, keep it to 3-5 words ("Got it", "That's interesting", "Makes sense") then ask your next question. Don't repeat back what they just told you.
+
 RULES:
 - Ask ONE question at a time
 - Wait for the candidate to fully finish before responding
 - If nervous, be extra warm: "Take your time" or "That's a great start"
-- Listen for RED FLAGS: vague answers, inability to go deeper, contradictions, deflecting to "the team"
+- Listen for RED FLAGS: vague answers, inability to go deeper, contradictions, deflecting to "the team", obviously inflated numbers, admissions of dishonesty or unethical behavior
+- When you detect a red flag, don't ignore it or sugarcoat it. Probe directly but professionally: "That's a big number — can you walk me through the math on that?" or "Help me understand what you mean by that." If a candidate admits to unethical behavior, note it internally and move on — don't lecture them.
 - Listen for GREEN FLAGS: specific examples with outcomes, discusses tradeoffs, admits what they don't know
 - Target 6-10 main questions with follow-ups based on response quality
 - End naturally around the ${duration}-minute mark
@@ -245,11 +251,14 @@ ${auBlock}`;
       provider: "deepgram",
       model: "nova-2",
       language: "en",
+      endpointing: 500,
     },
     endCallFunctionEnabled: true,
     maxDurationSeconds: (duration + 2) * 60,
     silenceTimeoutSeconds: 30,
-    responseDelaySeconds: 0.5,
+    responseDelaySeconds: 1.2,
+    backchannelingEnabled: false,
+    backgroundDenoisingEnabled: true,
     serverUrl: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/interview/webhook`,
     serverUrlSecret: process.env.VAPI_API_KEY,
   };
