@@ -74,7 +74,7 @@ export default function TestInterviewPage() {
   };
 
   return (
-    <div className="max-w-2xl">
+    <div className="w-full">
       <div className="mb-6">
         <Link
           href="/interviews"
