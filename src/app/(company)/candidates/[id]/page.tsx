@@ -183,9 +183,8 @@ export default async function CandidateDetailPage({
           )}
         </div>
 
-        {/* Share + Action Buttons */}
+        {/* Action Buttons */}
         <div className="flex items-center gap-3 shrink-0">
-        {primaryApp && <ShareButton applicationId={primaryApp.id} />}
         {(() => {
           if (!primaryApp || primaryApp.current_stage === "rejected" || primaryApp.current_stage === "hired") return null;
           const appData = primaryApp as unknown as Record<string, unknown>;
@@ -215,6 +214,13 @@ export default async function CandidateDetailPage({
         })()}
         </div>
       </div>
+
+      {/* Share with Client */}
+      {primaryApp && (
+        <div className="mb-6">
+          <ShareButton applicationId={primaryApp.id} />
+        </div>
+      )}
 
       {/* ═══════════════════════════════════════════════════
           SECTION 2: ASSESSMENT AT A GLANCE

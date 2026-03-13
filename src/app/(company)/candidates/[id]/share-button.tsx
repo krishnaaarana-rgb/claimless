@@ -35,11 +35,11 @@ export function ShareButton({ applicationId }: { applicationId: string }) {
 
   if (shareUrl) {
     return (
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 w-full">
         <input
           readOnly
           value={shareUrl}
-          className="text-[12px] px-2 py-1 border border-[#E9E9E7] rounded bg-[#F7F6F3] text-[#37352F] w-56 truncate"
+          className="text-[12px] px-3 py-1.5 border border-[#E9E9E7] rounded-lg bg-[#F7F6F3] text-[#37352F] flex-1 min-w-0"
           onClick={(e) => (e.target as HTMLInputElement).select()}
         />
         <button
@@ -48,7 +48,7 @@ export function ShareButton({ applicationId }: { applicationId: string }) {
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
           }}
-          className="text-[12px] px-2.5 py-1 rounded border border-[#E9E9E7] text-[#37352F] hover:bg-[#F7F6F3] transition-colors shrink-0"
+          className="text-[12px] px-3 py-1.5 rounded-lg border border-[#E9E9E7] text-[#37352F] hover:bg-[#F7F6F3] transition-colors shrink-0"
         >
           {copied ? "Copied!" : "Copy"}
         </button>
