@@ -26,6 +26,7 @@ export default function InterviewSession() {
   const [jobTitle, setJobTitle] = useState("");
   const [candidateName, setCandidateName] = useState("");
   const [error, setError] = useState("");
+  const [cameraActive, setCameraActive] = useState(false);
 
   const vapiRef = useRef<Vapi | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -38,9 +39,14 @@ export default function InterviewSession() {
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: false })
       .then((stream) => {
-        if (videoRef.current) videoRef.current.srcObject = stream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          setCameraActive(true);
+        }
       })
-      .catch(() => {});
+      .catch(() => {
+        setCameraActive(false);
+      });
 
     return () => {
       if (videoRef.current?.srcObject) {
@@ -271,14 +277,43 @@ export default function InterviewSession() {
       <div className="flex-1 flex min-h-0 p-3 gap-3">
         {/* Left: Video Area */}
         <div className="flex-[3] relative rounded-xl overflow-hidden bg-[#18181B]">
+          {/* Video feed */}
           <video
             ref={videoRef}
             autoPlay
             muted
             playsInline
-            className="w-full h-full object-cover"
+            className={`w-full h-full object-cover ${cameraActive ? "" : "hidden"}`}
             style={{ transform: "scaleX(-1)" }}
           />
+
+          {/* Camera off fallback */}
+          {!cameraActive && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <div className="w-24 h-24 rounded-full bg-white/10 flex items-center justify-center mb-4">
+                <span className="text-[36px] font-semibold text-white/60">
+                  {candidateName.charAt(0).toUpperCase()}
+                </span>
+              </div>
+              <p className="text-[13px] text-white/30">Camera is off</p>
+              <button
+                onClick={() => {
+                  navigator.mediaDevices
+                    .getUserMedia({ video: true, audio: false })
+                    .then((stream) => {
+                      if (videoRef.current) {
+                        videoRef.current.srcObject = stream;
+                        setCameraActive(true);
+                      }
+                    })
+                    .catch(() => {});
+                }}
+                className="mt-3 px-4 py-2 rounded-lg text-[12px] font-medium text-white/50 border border-white/10 hover:bg-white/5 transition-colors"
+              >
+                Enable Camera
+              </button>
+            </div>
+          )}
 
           {/* Candidate name overlay */}
           <div className="absolute bottom-4 left-4 flex items-center gap-2">
