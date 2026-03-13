@@ -36,7 +36,7 @@ export async function GET(
   const admin = createAdminClient();
   const { data: job, error } = await admin
     .from("jobs")
-    .select("*, applications(id, current_stage, match_score, match_breakdown)")
+    .select("*, applications(id, current_stage, match_score, match_breakdown, application_form_data)")
     .eq("id", id)
     .eq("company_id", companyId)
     .single();
@@ -50,6 +50,7 @@ export async function GET(
     current_stage: string;
     match_score: number | null;
     match_breakdown: { pass?: boolean } | null;
+    application_form_data: Record<string, unknown> | null;
   }[] | null;
 
   const appList = Array.isArray(apps) ? apps : [];
@@ -59,6 +60,10 @@ export async function GET(
   let scoreCount = 0;
   let passedCount = 0;
   let screenedCount = 0;
+  let totalIvScore = 0;
+  let ivScoreCount = 0;
+  let ivInvitedCount = 0;
+  let ivCompletedCount = 0;
 
   for (const app of appList) {
     const stage = app.current_stage || "applied";
@@ -69,6 +74,21 @@ export async function GET(
       scoreCount++;
       screenedCount++;
       if (app.match_breakdown?.pass) passedCount++;
+    }
+
+    // Interview metrics
+    if (stage === "interview_invited" || stage === "interview_completed" || stage === "hired") {
+      ivInvitedCount++;
+    }
+    const scoring = app.application_form_data?.interview_scoring as {
+      overall_score?: number;
+      interview_score?: number;
+    } | null | undefined;
+    const ivScore = scoring?.overall_score ?? scoring?.interview_score;
+    if (ivScore != null) {
+      totalIvScore += ivScore;
+      ivScoreCount++;
+      ivCompletedCount++;
     }
   }
 
@@ -87,6 +107,8 @@ export async function GET(
       interviewing_count:
         (stageCount.interview_invited || 0) +
         (stageCount.interview_completed || 0),
+      avg_interview_score: ivScoreCount > 0 ? Math.round(totalIvScore / ivScoreCount) : null,
+      interview_completion_rate: ivInvitedCount > 0 ? Math.round((ivCompletedCount / ivInvitedCount) * 100) : null,
     },
   });
 }

@@ -14,6 +14,9 @@ import {
   TrendingUp,
   BarChart3,
   CheckCircle2,
+  Mic,
+  Trophy,
+  ArrowRight,
 } from "lucide-react";
 
 interface JobData {
@@ -31,6 +34,8 @@ interface JobData {
   pass_rate: number | null;
   passed_count: number;
   interviewing_count: number;
+  avg_interview_score: number | null;
+  interview_completion_rate: number | null;
 }
 
 interface CandidateRow {
@@ -40,9 +45,38 @@ interface CandidateRow {
   email: string;
   job_title: string;
   ats_score: number | null;
+  interview_score: number | null;
+  interview_recommendation: string | null;
   status: string;
   ai_summary: string | null;
   applied_at: string;
+}
+
+function combinedScore(ats: number | null, iv: number | null): number | null {
+  if (ats != null && iv != null) return Math.round(ats * 0.4 + iv * 0.6);
+  return iv ?? ats ?? null;
+}
+
+function recLabel(rec: string): string {
+  switch (rec) {
+    case "strong_hire": return "Strong Hire";
+    case "hire": return "Hire";
+    case "maybe": return "Maybe";
+    case "no_hire": return "No Hire";
+    case "strong_no_hire": return "Strong No";
+    default: return rec;
+  }
+}
+
+function recColor(rec: string): string {
+  switch (rec) {
+    case "strong_hire": return "bg-emerald-50 text-emerald-700 border-emerald-200";
+    case "hire": return "bg-green-50 text-green-700 border-green-200";
+    case "maybe": return "bg-amber-50 text-amber-700 border-amber-200";
+    case "no_hire": return "bg-red-50 text-red-600 border-red-200";
+    case "strong_no_hire": return "bg-red-100 text-red-700 border-red-300";
+    default: return "bg-[#F7F6F3] text-[#9B9A97] border-[#E9E9E7]";
+  }
 }
 
 function relativeTime(dateStr: string): string {
@@ -297,11 +331,11 @@ export default function JobDetailPage({
     return (
       <div className="space-y-6">
         <div className="h-8 bg-[#F7F6F3] rounded w-48 animate-pulse" />
-        <div className="grid grid-cols-4 gap-5">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-white border border-[#E9E9E7] rounded-lg p-5 animate-pulse">
-              <div className="h-3 bg-[#F7F6F3] rounded w-20 mb-4" />
-              <div className="h-8 bg-[#F7F6F3] rounded w-16" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="bg-white border border-[#E9E9E7] rounded-lg p-4 animate-pulse">
+              <div className="h-3 bg-[#F7F6F3] rounded w-20 mb-3" />
+              <div className="h-6 bg-[#F7F6F3] rounded w-12" />
             </div>
           ))}
         </div>
@@ -318,9 +352,18 @@ export default function JobDetailPage({
   const metrics = [
     { label: "Applicants", value: job.applicant_count, icon: Users },
     { label: "Pass Rate", value: job.pass_rate != null ? `${job.pass_rate}%` : "--", icon: TrendingUp },
-    { label: "Avg Score", value: job.avg_score ?? "--", icon: BarChart3 },
+    { label: "Avg ATS Score", value: job.avg_score ?? "--", icon: BarChart3 },
     { label: "Passed ATS", value: job.passed_count, icon: CheckCircle2 },
+    { label: "Avg Interview", value: job.avg_interview_score ?? "--", icon: Mic },
+    { label: "IV Completion", value: job.interview_completion_rate != null ? `${job.interview_completion_rate}%` : "--", icon: CheckCircle2 },
   ];
+
+  // Build shortlist — top 5 candidates ranked by combined score
+  const shortlist = candidates
+    .map((c) => ({ ...c, combined: combinedScore(c.ats_score, c.interview_score) }))
+    .filter((c) => c.combined != null && c.combined > 0)
+    .sort((a, b) => (b.combined ?? 0) - (a.combined ?? 0))
+    .slice(0, 5);
 
   return (
     <div className="space-y-6">
@@ -370,21 +413,21 @@ export default function JobDetailPage({
       </div>
 
       {/* Metric Cards */}
-      <div className="grid grid-cols-4 gap-5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
         {metrics.map((metric) => {
           const Icon = metric.icon;
           return (
             <div
               key={metric.label}
-              className="bg-white border border-[#E9E9E7] rounded-lg p-5"
+              className="bg-white border border-[#E9E9E7] rounded-lg p-4"
             >
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[13px] text-[#9B9A97]">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[12px] text-[#9B9A97]">
                   {metric.label}
                 </span>
-                <Icon size={16} className="text-[#D3D1CB]" />
+                <Icon size={14} className="text-[#D3D1CB]" />
               </div>
-              <div className="text-[32px] font-bold text-[#37352F] leading-none">
+              <div className="text-[24px] font-bold text-[#37352F] leading-none">
                 {metric.value}
               </div>
             </div>
@@ -392,8 +435,115 @@ export default function JobDetailPage({
         })}
       </div>
 
+      {/* Pipeline Funnel */}
+      {job.applicant_count > 0 && (() => {
+        const stages = [
+          { key: "applied", label: "Applied", count: (job.stage_counts.applied || 0) + (job.stage_counts.pending_review || 0) },
+          { key: "passed", label: "Passed ATS", count: job.stage_counts.stage_1_passed || 0 },
+          { key: "interviewing", label: "Interviewing", count: (job.stage_counts.interview_invited || 0) },
+          { key: "interviewed", label: "Interviewed", count: job.stage_counts.interview_completed || 0 },
+          { key: "hired", label: "Hired", count: job.stage_counts.hired || 0 },
+        ];
+        const maxCount = Math.max(...stages.map(s => s.count), 1);
+        return (
+          <div className="bg-white border border-[#E9E9E7] rounded-lg p-5">
+            <h3 className="text-[13px] font-semibold text-[#37352F] mb-4">Pipeline</h3>
+            <div className="flex items-end gap-2 h-16">
+              {stages.map((stage) => {
+                const pct = Math.max((stage.count / maxCount) * 100, 4);
+                return (
+                  <div key={stage.key} className="flex-1 flex flex-col items-center gap-1">
+                    <span className="text-[11px] font-medium text-[#37352F] tabular-nums">{stage.count}</span>
+                    <div
+                      className="w-full rounded-sm bg-[#2383E2]/15 transition-all"
+                      style={{ height: `${pct}%`, minHeight: "3px" }}
+                    />
+                    <span className="text-[10px] text-[#9B9A97] text-center leading-tight">{stage.label}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Shortlist — Top Candidates */}
+      {shortlist.length > 0 && (
+        <div className="bg-white border border-[#E9E9E7] rounded-lg overflow-hidden">
+          <div className="px-5 py-4 border-b border-[#E9E9E7] flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Trophy size={15} className="text-amber-500" />
+              <h3 className="text-[14px] font-semibold text-[#37352F]">Top Candidates</h3>
+              <span className="text-[11px] text-[#9B9A97]">Ranked by combined ATS + Interview score</span>
+            </div>
+          </div>
+          <div className="divide-y divide-[#E9E9E7]">
+            {shortlist.map((c, idx) => (
+              <button
+                key={c.application_id}
+                onClick={() => router.push(`/candidates/${c.id}`)}
+                className="w-full px-5 py-3.5 flex items-center gap-4 hover:bg-[#F7F6F3]/50 transition-colors text-left"
+              >
+                {/* Rank */}
+                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 ${
+                  idx === 0 ? "bg-amber-100 text-amber-700" : idx === 1 ? "bg-gray-100 text-gray-600" : idx === 2 ? "bg-orange-50 text-orange-600" : "bg-[#F7F6F3] text-[#9B9A97]"
+                }`}>
+                  {idx + 1}
+                </span>
+
+                {/* Name & email */}
+                <div className="flex-1 min-w-0">
+                  <div className="text-[14px] font-medium text-[#37352F] truncate">{c.name}</div>
+                  <div className="text-[11px] text-[#9B9A97] truncate">{c.email}</div>
+                </div>
+
+                {/* Combined score */}
+                <div className="text-center shrink-0 w-16">
+                  <div className={`text-[18px] font-bold tabular-nums ${
+                    (c.combined ?? 0) >= 70 ? "text-emerald-600" : (c.combined ?? 0) >= 50 ? "text-[#2383E2]" : "text-[#37352F]"
+                  }`} style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                    {c.combined}
+                  </div>
+                  <div className="text-[9px] text-[#9B9A97] uppercase tracking-wide">Combined</div>
+                </div>
+
+                {/* ATS score */}
+                <div className="text-center shrink-0 w-12">
+                  <div className="text-[13px] font-medium text-[#9B9A97] tabular-nums" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                    {c.ats_score ?? "--"}
+                  </div>
+                  <div className="text-[9px] text-[#D3D1CB] uppercase tracking-wide">ATS</div>
+                </div>
+
+                {/* Interview score */}
+                <div className="text-center shrink-0 w-12">
+                  <div className="text-[13px] font-medium text-[#9B9A97] tabular-nums" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                    {c.interview_score ?? "--"}
+                  </div>
+                  <div className="text-[9px] text-[#D3D1CB] uppercase tracking-wide">IV</div>
+                </div>
+
+                {/* Recommendation */}
+                {c.interview_recommendation && (
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium border shrink-0 ${recColor(c.interview_recommendation)}`}>
+                    {recLabel(c.interview_recommendation)}
+                  </span>
+                )}
+
+                {/* Status */}
+                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium border shrink-0 ${stagePill(c.status)}`}>
+                  {stageLabel(c.status)}
+                </span>
+
+                <ArrowRight size={14} className="text-[#D3D1CB] shrink-0" />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Candidates section header */}
-      <h2 className="text-[16px] font-semibold text-[#37352F]">Candidates</h2>
+      <h2 className="text-[16px] font-semibold text-[#37352F]">All Candidates</h2>
 
       {/* Filters */}
       <div className="bg-white border border-[#E9E9E7] rounded-lg p-4 flex items-center gap-3 flex-wrap">
@@ -505,8 +655,11 @@ export default function JobDetailPage({
                       onClick={() => toggleSort("match_score")}
                       className="text-[11px] font-medium text-[#9B9A97] uppercase tracking-[0.04em] flex items-center justify-center hover:text-[#37352F]"
                     >
-                      Score <SortIcon field="match_score" />
+                      ATS <SortIcon field="match_score" />
                     </button>
+                  </th>
+                  <th className="text-center px-4 py-2.5">
+                    <span className="text-[11px] font-medium text-[#9B9A97] uppercase tracking-[0.04em]">Interview</span>
                   </th>
                   <th className="text-center px-4 py-2.5">
                     <span className="text-[11px] font-medium text-[#9B9A97] uppercase tracking-[0.04em]">Status</span>
@@ -548,6 +701,25 @@ export default function JobDetailPage({
                       >
                         {c.ats_score != null ? c.ats_score : "--"}
                       </span>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {c.interview_score != null ? (
+                        <div className="flex flex-col items-center gap-0.5">
+                          <span
+                            className={`text-[14px] font-medium tabular-nums ${scoreColor(c.interview_score)}`}
+                            style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                          >
+                            {c.interview_score}
+                          </span>
+                          {c.interview_recommendation && (
+                            <span className={`inline-flex items-center px-1.5 py-0 rounded-full text-[9px] font-medium border ${recColor(c.interview_recommendation)}`}>
+                              {recLabel(c.interview_recommendation)}
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-[12px] text-[#D3D1CB]">--</span>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-center">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium border ${stagePill(c.status)}`}>

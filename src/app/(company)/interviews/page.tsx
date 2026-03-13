@@ -255,11 +255,10 @@ export default function InterviewsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F6F3]">
-      <div className="max-w-[1200px] mx-auto px-6 py-8">
+    <div className="space-y-6">
 
         {/* ─── Header ─── */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-0">
           <div>
             <h1 className="text-[22px] font-semibold text-[#37352F]">Interviews</h1>
             <p className="text-[13px] text-[#9B9A97] mt-0.5">
@@ -289,7 +288,7 @@ export default function InterviewsPage() {
 
         {/* ─── Stats Row ─── */}
         {!loading && (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-0">
             <StatCard
               icon={<CheckCircle size={14} className="text-[#2383E2]" />}
               label="Completed"
@@ -319,7 +318,7 @@ export default function InterviewsPage() {
 
         {/* ─── Filter Bar ─── */}
         {showFilters && (
-          <div className="bg-white rounded-lg border border-[#E9E9E7] p-4 mb-6">
+          <div className="bg-white rounded-lg border border-[#E9E9E7] p-4 mb-0">
             <div className="flex items-center justify-between mb-3">
               <span className="text-[13px] font-medium text-[#37352F]">Filter Interviews</span>
               {hasActiveFilters && (
@@ -425,7 +424,7 @@ export default function InterviewsPage() {
               <Mic size={20} className="text-[#9B9A97]" />
             </div>
             <h3 className="text-[16px] font-semibold text-[#37352F] mb-2">No interviews yet</h3>
-            <p className="text-[14px] text-[#9B9A97] max-w-md mx-auto mb-6">
+            <p className="text-[14px] text-[#9B9A97] max-w-md mx-auto mb-0">
               Interviews appear here when candidates are invited to a voice interview.
               Go to the Candidates page to screen applicants and invite them to interview.
             </p>
@@ -551,23 +550,23 @@ export default function InterviewsPage() {
                           Play Recording
                         </a>
                       )}
-                      {iv.interview_transcript && (
+                      {(iv.interview_transcript || iv.interview_scoring) && (
                         <button
                           onClick={() => toggleCard(iv.application_id)}
                           className="flex items-center gap-1 px-3 py-1.5 text-[12px] font-medium text-[#9B9A97] hover:text-[#37352F] ml-auto transition-colors"
                         >
                           {isExpanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
-                          {isExpanded ? "Hide" : "Transcript"}
+                          {isExpanded ? "Hide" : "Details"}
                         </button>
                       )}
                     </div>
                   </div>
 
-                  {/* Expanded transcript */}
-                  {isExpanded && iv.interview_transcript && (
-                    <div className="border-t border-[#E9E9E7] px-5 py-4 bg-[#FAFAFA]">
+                  {/* Expanded details */}
+                  {isExpanded && (
+                    <div className="border-t border-[#E9E9E7] px-5 py-4 bg-[#FAFAFA] space-y-4">
                       {iv.interview_scoring?.overall_impression && (
-                        <div className="mb-4">
+                        <div>
                           <p className="text-[12px] font-medium text-[#9B9A97] uppercase tracking-wide mb-1">Overall Impression</p>
                           <p className="text-[13px] text-[#37352F] leading-relaxed">
                             {iv.interview_scoring.overall_impression}
@@ -575,21 +574,68 @@ export default function InterviewsPage() {
                         </div>
                       )}
                       {iv.interview_scoring?.recommendation_reasoning && (
-                        <div className="mb-4">
+                        <div>
                           <p className="text-[12px] font-medium text-[#9B9A97] uppercase tracking-wide mb-1">Recommendation Reasoning</p>
                           <p className="text-[13px] text-[#37352F] leading-relaxed">
                             {iv.interview_scoring.recommendation_reasoning}
                           </p>
                         </div>
                       )}
-                      <div>
-                        <p className="text-[12px] font-medium text-[#9B9A97] uppercase tracking-wide mb-2">Transcript Preview</p>
-                        <pre className="text-[12px] text-[#37352F] leading-relaxed whitespace-pre-wrap max-h-[300px] overflow-y-auto font-[inherit]">
-                          {iv.interview_transcript.length > 2000
-                            ? iv.interview_transcript.slice(0, 2000) + "\n\n... [truncated — view full transcript on candidate profile]"
-                            : iv.interview_transcript}
-                        </pre>
-                      </div>
+                      {iv.interview_scoring?.consistency_analysis && (
+                        <div>
+                          <p className="text-[12px] font-medium text-[#9B9A97] uppercase tracking-wide mb-1">Consistency Analysis</p>
+                          <p className="text-[13px] text-[#37352F] leading-relaxed">
+                            {iv.interview_scoring.consistency_analysis}
+                          </p>
+                        </div>
+                      )}
+                      {/* Areas for improvement */}
+                      {(iv.interview_scoring?.areas_for_improvement ?? []).length > 0 && (
+                        <div>
+                          <p className="text-[12px] font-medium text-[#9B9A97] uppercase tracking-wide mb-1">Areas for Improvement</p>
+                          <ul className="space-y-1">
+                            {iv.interview_scoring!.areas_for_improvement!.map((a, i) => (
+                              <li key={i} className="flex items-start gap-2 text-[13px] text-[#37352F]">
+                                <span className="text-red-400 mt-0.5 shrink-0">-</span>
+                                <span>{a}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      {/* Risk factors */}
+                      {(iv.interview_scoring?.hiring_risk_factors ?? []).length > 0 && (
+                        <div className="bg-amber-50 border border-amber-200 rounded-md px-4 py-3">
+                          <p className="text-[12px] font-medium text-amber-700 uppercase tracking-wide mb-1">Risk Factors</p>
+                          <ul className="space-y-1">
+                            {iv.interview_scoring!.hiring_risk_factors!.map((r, i) => (
+                              <li key={i} className="text-[13px] text-amber-800">{r}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      {/* Follow-up questions */}
+                      {(iv.interview_scoring?.follow_up_questions ?? []).length > 0 && (
+                        <div>
+                          <p className="text-[12px] font-medium text-[#9B9A97] uppercase tracking-wide mb-1">Suggested Follow-ups</p>
+                          <ol className="space-y-1 list-decimal list-inside">
+                            {iv.interview_scoring!.follow_up_questions!.map((q, i) => (
+                              <li key={i} className="text-[13px] text-[#37352F]">{q}</li>
+                            ))}
+                          </ol>
+                        </div>
+                      )}
+                      {/* Transcript */}
+                      {iv.interview_transcript && (
+                        <div>
+                          <p className="text-[12px] font-medium text-[#9B9A97] uppercase tracking-wide mb-2">Transcript Preview</p>
+                          <pre className="text-[12px] text-[#37352F] leading-relaxed whitespace-pre-wrap max-h-[300px] overflow-y-auto font-[inherit]">
+                            {iv.interview_transcript.length > 2000
+                              ? iv.interview_transcript.slice(0, 2000) + "\n\n... [truncated — view full transcript on candidate profile]"
+                              : iv.interview_transcript}
+                          </pre>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -597,7 +643,6 @@ export default function InterviewsPage() {
             })}
           </div>
         )}
-      </div>
     </div>
   );
 }
