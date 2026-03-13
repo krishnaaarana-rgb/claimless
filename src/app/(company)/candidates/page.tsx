@@ -481,6 +481,33 @@ function ResumeModal({
   );
 }
 
+/* ─── Smart Dropdown (opens up when near bottom) ─── */
+function StageDropdown({ children }: { children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [openUp, setOpenUp] = useState(false);
+
+  useEffect(() => {
+    if (ref.current) {
+      const rect = ref.current.parentElement?.getBoundingClientRect();
+      if (rect) {
+        const spaceBelow = window.innerHeight - rect.bottom;
+        setOpenUp(spaceBelow < 250);
+      }
+    }
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className={`absolute left-1/2 -translate-x-1/2 z-20 bg-white border border-[#E9E9E7] rounded-lg shadow-lg py-1 min-w-[170px] ${
+        openUp ? "bottom-full mb-1" : "top-full mt-1"
+      }`}
+    >
+      {children}
+    </div>
+  );
+}
+
 /* ─── Main Component ─── */
 export default function CandidatesPage() {
   const router = useRouter();
@@ -1213,7 +1240,7 @@ export default function CandidatesPage() {
                           {stagePillMenu === c.application_id && (
                             <>
                               <div className="fixed inset-0 z-10" onClick={() => setStagePillMenu(null)} />
-                              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1 z-20 bg-white border border-[#E9E9E7] rounded-lg shadow-lg py-1 min-w-[170px]">
+                              <StageDropdown>
                                 {STAGE_MOVES.map((s) => {
                                   const isCurrent = s.value === c.status;
                                   return (
@@ -1237,7 +1264,7 @@ export default function CandidatesPage() {
                                     </button>
                                   );
                                 })}
-                              </div>
+                              </StageDropdown>
                             </>
                           )}
                         </div>
