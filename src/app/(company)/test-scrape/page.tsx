@@ -138,7 +138,7 @@ export default function TestScrapePage() {
           onKeyDown={(e) => e.key === "Enter" && handleScrape()}
           className="max-w-sm bg-card border-border"
         />
-        <Button onClick={handleScrape} disabled={loading || !username.trim()} className="glow-primary">
+        <Button onClick={handleScrape} disabled={loading || !username.trim()} className="">
           {loading ? "Analyzing..." : "Generate Profile"}
         </Button>
       </div>

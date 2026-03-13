@@ -137,7 +137,7 @@ export default function SignupPage() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full glow-primary"
+              className="w-full"
             >
               {loading ? "Creating account..." : "Create Account"}
             </Button>

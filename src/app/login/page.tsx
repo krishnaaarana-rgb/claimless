@@ -91,7 +91,7 @@ export default function LoginPage() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full glow-primary"
+              className="w-full"
             >
               {loading ? "Signing in..." : "Log in"}
             </Button>

@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   Users,
   Briefcase,
+  Mic,
   Settings,
   UserCog,
   Plug,
@@ -22,6 +23,7 @@ const NAV_SECTIONS = [
       { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
       { href: "/candidates", label: "Candidates", icon: Users },
       { href: "/jobs", label: "Jobs", icon: Briefcase },
+      { href: "/interviews", label: "Interviews", icon: Mic },
     ],
   },
   {

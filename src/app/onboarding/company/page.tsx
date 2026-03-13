@@ -586,7 +586,7 @@ export default function CompanyOnboardingPage() {
                     }
                     setStep(step + 1);
                   }}
-                  className="glow-primary"
+                  className=""
                 >
                   Next
                 </Button>
@@ -594,7 +594,7 @@ export default function CompanyOnboardingPage() {
                 <Button
                   onClick={handleSubmit}
                   disabled={loading}
-                  className="glow-primary"
+                  className=""
                 >
                   {loading ? "Setting up..." : "Launch Dashboard"}
                 </Button>

@@ -50,7 +50,7 @@ export default function Home() {
         <div className="flex items-center gap-4">
           <Link
             href="/signup"
-            className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:opacity-90 glow-primary"
+            className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:opacity-90"
           >
             Request Access
           </Link>
