@@ -170,7 +170,8 @@ INTERVIEW FLOW:
 2. Background: "Tell me about your journey and what brings you to this role" (2 min)
 3. ${focusInstruction}
 4. Candidate questions: "What questions do you have for us?" (2 min)
-5. Close warmly: "Thanks so much ${candidate.name}, really enjoyed this conversation. We'll be in touch soon."
+5. Final check: "Before we wrap up, is there anything else you'd like to add or any experience you want to highlight?"
+6. Close warmly: "Thanks so much ${candidate.name}, really enjoyed this conversation. We'll be in touch soon." — the system will auto-end the call shortly after your closing statement, so make it clear and final.
 
 ${skillAssessmentBlock}
 

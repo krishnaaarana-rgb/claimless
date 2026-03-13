@@ -3,7 +3,14 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Vapi from "@vapi-ai/web";
-import { Mic, MicOff, PhoneOff, CheckCircle2, Loader2 } from "lucide-react";
+import {
+  Mic,
+  MicOff,
+  PhoneOff,
+  CheckCircle2,
+  Loader2,
+  Clock,
+} from "lucide-react";
 
 interface TranscriptEntry {
   role: "assistant" | "user";
@@ -12,6 +19,24 @@ interface TranscriptEntry {
 }
 
 type SessionStatus = "loading" | "connecting" | "active" | "ended" | "error";
+
+const SILENCE_WARN_SECONDS = 15;
+
+const CLOSING_PHRASES = [
+  "we'll be in touch",
+  "enjoyed this conversation",
+  "that wraps up",
+  "that's all the time",
+  "all done",
+  "thanks for your time",
+  "good luck",
+  "we'll get back to you",
+  "best of luck",
+  "pleasure chatting",
+  "really enjoyed",
+  "we're all done",
+  "that's everything",
+];
 
 export default function InterviewSession() {
   const { token } = useParams<{ token: string }>();
@@ -28,11 +53,25 @@ export default function InterviewSession() {
   const [error, setError] = useState("");
   const [cameraActive, setCameraActive] = useState(false);
 
+  // Silence warning
+  const [silenceSeconds, setSilenceSeconds] = useState(0);
+  const lastActivityRef = useRef<number>(Date.now());
+
+  // End-of-interview countdown
+  const [endCountdown, setEndCountdown] = useState<number | null>(null);
+
   const vapiRef = useRef<Vapi | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const transcriptEndRef = useRef<HTMLDivElement>(null);
   const startedRef = useRef(false);
+  const closingDetectedRef = useRef(false);
+
+  // Reset silence timer on any activity
+  const markActivity = useCallback(() => {
+    lastActivityRef.current = Date.now();
+    setSilenceSeconds(0);
+  }, []);
 
   // Camera (video only — Vapi handles audio)
   useEffect(() => {
@@ -61,17 +100,62 @@ export default function InterviewSession() {
     transcriptEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [transcript]);
 
-  // Timer
+  // Main timer — handles elapsed time + silence tracking
   useEffect(() => {
     if (status === "active") {
       timerRef.current = setInterval(() => {
         setElapsedTime((prev) => prev + 1);
+
+        // Track silence
+        const silenceDuration = Math.floor(
+          (Date.now() - lastActivityRef.current) / 1000
+        );
+        setSilenceSeconds(silenceDuration);
       }, 1000);
     }
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [status]);
+
+  // End-of-interview countdown timer
+  useEffect(() => {
+    if (endCountdown === null) return;
+
+    if (endCountdown <= 0) {
+      vapiRef.current?.stop();
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setEndCountdown((prev) => (prev !== null ? prev - 1 : null));
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [endCountdown]);
+
+  // Detect closing phrases in transcript
+  useEffect(() => {
+    if (
+      transcript.length === 0 ||
+      closingDetectedRef.current ||
+      endCountdown !== null
+    )
+      return;
+
+    const lastEntry = transcript[transcript.length - 1];
+    if (lastEntry.role === "assistant") {
+      const text = lastEntry.text.toLowerCase();
+      const isClosing = CLOSING_PHRASES.some((phrase) =>
+        text.includes(phrase)
+      );
+      if (isClosing) {
+        closingDetectedRef.current = true;
+        // Start 10-second countdown
+        setEndCountdown(10);
+      }
+    }
+  }, [transcript, endCountdown]);
 
   // Initialize Vapi
   const startInterview = useCallback(async () => {
@@ -103,15 +187,24 @@ export default function InterviewSession() {
       const vapi = new Vapi(public_key);
       vapiRef.current = vapi;
 
-      vapi.on("call-start", () => setStatus("active"));
+      vapi.on("call-start", () => {
+        setStatus("active");
+        markActivity();
+      });
 
       vapi.on("call-end", () => {
         setStatus("ended");
         setTimeout(() => router.push(`/interview/${token}/complete`), 2000);
       });
 
-      vapi.on("speech-start", () => setAiSpeaking(true));
-      vapi.on("speech-end", () => setAiSpeaking(false));
+      vapi.on("speech-start", () => {
+        setAiSpeaking(true);
+        markActivity();
+      });
+      vapi.on("speech-end", () => {
+        setAiSpeaking(false);
+        markActivity();
+      });
 
       vapi.on("message", (message) => {
         const msg = message as {
@@ -121,6 +214,7 @@ export default function InterviewSession() {
           transcript?: string;
         };
         if (msg.type === "transcript" && msg.transcriptType === "final") {
+          markActivity();
           setTranscript((prev) => [
             ...prev,
             {
@@ -143,7 +237,7 @@ export default function InterviewSession() {
       setError("Failed to start interview. Please try again.");
       setStatus("error");
     }
-  }, [token, router, searchParams]);
+  }, [token, router, searchParams, markActivity]);
 
   useEffect(() => {
     startInterview();
@@ -172,8 +266,17 @@ export default function InterviewSession() {
   };
 
   const formatTimestamp = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    return date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
+
+  const silenceRemaining = 30 - silenceSeconds;
+  const showSilenceWarning =
+    status === "active" &&
+    silenceSeconds >= SILENCE_WARN_SECONDS &&
+    endCountdown === null;
 
   // --- Loading ---
   if (status === "loading") {
@@ -249,7 +352,9 @@ export default function InterviewSession() {
           {status === "connecting" ? (
             <div className="flex items-center gap-2">
               <Loader2 size={14} className="text-[#2383E2] animate-spin" />
-              <span className="text-[13px] text-[#9B9A97]">Connecting...</span>
+              <span className="text-[13px] text-[#9B9A97]">
+                Connecting...
+              </span>
             </div>
           ) : (
             <div className="flex items-center gap-2">
@@ -315,6 +420,46 @@ export default function InterviewSession() {
             </div>
           )}
 
+          {/* Silence warning — overlaid on video */}
+          {showSilenceWarning && (
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 animate-fade-in">
+              <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-amber-500/90 backdrop-blur-sm shadow-lg">
+                <Clock size={15} className="text-white shrink-0" />
+                <span className="text-[13px] font-medium text-white">
+                  Are you still there? Call ends in{" "}
+                  <span
+                    className="tabular-nums font-semibold"
+                    style={{
+                      fontFamily: "'JetBrains Mono', monospace",
+                    }}
+                  >
+                    {silenceRemaining}s
+                  </span>
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* End-of-interview countdown — overlaid on video */}
+          {endCountdown !== null && endCountdown > 0 && (
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 animate-fade-in">
+              <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-[#2383E2]/90 backdrop-blur-sm shadow-lg">
+                <CheckCircle2 size={15} className="text-white shrink-0" />
+                <span className="text-[13px] font-medium text-white">
+                  Interview wrapping up in{" "}
+                  <span
+                    className="tabular-nums font-semibold"
+                    style={{
+                      fontFamily: "'JetBrains Mono', monospace",
+                    }}
+                  >
+                    {endCountdown}s
+                  </span>
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* Candidate name overlay */}
           <div className="absolute bottom-4 left-4 flex items-center gap-2">
             <div className="px-3 py-1.5 rounded-lg bg-black/40 backdrop-blur-sm">
@@ -336,9 +481,7 @@ export default function InterviewSession() {
               {/* AI avatar */}
               <div
                 className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-all ${
-                  aiSpeaking
-                    ? "bg-[#2383E2]"
-                    : "bg-[#E9E9E7]"
+                  aiSpeaking ? "bg-[#2383E2]" : "bg-[#E9E9E7]"
                 }`}
               >
                 {aiSpeaking ? (
@@ -453,6 +596,19 @@ export default function InterviewSession() {
           100% {
             height: 14px;
           }
+        }
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+            transform: translate(-50%, -8px);
+          }
+          to {
+            opacity: 1;
+            transform: translate(-50%, 0);
+          }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.3s ease-out;
         }
       `}</style>
     </div>

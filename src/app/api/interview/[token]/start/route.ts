@@ -211,7 +211,8 @@ INTERVIEW FLOW:
 4. ${interviewTopics.length > 0 ? "Deep-dive into: " + interviewTopics.join(", ") : "Role-specific questions based on the job description"}
 5. ${concerns.length > 0 ? "Gently explore: " + concerns.join(", ") : "General fit assessment"}
 6. Candidate questions (2 min)
-7. Close: "Thanks so much ${candidateName}, really enjoyed this conversation. We'll be in touch soon."
+7. Final check: "Before we wrap up, anything else you'd like to add?"
+8. Close: "Thanks so much ${candidateName}, really enjoyed this conversation. We'll be in touch soon." — the system will auto-end the call shortly after your closing, so make it clear and final.
 
 JOB DESCRIPTION:
 ${job.description || "No description provided"}
