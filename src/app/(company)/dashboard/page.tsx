@@ -7,10 +7,9 @@ import {
   TrendingUp,
   Briefcase,
   BarChart3,
-  Mail,
-  MailCheck,
-  Mic,
   CheckCircle2,
+  Clock,
+  Mic,
 } from "lucide-react";
 
 interface StatsData {
@@ -24,6 +23,10 @@ interface StatsData {
   emails_delivered: number;
   interviews_scheduled: number;
   interviews_completed: number;
+  conversion_rate: number;
+  interview_completion_rate: number;
+  avg_interview_score: number;
+  avg_days_to_hire: number;
   recent_activity: ActivityItem[];
 }
 
@@ -161,24 +164,24 @@ export default function DashboardPage() {
 
   const bottomMetrics = [
     {
-      label: "Emails Sent",
-      value: stats?.emails_sent ?? 0,
-      icon: Mail,
+      label: "Conversion Rate",
+      value: `${stats?.conversion_rate ?? 0}%`,
+      icon: TrendingUp,
     },
     {
-      label: "Delivered",
-      value: stats?.emails_delivered ?? 0,
-      icon: MailCheck,
+      label: "Avg Interview Score",
+      value: `${stats?.avg_interview_score ?? 0}/100`,
+      icon: BarChart3,
     },
     {
-      label: "Interviews",
-      value: stats?.interviews_scheduled ?? 0,
-      icon: Mic,
-    },
-    {
-      label: "Completed",
-      value: stats?.interviews_completed ?? 0,
+      label: "Interview Completion",
+      value: `${stats?.interview_completion_rate ?? 0}%`,
       icon: CheckCircle2,
+    },
+    {
+      label: "Avg Days to Hire",
+      value: `${stats?.avg_days_to_hire ?? 0} days`,
+      icon: Clock,
     },
   ];
 

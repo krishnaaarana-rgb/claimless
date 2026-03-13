@@ -168,6 +168,17 @@ export async function GET(request: NextRequest) {
         ? String(formData.resume_text).slice(0, 200)
         : null;
 
+      // Extract interview scoring from application_form_data
+      const interviewScoring = formData?.interview_scoring as {
+        interview_score?: number;
+        overall_score?: number;
+        recommendation?: string;
+        communication_score?: number;
+        technical_score?: number;
+      } | null | undefined;
+      const interviewScore = interviewScoring?.overall_score ?? interviewScoring?.interview_score ?? null;
+      const interviewRecommendation = interviewScoring?.recommendation ?? null;
+
       return {
         id: candidate?.id || "",
         application_id: app.id,
@@ -188,6 +199,8 @@ export async function GET(request: NextRequest) {
         resume_text_preview: resumePreview,
         email_status: emailStatusMap[app.id] || null,
         interview_status: interviewStatusMap[app.id] || null,
+        interview_score: interviewScore,
+        interview_recommendation: interviewRecommendation,
       };
     })
     .filter((c) => {

@@ -44,6 +44,8 @@ interface CandidateRow {
   resume_text_preview: string | null;
   email_status: string | null;
   interview_status: string | null;
+  interview_score: number | null;
+  interview_recommendation: string | null;
 }
 
 interface JobOption {
@@ -1008,6 +1010,11 @@ export default function CandidatesPage() {
                   </th>
                   <th className="text-center px-4 py-2.5">
                     <span className="text-[11px] font-medium text-[#9B9A97] uppercase tracking-[0.04em]">
+                      Interview
+                    </span>
+                  </th>
+                  <th className="text-center px-4 py-2.5">
+                    <span className="text-[11px] font-medium text-[#9B9A97] uppercase tracking-[0.04em]">
                       Status
                     </span>
                   </th>
@@ -1146,6 +1153,36 @@ export default function CandidatesPage() {
                           </span>
                         ) : (
                           <span className="text-[13px] text-[#D3D1CB]">--</span>
+                        )}
+                      </td>
+                      {/* Interview score column */}
+                      <td className="px-4 py-3 text-center">
+                        {c.interview_score != null ? (
+                          <div className="flex flex-col items-center gap-0.5">
+                            <span
+                              className={`inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-[13px] font-semibold tabular-nums ${scorePill(c.interview_score).text} ${scorePill(c.interview_score).bg}`}
+                              style={{ fontFamily: "'JetBrains Mono', monospace", minWidth: "42px" }}
+                            >
+                              {c.interview_score}
+                            </span>
+                            {c.interview_recommendation && (
+                              <span
+                                className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full leading-none ${
+                                  c.interview_recommendation === "strong_hire"
+                                    ? "text-[#059669] bg-[#ECFDF5]"
+                                    : c.interview_recommendation === "hire"
+                                    ? "text-[#10B981] bg-[#ECFDF5]"
+                                    : c.interview_recommendation === "maybe"
+                                    ? "text-[#D97706] bg-[#FEF3C7]"
+                                    : "text-[#DC2626] bg-[#FEF2F2]"
+                                }`}
+                              >
+                                {c.interview_recommendation.replace(/_/g, " ")}
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-[13px] text-[#D3D1CB]">&mdash;</span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-center" data-no-row-click>

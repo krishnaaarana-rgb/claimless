@@ -50,7 +50,7 @@ export async function GET() {
       admin
         .from("applications")
         .select(
-          "id, current_stage, match_score, match_breakdown, candidate_id, created_at, candidates (id, full_name, email), jobs (id, title)"
+          "id, current_stage, match_score, match_breakdown, candidate_id, created_at, updated_at, application_form_data, candidates (id, full_name, email), jobs (id, title)"
         )
         .eq("company_id", companyId),
       // Active jobs count
@@ -87,6 +87,10 @@ export async function GET() {
   let scoreCount = 0;
   let passedCount = 0;
   let screenedCount = 0;
+  let interviewScoreTotal = 0;
+  let interviewScoreCount = 0;
+  let totalDaysToHire = 0;
+  let hiredCount = 0;
 
   for (const app of apps) {
     const stage = app.current_stage || "applied";
@@ -103,6 +107,28 @@ export async function GET() {
       screenedCount++;
       const breakdown = app.match_breakdown as { pass?: boolean } | null;
       if (breakdown?.pass) passedCount++;
+    }
+
+    // Extract interview scoring
+    const formData = app.application_form_data as Record<string, unknown> | null;
+    if (formData) {
+      const scoring = formData.interview_scoring as Record<string, unknown> | undefined;
+      if (scoring) {
+        const score = (scoring.overall_score ?? scoring.interview_score) as number | undefined;
+        if (score != null) {
+          interviewScoreTotal += score;
+          interviewScoreCount++;
+        }
+      }
+    }
+
+    // Calculate days to hire for hired candidates
+    if (app.current_stage === "hired" && app.created_at && app.updated_at) {
+      const created = new Date(app.created_at).getTime();
+      const updated = new Date(app.updated_at).getTime();
+      const days = (updated - created) / (1000 * 60 * 60 * 24);
+      totalDaysToHire += days;
+      hiredCount++;
     }
   }
 
@@ -262,6 +288,10 @@ export async function GET() {
     emails_delivered: emailsDelivered,
     interviews_scheduled: interviewsScheduled,
     interviews_completed: interviewsCompleted,
+    conversion_rate: apps.length > 0 ? Math.round((candidatesByStage.hired / apps.length) * 100 * 10) / 10 : 0,
+    interview_completion_rate: interviewsScheduled > 0 ? Math.round((interviewsCompleted / interviewsScheduled) * 100 * 10) / 10 : 0,
+    avg_interview_score: interviewScoreCount > 0 ? Math.round(interviewScoreTotal / interviewScoreCount) : 0,
+    avg_days_to_hire: hiredCount > 0 ? Math.round(totalDaysToHire / hiredCount) : 0,
     recent_activity: uniqueActivity.slice(0, 10),
   });
 }
