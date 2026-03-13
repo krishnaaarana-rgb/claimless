@@ -242,8 +242,8 @@ export default function ApplyPage({
   if (loadError) {
     return (
       <CenteredMessage>
-        <h1 className="text-2xl font-bold text-stone-900">Job Not Found</h1>
-        <p className="mt-2 text-stone-500">
+        <h1 className="text-2xl font-bold text-[#37352F]">Job Not Found</h1>
+        <p className="mt-2 text-[#9B9A97]">
           This job posting doesn&apos;t exist or has been removed.
         </p>
       </CenteredMessage>
@@ -253,8 +253,8 @@ export default function ApplyPage({
   if (closed) {
     return (
       <CenteredMessage>
-        <h1 className="text-2xl font-bold text-stone-900">Position Closed</h1>
-        <p className="mt-2 text-stone-500">
+        <h1 className="text-2xl font-bold text-[#37352F]">Position Closed</h1>
+        <p className="mt-2 text-[#9B9A97]">
           This position is no longer accepting applications.
         </p>
       </CenteredMessage>
@@ -268,23 +268,23 @@ export default function ApplyPage({
           <div className="w-14 h-14 mx-auto rounded-full flex items-center justify-center text-xl text-white mb-5" style={{ background: "#059669" }}>
             {"\u2713"}
           </div>
-          <h1 className="text-2xl font-bold text-stone-900">
+          <h1 className="text-2xl font-bold text-[#37352F]">
             Application Submitted!
           </h1>
-          <p className="mt-3 text-[14px] text-stone-500 leading-relaxed">
+          <p className="mt-3 text-[14px] text-[#9B9A97] leading-relaxed">
             Thank you for applying for{" "}
-            <span className="font-medium text-stone-700">{job?.title}</span>
+            <span className="font-medium text-[#37352F]">{job?.title}</span>
             {company?.name ? (
               <>
                 {" "}at{" "}
-                <span className="font-medium text-stone-700">{company.name}</span>
+                <span className="font-medium text-[#37352F]">{company.name}</span>
               </>
             ) : null}
             . We&apos;ll review your application and get back to you soon.
           </p>
         </div>
-        <div className="mt-12 text-[11px] text-stone-400">
-          Powered by <span className="font-medium text-stone-500">Claimless</span>
+        <div className="mt-12 text-[11px] text-[#9B9A97]">
+          Powered by <span className="font-medium text-[#9B9A97]">Claimless</span>
         </div>
       </div>
     );
@@ -293,8 +293,8 @@ export default function ApplyPage({
   if (duplicate) {
     return (
       <CenteredMessage>
-        <h1 className="text-2xl font-bold text-stone-900">Already Applied</h1>
-        <p className="mt-3 text-stone-500">
+        <h1 className="text-2xl font-bold text-[#37352F]">Already Applied</h1>
+        <p className="mt-3 text-[#9B9A97]">
           You&apos;ve already applied for this position. We&apos;ll be in touch.
         </p>
       </CenteredMessage>
@@ -317,52 +317,52 @@ export default function ApplyPage({
           ) : (
             <div
               className="w-10 h-10 rounded-lg mx-auto mb-3 flex items-center justify-center text-white font-bold text-sm"
-              style={{ background: "#D97706" }}
+              style={{ background: company?.primary_color || "#2383E2" }}
             >
               {company?.name?.[0] || "C"}
             </div>
           )}
-          <h1 className="text-xl font-semibold text-stone-900">
+          <h1 className="text-xl font-semibold text-[#37352F]">
             {job?.title}
           </h1>
-          <div className="text-[14px] text-stone-500 mt-1">
+          <div className="text-[14px] text-[#9B9A97] mt-1">
             {company?.name}
           </div>
         </div>
 
         {/* Job Details Card */}
         <div
-          className="bg-white rounded-xl border border-stone-200 p-6 mb-5"
+          className="bg-white rounded-xl border border-[#E9E9E7] p-6 mb-5"
           style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}
         >
           <div className="flex flex-wrap gap-2 mb-4">
             {job?.department && (
-              <span className="px-2.5 py-1 rounded-full text-[12px] font-medium bg-stone-100 text-stone-600">
+              <span className="px-2.5 py-1 rounded-full text-[12px] font-medium bg-[#F7F6F3] text-[#37352F]">
                 {job.department}
               </span>
             )}
             {job?.location && (
-              <span className="px-2.5 py-1 rounded-full text-[12px] font-medium bg-stone-100 text-stone-600">
+              <span className="px-2.5 py-1 rounded-full text-[12px] font-medium bg-[#F7F6F3] text-[#37352F]">
                 {job.location}
               </span>
             )}
             {job?.employment_type && (
-              <span className="px-2.5 py-1 rounded-full text-[12px] font-medium bg-stone-100 text-stone-600">
+              <span className="px-2.5 py-1 rounded-full text-[12px] font-medium bg-[#F7F6F3] text-[#37352F]">
                 {TYPE_LABELS[job.employment_type] || job.employment_type}
               </span>
             )}
           </div>
-          <div className="text-[14px] text-stone-600 leading-relaxed whitespace-pre-line">
+          <div className="text-[14px] text-[#37352F] leading-relaxed whitespace-pre-line">
             {job?.description}
           </div>
         </div>
 
         {/* Application Form */}
         <div
-          className="bg-white rounded-xl border border-stone-200 p-6"
+          className="bg-white rounded-xl border border-[#E9E9E7] p-6"
           style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}
         >
-          <h2 className="text-[16px] font-semibold text-stone-900 mb-6">
+          <h2 className="text-[16px] font-semibold text-[#37352F] mb-6">
             Apply for this position
           </h2>
 
@@ -374,7 +374,7 @@ export default function ApplyPage({
               if (fc.key === "resume") {
                 return (
                   <div key={fc.key} className="space-y-1.5">
-                    <label className="block text-[13px] font-semibold text-stone-900">
+                    <label className="block text-[13px] font-semibold text-[#37352F]">
                       {fc.label}
                       {required && (
                         <span className="text-amber-600 ml-0.5">*</span>
@@ -386,9 +386,9 @@ export default function ApplyPage({
                       onChange={(e) =>
                         handleResumeChange(e.target.files?.[0] || null)
                       }
-                      className="block w-full text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border file:border-stone-200 file:text-[13px] file:font-medium file:bg-stone-50 file:text-stone-700 hover:file:bg-stone-100 file:transition-colors"
+                      className="block w-full text-sm text-[#9B9A97] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border file:border-[#E9E9E7] file:text-[13px] file:font-medium file:bg-[#F7F6F3] file:text-[#37352F] hover:file:bg-[#F7F6F3] file:transition-colors"
                     />
-                    <p className="text-[12px] text-stone-400">
+                    <p className="text-[12px] text-[#9B9A97]">
                       {resumeFile
                         ? resumeParsed
                           ? "Resume parsed"
@@ -403,7 +403,7 @@ export default function ApplyPage({
               if (fc.type === "textarea") {
                 return (
                   <div key={fc.key} className="space-y-1.5">
-                    <label className="block text-[13px] font-semibold text-stone-900">
+                    <label className="block text-[13px] font-semibold text-[#37352F]">
                       {fc.label}
                       {required && (
                         <span className="text-amber-600 ml-0.5">*</span>
@@ -414,7 +414,7 @@ export default function ApplyPage({
                       value={formValues[fc.key] || ""}
                       onChange={(e) => updateField(fc.key, e.target.value)}
                       rows={4}
-                      className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-[14px] text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 resize-none transition-colors"
+                      className="w-full rounded-lg border border-[#E9E9E7] bg-white px-4 py-3 text-[14px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2] resize-none transition-colors"
                     />
                   </div>
                 );
@@ -422,7 +422,7 @@ export default function ApplyPage({
 
               return (
                 <div key={fc.key} className="space-y-1.5">
-                  <label className="block text-[13px] font-semibold text-stone-900">
+                  <label className="block text-[13px] font-semibold text-[#37352F]">
                     {fc.label}
                     {required && (
                       <span className="text-amber-600 ml-0.5">*</span>
@@ -433,7 +433,7 @@ export default function ApplyPage({
                     placeholder={fc.placeholder}
                     value={formValues[fc.key] || ""}
                     onChange={(e) => updateField(fc.key, e.target.value)}
-                    className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-[14px] text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-colors"
+                    className="w-full rounded-lg border border-[#E9E9E7] bg-white px-4 py-3 text-[14px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2] transition-colors"
                   />
                 </div>
               );
@@ -442,7 +442,7 @@ export default function ApplyPage({
             {/* Custom Questions */}
             {customQuestions.map((q, i) => (
               <div key={i} className="space-y-1.5">
-                <label className="block text-[13px] font-semibold text-stone-900">
+                <label className="block text-[13px] font-semibold text-[#37352F]">
                   {q.question}
                   {q.required && (
                     <span className="text-amber-600 ml-0.5">*</span>
@@ -458,7 +458,7 @@ export default function ApplyPage({
                     }))
                   }
                   rows={3}
-                  className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-[14px] text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 resize-none transition-colors"
+                  className="w-full rounded-lg border border-[#E9E9E7] bg-white px-4 py-3 text-[14px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2] resize-none transition-colors"
                 />
               </div>
             ))}
@@ -473,7 +473,7 @@ export default function ApplyPage({
               type="submit"
               disabled={submitting}
               className="w-full py-3 rounded-lg text-[14px] font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
-              style={{ background: "#D97706" }}
+              style={{ background: company?.primary_color || "#2383E2" }}
             >
               {submitting ? (
                 <span className="flex items-center justify-center gap-2">
@@ -488,9 +488,9 @@ export default function ApplyPage({
         </div>
 
         {/* Powered by */}
-        <div className="text-center mt-8 text-[11px] text-stone-400">
+        <div className="text-center mt-8 text-[11px] text-[#9B9A97]">
           Powered by{" "}
-          <span className="font-medium text-stone-500">Claimless</span>
+          <span className="font-medium text-[#9B9A97]">Claimless</span>
         </div>
       </div>
     </div>

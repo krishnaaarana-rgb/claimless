@@ -1186,7 +1186,7 @@ export default function CandidatesPage() {
                                     : c.interview_recommendation === "hire"
                                     ? "text-[#10B981] bg-[#ECFDF5]"
                                     : c.interview_recommendation === "maybe"
-                                    ? "text-[#D97706] bg-[#FEF3C7]"
+                                    ? "text-amber-700 bg-amber-50"
                                     : "text-[#DC2626] bg-[#FEF2F2]"
                                 }`}
                               >

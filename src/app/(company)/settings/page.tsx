@@ -236,7 +236,7 @@ function HelperText({ children }: { children: React.ReactNode }) {
 function GeneralTab({ getValue, updateDraft }: TabProps) {
   const threshold = getValue("ats_pass_threshold") ?? 40;
   const autoReject = getValue("ats_auto_reject") ?? true;
-  const accentColor = getValue("brand_accent_color") ?? "#D97706";
+  const accentColor = getValue("brand_accent_color") ?? "#2383E2";
   const logoUrl = getValue("brand_logo_url") ?? "";
   const stageNames = getValue("stage_names") ?? {};
 
