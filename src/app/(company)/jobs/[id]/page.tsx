@@ -18,6 +18,7 @@ import {
   Trophy,
   ArrowRight,
 } from "lucide-react";
+import { ShareShortlistButton } from "./share-shortlist-button";
 
 interface JobData {
   id: string;
@@ -404,13 +405,20 @@ export default function JobDetailPage({
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {shortlist.length >= 2 && (
-            <Link
-              href={`/jobs/${id}/compare`}
-              className="px-4 py-2 rounded-lg text-[13px] font-medium bg-[#2383E2] text-white hover:bg-[#1b6ec2] transition-colors flex items-center gap-1.5"
-            >
-              <Trophy size={14} />
-              Compare Top {shortlist.length}
-            </Link>
+            <>
+              <ShareShortlistButton
+                applicationIds={shortlist.map(c => c.application_id)}
+                jobId={id}
+                jobTitle={job.title}
+              />
+              <Link
+                href={`/jobs/${id}/compare`}
+                className="px-4 py-2 rounded-lg text-[13px] font-medium bg-[#2383E2] text-white hover:bg-[#1b6ec2] transition-colors flex items-center gap-1.5"
+              >
+                <Trophy size={14} />
+                Compare Top {shortlist.length}
+              </Link>
+            </>
           )}
           <Link
             href={`/jobs/${id}/edit`}

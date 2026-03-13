@@ -5,6 +5,7 @@ import type { Candidate, Application } from "@/types/database";
 import { ScreenButton } from "./screen-button";
 import { ActionButtons } from "./action-buttons";
 import { NotesSection } from "./notes-section";
+import { ShareButton } from "./share-button";
 
 interface ATSScreeningResult {
   match_score: number;
@@ -182,7 +183,9 @@ export default async function CandidateDetailPage({
           )}
         </div>
 
-        {/* Action Buttons */}
+        {/* Share + Action Buttons */}
+        <div className="flex items-center gap-3 shrink-0">
+        {primaryApp && <ShareButton applicationId={primaryApp.id} />}
         {(() => {
           if (!primaryApp || primaryApp.current_stage === "rejected" || primaryApp.current_stage === "hired") return null;
           const appData = primaryApp as unknown as Record<string, unknown>;
@@ -210,6 +213,7 @@ export default async function CandidateDetailPage({
             </span>
           );
         })()}
+        </div>
       </div>
 
       {/* ═══════════════════════════════════════════════════

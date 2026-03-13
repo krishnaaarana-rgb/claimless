@@ -6,7 +6,7 @@ export async function updateSession(request: NextRequest) {
 
   // Public routes — no auth required
   const publicExact = ["/", "/login", "/signup", "/onboard", "/onboard/processing"];
-  const publicPrefixes = ["/auth/", "/apply/", "/interview/"];
+  const publicPrefixes = ["/auth/", "/apply/", "/interview/", "/brief/"];
 
   const isPublic =
     publicExact.includes(pathname) ||

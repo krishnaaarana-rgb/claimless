@@ -192,6 +192,29 @@ Everything built from project inception to current state.
 
 ---
 
+## Phase 10: Shareable Client Brief
+
+### Public Brief System (`016_brief_tokens`)
+- **Database**: New `brief_tokens` table with token-based access, 30-day expiry, view count tracking, RLS policies
+- **Token types**: `single` (one candidate) and `shortlist` (multi-candidate comparison)
+- **Middleware**: Added `/brief/` to public route prefixes for unauthenticated access
+- **API**:
+  - `POST /api/briefs` — create a shareable brief token (validates company ownership)
+  - `GET /api/briefs` — list briefs for current company
+  - `GET /api/briefs/[token]` — public endpoint for viewing a shared brief (increments view count)
+- **Public brief page** (`/brief/[token]`):
+  - Single candidate: Full assessment with scores, AI analysis, interview deep-dive, skill assessments, risk factors, background
+  - Shortlist: Comparison table with scores + recommendation, expandable candidate details
+  - Company branding (name + primary color)
+  - PDF export via `window.print()` with CSS `@media print` styles
+  - Error and expiry handling
+- **Share buttons**:
+  - "Share with Client" button on candidate detail page (creates single brief, copies link)
+  - "Share Shortlist" button on job detail page (creates shortlist brief from top candidates)
+- **Shared components**: Extracted `RecBadge`, `ScoreBar`, `DetailRow`, score utilities into `src/components/brief/BriefComponents.tsx`
+
+---
+
 ## Architecture Summary
 
 ### Tech Stack
@@ -226,6 +249,7 @@ src/
 │   │   ├── team/           # Team management + invites
 │   │   └── integrations/   # API keys, webhooks, API docs
 │   ├── api/
+│   │   ├── briefs/         # Shareable brief token CRUD + public fetch
 │   │   ├── candidates/     # Candidate CRUD + notes, email, invite
 │   │   ├── dashboard/      # Stats, applications, interviews
 │   │   ├── interview/      # Token validation, start, score, webhook
@@ -233,6 +257,7 @@ src/
 │   │   ├── settings/       # API keys, webhooks
 │   │   └── v1/             # Public API
 │   ├── apply/              # Public application form
+│   ├── brief/              # Public shareable client brief (single + shortlist)
 │   ├── interview/          # Candidate interview flow (prep, session, complete)
 │   └── auth/               # Login, signup, OAuth callbacks
 ├── lib/
@@ -240,6 +265,7 @@ src/
 │   ├── supabase/           # Client, admin, middleware
 │   ├── industry-skills.ts  # Industry taxonomy + skill definitions
 │   └── vapi/               # Voice agent integration
-├── components/             # Shared UI components
+├── components/
+│   └── brief/              # Shared brief UI components (RecBadge, ScoreBar, etc.)
 └── types/                  # TypeScript interfaces
 ```
