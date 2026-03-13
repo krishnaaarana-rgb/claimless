@@ -212,24 +212,25 @@ export default function InterviewSession() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0A0A0A]">
-      <div className="w-full max-w-[720px] mx-auto px-6 py-6 flex flex-col min-h-screen">
+      <div className="w-full max-w-[640px] mx-auto px-6 py-6 flex flex-col min-h-screen">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
             {status === "connecting" ? (
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-white/40 animate-pulse" />
                 <span className="text-[13px] text-white/40">Connecting...</span>
               </div>
             ) : (
-              <div className="flex items-center gap-3">
+              <>
+                <span className="w-2 h-2 rounded-full bg-emerald-400" />
                 <span className="text-[13px] text-white/40">{jobTitle}</span>
-              </div>
+              </>
             )}
           </div>
           {status === "active" && (
             <div
-              className="text-[14px] text-white/50 tabular-nums"
+              className="text-[13px] text-white/30 tabular-nums"
               style={{ fontFamily: "'JetBrains Mono', monospace" }}
             >
               {formatTime(elapsedTime)}
@@ -237,62 +238,49 @@ export default function InterviewSession() {
           )}
         </div>
 
-        {/* Camera Preview */}
-        <div className="flex justify-center mb-5">
-          <div className="relative w-full max-w-[480px] rounded-xl overflow-hidden bg-[#18181B]" style={{ aspectRatio: "4/3" }}>
-            <video
-              ref={videoRef}
-              autoPlay
-              muted
-              playsInline
-              className="absolute inset-0 w-full h-full object-cover"
-              style={{ transform: "scaleX(-1)" }}
-            />
-            {status === "connecting" && (
-              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* AI Status */}
-        <div className="flex justify-center mb-5">
-          {aiSpeaking ? (
-            <div className="flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.04] border border-white/[0.06]">
-              <div className="flex items-center gap-[3px] h-3">
-                {[1, 2, 3, 4].map((i) => (
+        {/* AI Avatar + Status */}
+        <div className="flex flex-col items-center mb-8">
+          <div
+            className={`w-20 h-20 rounded-full flex items-center justify-center mb-4 transition-all duration-300 ${
+              aiSpeaking
+                ? "bg-white/[0.08] ring-[3px] ring-white/10 ring-offset-2 ring-offset-[#0A0A0A]"
+                : "bg-white/[0.04]"
+            }`}
+          >
+            {aiSpeaking ? (
+              <div className="flex items-center gap-[3px] h-5">
+                {[1, 2, 3, 4, 5].map((i) => (
                   <div
                     key={i}
-                    className="w-[3px] rounded-full bg-white/60"
+                    className="w-[3px] rounded-full bg-white/50"
                     style={{
-                      animation: `speaking 0.${4 + i}s ease-in-out infinite alternate`,
+                      animation: `speaking 0.${3 + i}s ease-in-out infinite alternate`,
                     }}
                   />
                 ))}
               </div>
-              <span className="text-[12px] text-white/50">
-                Interviewer is speaking
-              </span>
-            </div>
-          ) : status === "active" ? (
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/[0.06] border border-emerald-500/10">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-[12px] text-emerald-400/70">
-                Listening
-              </span>
-            </div>
-          ) : null}
+            ) : (
+              <Mic size={24} className="text-white/20" />
+            )}
+          </div>
+
+          <span className="text-[12px] text-white/30">
+            {aiSpeaking
+              ? "Interviewer is speaking"
+              : status === "active"
+                ? "Listening..."
+                : ""}
+          </span>
         </div>
 
         {/* Controls */}
-        <div className="flex justify-center gap-3 mb-6">
+        <div className="flex justify-center gap-3 mb-8">
           <button
             onClick={toggleMute}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-medium transition-colors ${
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-medium transition-all ${
               isMuted
-                ? "bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/15"
-                : "bg-white/[0.04] text-white/60 border border-white/[0.06] hover:bg-white/[0.08]"
+                ? "bg-red-500/15 text-red-400 border border-red-500/20"
+                : "bg-white/[0.05] text-white/50 border border-white/[0.08] hover:bg-white/[0.08]"
             }`}
           >
             {isMuted ? <MicOff size={15} /> : <Mic size={15} />}
@@ -300,7 +288,7 @@ export default function InterviewSession() {
           </button>
           <button
             onClick={endInterview}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-medium text-red-400/80 border border-red-500/15 hover:bg-red-500/10 transition-colors"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-medium text-red-400/70 border border-red-500/10 hover:bg-red-500/10 transition-all"
           >
             <PhoneOff size={15} />
             End
@@ -308,54 +296,67 @@ export default function InterviewSession() {
         </div>
 
         {/* Transcript */}
-        {transcript.length > 0 && (
-          <div className="flex-1 min-h-0">
-            <p className="text-[11px] text-white/20 uppercase tracking-wider font-medium mb-2">
-              Transcript
-            </p>
-            <div
-              className="rounded-lg overflow-y-auto space-y-1.5 pr-2"
-              style={{
-                maxHeight: "280px",
-                padding: "12px",
-                background: "rgba(255,255,255,0.02)",
-                border: "1px solid rgba(255,255,255,0.04)",
-              }}
-            >
-              {transcript.map((entry, i) => (
-                <div
-                  key={i}
-                  className={`flex flex-col ${entry.role === "user" ? "items-end" : "items-start"}`}
-                >
+        <div className="flex-1 min-h-0">
+          {transcript.length > 0 && (
+            <>
+              <p className="text-[10px] text-white/15 uppercase tracking-widest font-medium mb-3">
+                Transcript
+              </p>
+              <div
+                className="rounded-xl overflow-y-auto space-y-2 pr-2 scrollbar-thin"
+                style={{
+                  maxHeight: "calc(100vh - 420px)",
+                  padding: "16px",
+                  background: "rgba(255,255,255,0.015)",
+                  border: "1px solid rgba(255,255,255,0.03)",
+                }}
+              >
+                {transcript.map((entry, i) => (
                   <div
-                    className={`rounded-lg px-3 py-2 max-w-[85%] ${
-                      entry.role === "user"
-                        ? "bg-white/[0.06] text-white/70"
-                        : "bg-white/[0.03] text-white/50"
-                    }`}
+                    key={i}
+                    className={`flex ${entry.role === "user" ? "justify-end" : "justify-start"}`}
                   >
-                    <p className="text-[13px] leading-relaxed">{entry.text}</p>
+                    <div
+                      className={`rounded-2xl px-4 py-2.5 max-w-[80%] ${
+                        entry.role === "user"
+                          ? "bg-white/[0.08] text-white/70"
+                          : "bg-white/[0.03] text-white/50"
+                      }`}
+                    >
+                      <p className="text-[13px] leading-relaxed">{entry.text}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
-              <div ref={transcriptEndRef} />
-            </div>
-          </div>
-        )}
+                ))}
+                <div ref={transcriptEndRef} />
+              </div>
+            </>
+          )}
+        </div>
 
-        <div className="flex-1" />
+        {/* Self-view camera — small pip in bottom-right */}
+        <div className="fixed bottom-6 right-6 z-30">
+          <div className="w-28 h-28 rounded-2xl overflow-hidden bg-[#18181B] border border-white/[0.06] shadow-2xl">
+            <video
+              ref={videoRef}
+              autoPlay
+              muted
+              playsInline
+              className="w-full h-full object-cover"
+              style={{ transform: "scaleX(-1)" }}
+            />
+          </div>
+        </div>
 
         {/* Footer */}
-        <p className="text-center text-[11px] text-white/10 mt-6 pb-2">
+        <p className="text-center text-[11px] text-white/10 mt-4 pb-2">
           Powered by Claimless
         </p>
       </div>
 
-      {/* Speaking animation keyframes */}
       <style jsx>{`
         @keyframes speaking {
-          0% { height: 3px; }
-          100% { height: 12px; }
+          0% { height: 4px; }
+          100% { height: 16px; }
         }
       `}</style>
     </div>
