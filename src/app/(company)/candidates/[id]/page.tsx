@@ -21,6 +21,39 @@ interface ATSScreeningResult {
   suggested_interview_topics: string[];
 }
 
+interface InterviewScoring {
+  interview_score?: number;
+  overall_score?: number;
+  overall_impression?: string;
+  communication_score?: number;
+  technical_score?: number;
+  cultural_fit_score?: number;
+  confidence_score?: number;
+  hard_skill_average?: number;
+  soft_skill_average?: number;
+  strengths?: string[];
+  areas_for_improvement?: string[];
+  key_moments?: { timestamp_approx?: string; description: string; impact?: string }[];
+  recommendation?: string;
+  recommendation_reasoning?: string;
+  consistency_analysis?: string;
+  follow_up_questions?: string[];
+  hiring_risk_factors?: string[];
+  comparison_notes?: string;
+  skill_assessments?: {
+    skill: string;
+    category: string;
+    expected_level: string;
+    assessed_level: string;
+    score: number;
+    evidence: string;
+    notes: string;
+    depth_reached?: string;
+    red_flags?: string[];
+    green_flags?: string[];
+  }[];
+}
+
 interface ApplicationWithJob extends Application {
   jobs: { title: string; department: string | null; location: string | null } | null;
 }
@@ -39,9 +72,16 @@ function relativeTime(dateStr: string): string {
   return `${Math.floor(days / 7)}w ago`;
 }
 
-function scoreStyle(score: number | null): string {
+function scoreColor(score: number | null): string {
+  if (score == null) return "#9B9A97";
+  if (score >= 70) return "#059669";
+  if (score >= 40) return "#2383E2";
+  return "#DC2626";
+}
+
+function scoreColorClass(score: number | null): string {
   if (score == null) return "text-[#9B9A97]";
-  if (score >= 60) return "text-emerald-600";
+  if (score >= 70) return "text-emerald-600";
   if (score >= 40) return "text-blue-600";
   return "text-red-600";
 }
@@ -69,7 +109,6 @@ export default async function CandidateDetailPage({
   const applications = (applicationsRes.data || []) as ApplicationWithJob[];
   const primaryApp = applications[0] || null;
 
-  // Fetch email logs for this candidate
   const { data: emailLogs } = candidate.email
     ? await supabase
         .from("email_logs")
@@ -77,11 +116,15 @@ export default async function CandidateDetailPage({
         .eq("candidate_email", candidate.email)
         .order("created_at", { ascending: false })
     : { data: null };
+
   const screening = primaryApp?.match_breakdown as ATSScreeningResult | null;
   const formData = (primaryApp as unknown as { application_form_data?: Record<string, unknown> })
     ?.application_form_data as Record<string, unknown> | null;
 
-  // Fetch interview token status
+  const interviewScoring = formData?.interview_scoring as InterviewScoring | undefined;
+  const interviewTranscript = formData?.interview_transcript as string | undefined;
+  const interviewRecordingUrl = formData?.interview_recording_url as string | undefined;
+
   const { data: interviewToken } = primaryApp
     ? await supabase
         .from("interview_tokens")
@@ -92,35 +135,51 @@ export default async function CandidateDetailPage({
         .maybeSingle()
     : { data: null };
 
+  // Compute scores
+  const atsScore = screening?.match_score ?? null;
+  const ivScore = interviewScoring?.overall_score ?? interviewScoring?.interview_score ?? null;
+  const combinedScore = atsScore != null && ivScore != null
+    ? Math.round((atsScore * 0.4 + ivScore * 0.6))
+    : atsScore ?? ivScore ?? null;
+  const recommendation = interviewScoring?.recommendation;
+
   return (
-    <div className="max-w-3xl">
-      {/* Back link */}
+    <div className="max-w-4xl">
+      {/* Back */}
       <Link
         href="/candidates"
-        className="inline-flex items-center text-[13px] text-[#9B9A97] hover:text-blue-600 transition-colors mb-6"
+        className="inline-flex items-center text-[13px] text-[#9B9A97] hover:text-[#37352F] transition-colors mb-6"
       >
-        <span className="mr-1">&larr;</span> Back to Candidates
+        <span className="mr-1">&larr;</span> Candidates
       </Link>
 
-      {/* Header */}
-      <div className="flex items-start justify-between gap-4 mb-2">
-        <div>
-          <h1 className="text-[28px] font-bold text-[#37352F] leading-tight">
+      {/* ═══════════════════════════════════════════════════
+          SECTION 1: CANDIDATE HEADER + VERDICT
+          ═══════════════════════════════════════════════════ */}
+      <div className="flex items-start justify-between gap-6 mb-8">
+        <div className="flex-1 min-w-0">
+          <h1 className="text-[28px] font-bold text-[#37352F] leading-tight tracking-tight">
             {candidate.full_name || "Unknown"}
           </h1>
-          <div className="mt-1 space-y-0.5">
+          <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1">
             {candidate.email && (
-              <div className="text-[14px] text-[#9B9A97]">{candidate.email}</div>
+              <span className="text-[14px] text-[#9B9A97]">{candidate.email}</span>
             )}
-            {primaryApp && (
-              <div className="text-[14px] text-[#9B9A97]">
-                Applied {relativeTime(primaryApp.created_at)} for{" "}
-                <span className="text-[#37352F] font-medium">
-                  {primaryApp.jobs?.title || "Unknown Position"}
-                </span>
-              </div>
+            {candidate.phone && (
+              <span className="text-[14px] text-[#9B9A97]">{candidate.phone}</span>
             )}
           </div>
+          {primaryApp && (
+            <div className="text-[14px] text-[#9B9A97] mt-1">
+              Applied {relativeTime(primaryApp.created_at)} for{" "}
+              <span className="text-[#37352F] font-medium">
+                {primaryApp.jobs?.title || "Unknown Position"}
+              </span>
+              {primaryApp.jobs?.department && (
+                <span className="text-[#9B9A97]"> · {primaryApp.jobs.department}</span>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Action Buttons */}
@@ -139,7 +198,6 @@ export default async function CandidateDetailPage({
             />
           );
         })()}
-        {/* Notification status for rejected/hired */}
         {(() => {
           if (!primaryApp) return null;
           if (primaryApp.current_stage !== "rejected" && primaryApp.current_stage !== "hired") return null;
@@ -154,11 +212,107 @@ export default async function CandidateDetailPage({
         })()}
       </div>
 
+      {/* ═══════════════════════════════════════════════════
+          SECTION 2: ASSESSMENT AT A GLANCE
+          The "3-second verdict" — what agencies show clients
+          ═══════════════════════════════════════════════════ */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        {/* Overall Score */}
+        <div className="bg-white border border-[#E9E9E7] rounded-lg p-5 flex flex-col items-center justify-center text-center">
+          <span className="text-[11px] font-semibold text-[#9B9A97] uppercase tracking-wider mb-2">Overall</span>
+          <span
+            className={`text-[40px] font-bold tabular-nums leading-none ${scoreColorClass(combinedScore)}`}
+            style={{ fontFamily: "'JetBrains Mono', monospace" }}
+          >
+            {combinedScore ?? "—"}
+          </span>
+          <span className="text-[12px] text-[#9B9A97] mt-1">/100</span>
+          {recommendation && (
+            <div className="mt-3">
+              <RecBadge rec={recommendation} />
+            </div>
+          )}
+        </div>
+
+        {/* ATS Score Card */}
+        <div className="bg-white border border-[#E9E9E7] rounded-lg p-5">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-semibold text-[#9B9A97] uppercase tracking-wider">ATS Screening</span>
+            <span
+              className={`text-[24px] font-bold tabular-nums ${scoreColorClass(atsScore)}`}
+              style={{ fontFamily: "'JetBrains Mono', monospace" }}
+            >
+              {atsScore ?? "—"}
+            </span>
+          </div>
+          {screening ? (
+            <ul className="space-y-1">
+              {screening.strengths.slice(0, 2).map((s, i) => (
+                <li key={i} className="text-[12px] text-[#9B9A97] flex gap-1.5 leading-snug">
+                  <span className="text-emerald-500 shrink-0">+</span>
+                  <span className="line-clamp-1">{s}</span>
+                </li>
+              ))}
+              {screening.concerns.slice(0, 1).map((c, i) => (
+                <li key={i} className="text-[12px] text-[#9B9A97] flex gap-1.5 leading-snug">
+                  <span className="text-red-500 shrink-0">-</span>
+                  <span className="line-clamp-1">{c}</span>
+                </li>
+              ))}
+            </ul>
+          ) : primaryApp ? (
+            <div className="mt-1">
+              <span className="text-[12px] text-[#9B9A97]">Not screened yet</span>
+              <div className="mt-2">
+                <ScreenButton applicationId={primaryApp.id} />
+              </div>
+            </div>
+          ) : null}
+        </div>
+
+        {/* Interview Score Card */}
+        <div className="bg-white border border-[#E9E9E7] rounded-lg p-5">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-semibold text-[#9B9A97] uppercase tracking-wider">Interview</span>
+            <span
+              className={`text-[24px] font-bold tabular-nums ${scoreColorClass(ivScore)}`}
+              style={{ fontFamily: "'JetBrains Mono', monospace" }}
+            >
+              {ivScore ?? "—"}
+            </span>
+          </div>
+          {interviewScoring ? (
+            <ul className="space-y-1">
+              {(interviewScoring.strengths || []).slice(0, 2).map((s, i) => (
+                <li key={i} className="text-[12px] text-[#9B9A97] flex gap-1.5 leading-snug">
+                  <span className="text-emerald-500 shrink-0">+</span>
+                  <span className="line-clamp-1">{s}</span>
+                </li>
+              ))}
+              {(interviewScoring.areas_for_improvement || []).slice(0, 1).map((a, i) => (
+                <li key={i} className="text-[12px] text-[#9B9A97] flex gap-1.5 leading-snug">
+                  <span className="text-red-500 shrink-0">-</span>
+                  <span className="line-clamp-1">{a}</span>
+                </li>
+              ))}
+            </ul>
+          ) : interviewToken ? (
+            <span className="text-[12px] text-[#9B9A97]">
+              {interviewToken.status === "active" ? "In progress" :
+               interviewToken.status === "expired" || new Date(interviewToken.expires_at) < new Date() ? "Link expired" :
+               "Invite sent — awaiting completion"}
+            </span>
+          ) : (
+            <span className="text-[12px] text-[#9B9A97]">Not interviewed yet</span>
+          )}
+        </div>
+      </div>
+
       {/* AI Summary */}
       {screening?.summary && (
-        <div className="bg-blue-50/50 border border-blue-100 rounded-lg p-5 mt-6 mb-2">
-          <h2 className="text-[13px] font-semibold text-[#37352F] mb-2">
-            AI Summary
+        <div className="bg-[#F7F6F3] border border-[#E9E9E7] rounded-lg p-5 mb-8">
+          <h2 className="text-[11px] font-semibold text-[#9B9A97] uppercase tracking-wider mb-2">
+            AI Assessment
           </h2>
           <p className="text-[14px] text-[#37352F] leading-relaxed">
             {screening.summary}
@@ -166,90 +320,260 @@ export default async function CandidateDetailPage({
         </div>
       )}
 
-      {/* Interview Status */}
-      {interviewToken && (
-        <div className="flex items-center gap-2 mt-4 mb-2">
-          <span className="text-[13px] font-medium text-[#37352F]">Interview:</span>
-          {interviewToken.status === "used" ? (
-            <span className="text-[12px] font-medium px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200">
-              Completed
-            </span>
-          ) : interviewToken.status === "expired" || new Date(interviewToken.expires_at) < new Date() ? (
-            <span className="text-[12px] font-medium px-2 py-0.5 rounded-full bg-red-50 text-red-600 border border-red-200">
-              Expired
-            </span>
-          ) : (
-            <span className="text-[12px] font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-200">
-              Pending
-            </span>
-          )}
-        </div>
-      )}
-
-      {/* Divider */}
-      <div className="border-t border-[#E9E9E7] my-8" />
-
-      {/* ATS Assessment */}
-      {screening ? (
+      {/* ═══════════════════════════════════════════════════
+          SECTION 3: INTERVIEW DEEP-DIVE
+          ═══════════════════════════════════════════════════ */}
+      {interviewScoring && (
         <>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[16px] font-semibold text-[#37352F]">
-              ATS Assessment
-            </h2>
-            <span
-              className={`text-[28px] font-bold tabular-nums ${scoreStyle(screening.match_score)}`}
-              style={{ fontFamily: "'JetBrains Mono', monospace" }}
-            >
-              {screening.match_score}
-              <span className="text-[14px] text-[#9B9A97] font-normal">/100</span>
-            </span>
+          <div className="border-t border-[#E9E9E7] my-8" />
+
+          <h2 className="text-[16px] font-semibold text-[#37352F] mb-5">
+            Interview Analysis
+          </h2>
+
+          {/* Overall impression */}
+          {(interviewScoring.overall_impression || interviewScoring.recommendation_reasoning) && (
+            <p className="text-[14px] text-[#9B9A97] leading-relaxed mb-6">
+              {interviewScoring.overall_impression || interviewScoring.recommendation_reasoning}
+            </p>
+          )}
+
+          {/* Score Breakdown */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 mb-8">
+            {interviewScoring.communication_score != null && (
+              <ScoreBar label="Communication" score={interviewScoring.communication_score} />
+            )}
+            {interviewScoring.technical_score != null && (
+              <ScoreBar label="Technical" score={interviewScoring.technical_score} />
+            )}
+            {interviewScoring.cultural_fit_score != null && (
+              <ScoreBar label="Cultural Fit" score={interviewScoring.cultural_fit_score} />
+            )}
+            {interviewScoring.confidence_score != null && (
+              <ScoreBar label="Confidence" score={interviewScoring.confidence_score} />
+            )}
+            {interviewScoring.hard_skill_average != null && (
+              <ScoreBar label="Hard Skills Avg" score={interviewScoring.hard_skill_average} />
+            )}
+            {interviewScoring.soft_skill_average != null && (
+              <ScoreBar label="Soft Skills Avg" score={interviewScoring.soft_skill_average} />
+            )}
           </div>
 
-          <div className="border-t border-[#E9E9E7] my-6" />
+          {/* Skill Assessments (industry jobs) */}
+          {interviewScoring.skill_assessments && interviewScoring.skill_assessments.length > 0 && (
+            <div className="mb-8">
+              <h3 className="text-[13px] font-semibold text-[#37352F] mb-3">Skill Assessment</h3>
+              <div className="border border-[#E9E9E7] rounded-lg overflow-hidden">
+                <table className="w-full text-[13px]">
+                  <thead>
+                    <tr className="bg-[#F7F6F3] border-b border-[#E9E9E7]">
+                      <th className="text-left font-medium text-[#9B9A97] px-4 py-2.5">Skill</th>
+                      <th className="text-center font-medium text-[#9B9A97] px-3 py-2.5 w-20">Expected</th>
+                      <th className="text-center font-medium text-[#9B9A97] px-3 py-2.5 w-20">Assessed</th>
+                      <th className="text-center font-medium text-[#9B9A97] px-3 py-2.5 w-16">Score</th>
+                      <th className="text-left font-medium text-[#9B9A97] px-4 py-2.5">Evidence</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {interviewScoring.skill_assessments.map((sa, i) => (
+                      <tr key={i} className="border-b border-[#E9E9E7] last:border-0">
+                        <td className="px-4 py-2.5 text-[#37352F] font-medium">{sa.skill}</td>
+                        <td className="px-3 py-2.5 text-center text-[#9B9A97] capitalize">{sa.expected_level}</td>
+                        <td className="px-3 py-2.5 text-center capitalize">
+                          <span className={sa.assessed_level === "not_assessed" ? "text-[#9B9A97]" :
+                            sa.score >= 70 ? "text-emerald-600 font-medium" :
+                            sa.score >= 40 ? "text-blue-600" : "text-red-600"}>
+                            {sa.assessed_level === "not_assessed" ? "N/A" : sa.assessed_level}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2.5 text-center">
+                          <span
+                            className={`font-mono font-medium ${scoreColorClass(sa.score)}`}
+                          >
+                            {sa.score}
+                          </span>
+                        </td>
+                        <td className="px-4 py-2.5 text-[#9B9A97] text-[12px] leading-snug max-w-[300px]">
+                          {sa.evidence}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
 
-          {/* Summary */}
-          <p className="text-[14px] text-[#9B9A97] leading-relaxed mb-8">
-            {screening.summary}
-          </p>
+          {/* Consistency Analysis */}
+          {interviewScoring.consistency_analysis && (
+            <div className="bg-[#F7F6F3] border border-[#E9E9E7] rounded-lg p-4 mb-6">
+              <h3 className="text-[11px] font-semibold text-[#9B9A97] uppercase tracking-wider mb-1.5">
+                Consistency Analysis
+              </h3>
+              <p className="text-[13px] text-[#37352F] leading-relaxed">
+                {interviewScoring.consistency_analysis}
+              </p>
+            </div>
+          )}
 
-          {/* Strengths & Concerns grid */}
-          {((screening?.strengths?.length ?? 0) > 0 ||
-            (screening?.concerns?.length ?? 0) > 0) && (
-            <div className="grid grid-cols-2 gap-8 mb-8">
-              {(screening?.strengths?.length ?? 0) > 0 && (
+          {/* Key Moments */}
+          {(interviewScoring.key_moments?.length ?? 0) > 0 && (
+            <div className="mb-8">
+              <h3 className="text-[13px] font-semibold text-[#37352F] mb-3">Key Moments</h3>
+              <div className="space-y-2">
+                {interviewScoring.key_moments!.map((m, i) => (
+                  <div key={i} className="flex items-start gap-3 py-2 border-l-2 pl-4" style={{
+                    borderColor: m.impact === "positive" ? "#059669" : m.impact === "negative" ? "#DC2626" : "#E9E9E7"
+                  }}>
+                    <span className="text-[12px] text-[#9B9A97] shrink-0 uppercase w-10">{m.timestamp_approx || ""}</span>
+                    <span className="text-[13px] text-[#37352F]">{m.description}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Strengths & Areas for Improvement */}
+          {((interviewScoring.strengths?.length ?? 0) > 0 || (interviewScoring.areas_for_improvement?.length ?? 0) > 0) && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+              {(interviewScoring.strengths?.length ?? 0) > 0 && (
                 <div>
-                  <h3 className="text-[13px] font-semibold text-[#37352F] mb-3">
-                    Strengths
-                  </h3>
+                  <h3 className="text-[13px] font-semibold text-[#37352F] mb-3">Strengths</h3>
                   <ul className="space-y-2">
-                    {screening.strengths.map((s, i) => (
-                      <li
-                        key={i}
-                        className="text-[13px] text-[#9B9A97] flex gap-2"
-                      >
-                        <span className="text-emerald-500 shrink-0 font-medium">
-                          +
-                        </span>
+                    {interviewScoring.strengths!.map((s, i) => (
+                      <li key={i} className="text-[13px] text-[#9B9A97] flex gap-2">
+                        <span className="text-emerald-500 shrink-0">+</span>
                         {s}
                       </li>
                     ))}
                   </ul>
                 </div>
               )}
-              {(screening?.concerns?.length ?? 0) > 0 && (
+              {(interviewScoring.areas_for_improvement?.length ?? 0) > 0 && (
                 <div>
-                  <h3 className="text-[13px] font-semibold text-[#37352F] mb-3">
-                    Concerns
-                  </h3>
+                  <h3 className="text-[13px] font-semibold text-[#37352F] mb-3">Areas for Improvement</h3>
+                  <ul className="space-y-2">
+                    {interviewScoring.areas_for_improvement!.map((a, i) => (
+                      <li key={i} className="text-[13px] text-[#9B9A97] flex gap-2">
+                        <span className="text-blue-500 shrink-0">-</span>
+                        {a}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Hiring Risk Factors */}
+          {(interviewScoring.hiring_risk_factors?.length ?? 0) > 0 && (
+            <div className="bg-red-50/50 border border-red-100 rounded-lg p-4 mb-6">
+              <h3 className="text-[11px] font-semibold text-red-600 uppercase tracking-wider mb-2">
+                Risk Factors
+              </h3>
+              <ul className="space-y-1">
+                {interviewScoring.hiring_risk_factors!.map((r, i) => (
+                  <li key={i} className="text-[13px] text-red-700/70 flex gap-2">
+                    <span className="shrink-0">!</span>
+                    {r}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Recommendation */}
+          {interviewScoring.recommendation_reasoning && interviewScoring.overall_impression && (
+            <div className="mb-6">
+              <h3 className="text-[13px] font-semibold text-[#37352F] mb-2">Recommendation</h3>
+              <p className="text-[14px] text-[#9B9A97] leading-relaxed">{interviewScoring.recommendation_reasoning}</p>
+            </div>
+          )}
+
+          {/* Comparison Notes */}
+          {interviewScoring.comparison_notes && (
+            <div className="mb-6">
+              <h3 className="text-[13px] font-semibold text-[#37352F] mb-2">Industry Comparison</h3>
+              <p className="text-[13px] text-[#9B9A97] leading-relaxed">{interviewScoring.comparison_notes}</p>
+            </div>
+          )}
+
+          {/* Follow-up Questions */}
+          {(interviewScoring.follow_up_questions?.length ?? 0) > 0 && (
+            <div className="mb-6">
+              <h3 className="text-[13px] font-semibold text-[#37352F] mb-3">Follow-up Questions for Next Round</h3>
+              <ul className="space-y-1.5">
+                {interviewScoring.follow_up_questions!.map((q, i) => (
+                  <li key={i} className="text-[13px] text-[#9B9A97] flex items-start gap-2">
+                    <span className="text-[#2383E2] shrink-0">{i + 1}.</span>
+                    {q}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Recording & Transcript */}
+          <div className="flex flex-wrap gap-3 mb-2">
+            {interviewRecordingUrl && (
+              <a
+                href={interviewRecordingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#2383E2] hover:text-[#1b6ec2] transition-colors"
+              >
+                <span>▶</span> Play Recording
+              </a>
+            )}
+          </div>
+          {interviewTranscript && (
+            <details className="group">
+              <summary className="text-[13px] font-medium text-[#2383E2] hover:text-[#1b6ec2] cursor-pointer transition-colors">
+                View Full Transcript
+              </summary>
+              <pre className="mt-3 p-4 bg-[#F7F6F3] rounded-lg text-[12px] text-[#9B9A97] whitespace-pre-wrap leading-relaxed max-h-[400px] overflow-y-auto border border-[#E9E9E7]">
+                {interviewTranscript}
+              </pre>
+            </details>
+          )}
+        </>
+      )}
+
+      {/* ═══════════════════════════════════════════════════
+          SECTION 4: ATS ASSESSMENT DETAILS
+          ═══════════════════════════════════════════════════ */}
+      {screening && (
+        <>
+          <div className="border-t border-[#E9E9E7] my-8" />
+
+          <h2 className="text-[16px] font-semibold text-[#37352F] mb-5">
+            ATS Screening Details
+          </h2>
+
+          {/* Strengths & Concerns */}
+          {((screening.strengths?.length ?? 0) > 0 || (screening.concerns?.length ?? 0) > 0) && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+              {screening.strengths.length > 0 && (
+                <div>
+                  <h3 className="text-[13px] font-semibold text-[#37352F] mb-3">Strengths</h3>
+                  <ul className="space-y-2">
+                    {screening.strengths.map((s, i) => (
+                      <li key={i} className="text-[13px] text-[#9B9A97] flex gap-2">
+                        <span className="text-emerald-500 shrink-0">+</span>
+                        {s}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {screening.concerns.length > 0 && (
+                <div>
+                  <h3 className="text-[13px] font-semibold text-[#37352F] mb-3">Concerns</h3>
                   <ul className="space-y-2">
                     {screening.concerns.map((c, i) => (
-                      <li
-                        key={i}
-                        className="text-[13px] text-[#9B9A97] flex gap-2"
-                      >
-                        <span className="text-red-500 shrink-0 font-medium">
-                          -
-                        </span>
+                      <li key={i} className="text-[13px] text-[#9B9A97] flex gap-2">
+                        <span className="text-red-500 shrink-0">-</span>
                         {c}
                       </li>
                     ))}
@@ -260,35 +584,24 @@ export default async function CandidateDetailPage({
           )}
 
           {/* Key Qualifications */}
-          {(screening?.key_qualifications?.length ?? 0) > 0 && (
+          {(screening.key_qualifications?.length ?? 0) > 0 && (
             <div className="mb-8">
-              <h3 className="text-[13px] font-semibold text-[#37352F] mb-3">
-                Key Qualifications
-              </h3>
-              <div className="space-y-0">
+              <h3 className="text-[13px] font-semibold text-[#37352F] mb-3">Key Qualifications</h3>
+              <div className="border border-[#E9E9E7] rounded-lg overflow-hidden">
                 {screening.key_qualifications.map((q, i) => (
                   <div
                     key={i}
-                    className="flex items-start gap-4 py-2.5"
-                    style={
-                      i < screening.key_qualifications.length - 1
-                        ? { borderBottom: "1px solid #E9E9E7" }
-                        : undefined
-                    }
+                    className="flex items-start gap-4 px-4 py-3 border-b border-[#E9E9E7] last:border-0"
                   >
-                    <span className="text-[13px] text-[#37352F] flex-1 font-medium">
-                      {q.qualification}
-                    </span>
                     <span
-                      className={`text-[13px] shrink-0 w-6 text-center ${
+                      className={`text-[13px] shrink-0 w-5 text-center font-medium ${
                         q.met ? "text-emerald-500" : "text-red-500"
                       }`}
                     >
                       {q.met ? "\u2713" : "\u2717"}
                     </span>
-                    <span className="text-[13px] text-[#9B9A97] flex-1">
-                      {q.evidence}
-                    </span>
+                    <span className="text-[13px] text-[#37352F] font-medium flex-1">{q.qualification}</span>
+                    <span className="text-[12px] text-[#9B9A97] flex-1">{q.evidence}</span>
                   </div>
                 ))}
               </div>
@@ -296,17 +609,12 @@ export default async function CandidateDetailPage({
           )}
 
           {/* Interview Topics */}
-          {(screening?.suggested_interview_topics?.length ?? 0) > 0 && (
+          {(screening.suggested_interview_topics?.length ?? 0) > 0 && !interviewScoring && (
             <div className="mb-4">
-              <h3 className="text-[13px] font-semibold text-[#37352F] mb-3">
-                Interview Topics
-              </h3>
+              <h3 className="text-[13px] font-semibold text-[#37352F] mb-3">Suggested Interview Topics</h3>
               <ul className="space-y-1.5">
                 {screening.suggested_interview_topics.map((t, i) => (
-                  <li
-                    key={i}
-                    className="text-[14px] text-[#9B9A97] flex items-start gap-2"
-                  >
+                  <li key={i} className="text-[13px] text-[#9B9A97] flex items-start gap-2">
                     <span className="text-[#9B9A97] shrink-0">&bull;</span>
                     {t}
                   </li>
@@ -315,239 +623,32 @@ export default async function CandidateDetailPage({
             </div>
           )}
         </>
-      ) : primaryApp ? (
-        <div className="mb-4">
-          <h2 className="text-[16px] font-semibold text-[#37352F] mb-3">
-            ATS Assessment
-          </h2>
-          <p className="text-[14px] text-[#9B9A97] mb-4">
-            This candidate has not been screened yet.
-          </p>
+      )}
+
+      {/* Screen button when no screening exists */}
+      {!screening && primaryApp && (
+        <>
+          <div className="border-t border-[#E9E9E7] my-8" />
+          <h2 className="text-[16px] font-semibold text-[#37352F] mb-3">ATS Assessment</h2>
+          <p className="text-[14px] text-[#9B9A97] mb-4">This candidate has not been screened yet.</p>
           <ScreenButton applicationId={primaryApp.id} />
-        </div>
-      ) : null}
+        </>
+      )}
 
-      {/* Interview Results */}
-      {(() => {
-        const interviewScoring = formData?.interview_scoring as {
-          interview_score: number;
-          overall_impression: string;
-          communication_score: number;
-          technical_score: number;
-          cultural_fit_score: number;
-          confidence_score: number;
-          strengths: string[];
-          areas_for_improvement: string[];
-          key_moments: { timestamp_approx: string; description: string }[];
-          recommendation: string;
-          recommendation_reasoning: string;
-          follow_up_questions: string[];
-        } | undefined;
-        const interviewTranscript = formData?.interview_transcript as string | undefined;
-        const interviewRecordingUrl = formData?.interview_recording_url as string | undefined;
-
-        if (!interviewScoring) return null;
-
-        const recBadge = (rec: string) => {
-          const map: Record<string, { bg: string; text: string; label: string }> = {
-            strong_hire: { bg: "bg-emerald-50", text: "text-emerald-700", label: "STRONG HIRE" },
-            hire: { bg: "bg-emerald-50", text: "text-emerald-600", label: "HIRE" },
-            maybe: { bg: "bg-blue-50", text: "text-blue-600", label: "MAYBE" },
-            no_hire: { bg: "bg-red-50", text: "text-red-600", label: "NO HIRE" },
-            strong_no_hire: { bg: "bg-red-50", text: "text-red-700", label: "STRONG NO HIRE" },
-          };
-          const style = map[rec] || map.maybe;
-          return (
-            <span className={`text-[12px] font-bold px-3 py-1 rounded-full ${style.bg} ${style.text} border ${style.bg.replace("50", "200")}`}>
-              {style.label}
-            </span>
-          );
-        };
-
-        const scoreBar = (label: string, score: number) => {
-          const color = score >= 70 ? "bg-emerald-500" : score >= 50 ? "bg-blue-500" : "bg-red-500";
-          return (
-            <div className="flex items-center gap-3">
-              <span className="text-[13px] text-[#9B9A97] w-28 shrink-0">{label}</span>
-              <span className="text-[13px] text-[#37352F] font-medium w-12 text-right tabular-nums" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{score}/100</span>
-              <div className="flex-1 h-2 bg-[#F7F6F3] rounded-full overflow-hidden">
-                <div className={`h-full rounded-full ${color}`} style={{ width: `${score}%` }} />
-              </div>
-            </div>
-          );
-        };
-
-        return (
-          <>
-            <div className="border-t border-[#E9E9E7] my-8" />
-
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-[16px] font-semibold text-[#37352F]">Interview Results</h2>
-              <span className={`text-[28px] font-bold tabular-nums ${scoreStyle(interviewScoring.interview_score)}`} style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-                {interviewScoring.interview_score}
-                <span className="text-[14px] text-[#9B9A97] font-normal">/100</span>
-              </span>
-            </div>
-
-            {/* Recommendation badge */}
-            <div className="mb-4">
-              {recBadge(interviewScoring.recommendation)}
-            </div>
-
-            {/* Overall impression */}
-            <p className="text-[14px] text-[#9B9A97] leading-relaxed mb-6">
-              {interviewScoring.overall_impression}
-            </p>
-
-            {/* Score bars */}
-            <div className="space-y-3 mb-8">
-              {scoreBar("Communication", interviewScoring.communication_score)}
-              {scoreBar("Technical", interviewScoring.technical_score)}
-              {scoreBar("Cultural Fit", interviewScoring.cultural_fit_score)}
-              {scoreBar("Confidence", interviewScoring.confidence_score)}
-            </div>
-
-            {/* Strengths & Areas for improvement */}
-            {((interviewScoring.strengths?.length ?? 0) > 0 || (interviewScoring.areas_for_improvement?.length ?? 0) > 0) && (
-              <div className="grid grid-cols-2 gap-8 mb-8">
-                {(interviewScoring.strengths?.length ?? 0) > 0 && (
-                  <div>
-                    <h3 className="text-[13px] font-semibold text-[#37352F] mb-3">Strengths</h3>
-                    <ul className="space-y-2">
-                      {interviewScoring.strengths.map((s, i) => (
-                        <li key={i} className="text-[13px] text-[#9B9A97] flex gap-2">
-                          <span className="text-emerald-500 shrink-0 font-medium">+</span>
-                          {s}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                {(interviewScoring.areas_for_improvement?.length ?? 0) > 0 && (
-                  <div>
-                    <h3 className="text-[13px] font-semibold text-[#37352F] mb-3">Areas for Improvement</h3>
-                    <ul className="space-y-2">
-                      {interviewScoring.areas_for_improvement.map((a, i) => (
-                        <li key={i} className="text-[13px] text-[#9B9A97] flex gap-2">
-                          <span className="text-blue-500 shrink-0 font-medium">-</span>
-                          {a}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Key Moments */}
-            {(interviewScoring.key_moments?.length ?? 0) > 0 && (
-              <div className="mb-8">
-                <h3 className="text-[13px] font-semibold text-[#37352F] mb-3">Key Moments</h3>
-                <div className="space-y-2">
-                  {interviewScoring.key_moments.map((m, i) => (
-                    <div key={i} className="flex items-start gap-3 text-[13px]">
-                      <span className="text-[#9B9A97] shrink-0 capitalize">({m.timestamp_approx})</span>
-                      <span className="text-[#9B9A97]">{m.description}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Recommendation reasoning */}
-            {interviewScoring.recommendation_reasoning && (
-              <div className="mb-8">
-                <h3 className="text-[13px] font-semibold text-[#37352F] mb-2">Recommendation</h3>
-                <p className="text-[14px] text-[#9B9A97] leading-relaxed">{interviewScoring.recommendation_reasoning}</p>
-              </div>
-            )}
-
-            {/* Follow-up questions */}
-            {(interviewScoring.follow_up_questions?.length ?? 0) > 0 && (
-              <div className="mb-8">
-                <h3 className="text-[13px] font-semibold text-[#37352F] mb-3">Follow-up Questions</h3>
-                <ul className="space-y-1.5">
-                  {interviewScoring.follow_up_questions.map((q, i) => (
-                    <li key={i} className="text-[13px] text-[#9B9A97] flex items-start gap-2">
-                      <span className="text-[#9B9A97] shrink-0">&bull;</span>
-                      {q}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Recording & Transcript */}
-            <div className="flex gap-3">
-              {interviewRecordingUrl && (
-                <a
-                  href={interviewRecordingUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[13px] font-medium text-blue-600 hover:text-blue-700 underline underline-offset-2"
-                >
-                  Play Recording
-                </a>
-              )}
-              {interviewTranscript && (
-                <details className="w-full">
-                  <summary className="text-[13px] font-medium text-blue-600 hover:text-blue-700 cursor-pointer underline underline-offset-2">
-                    View Full Transcript
-                  </summary>
-                  <pre className="mt-3 p-4 bg-[#F7F6F3] rounded-lg text-[12px] text-[#9B9A97] whitespace-pre-wrap leading-relaxed max-h-[400px] overflow-y-auto border border-[#E9E9E7]">
-                    {interviewTranscript}
-                  </pre>
-                </details>
-              )}
-            </div>
-          </>
-        );
-      })()}
-
-      {/* Application Details */}
+      {/* ═══════════════════════════════════════════════════
+          SECTION 5: CANDIDATE BACKGROUND
+          ═══════════════════════════════════════════════════ */}
       <div className="border-t border-[#E9E9E7] my-8" />
 
-      <h2 className="text-[16px] font-semibold text-[#37352F] mb-4">
-        Application Details
-      </h2>
+      <h2 className="text-[16px] font-semibold text-[#37352F] mb-4">Background</h2>
 
       <div className="space-y-0">
-        <DetailRow
-          label="Resume"
-          value={
-            (formData?.resume_filename as string) || null
-          }
-        />
-        <DetailRow
-          label="LinkedIn"
-          value={candidate.linkedin_url || (formData?.linkedin_url as string) || null}
-          isLink
-        />
-        <DetailRow
-          label="GitHub"
-          value={
-            candidate.github_username ||
-            (formData?.github_username as string) ||
-            null
-          }
-          prefix="github.com/"
-        />
-        <DetailRow
-          label="Portfolio"
-          value={
-            candidate.personal_website_url ||
-            (formData?.portfolio_url as string) ||
-            null
-          }
-          isLink
-        />
+        <DetailRow label="Resume" value={(formData?.resume_filename as string) || null} />
+        <DetailRow label="LinkedIn" value={candidate.linkedin_url || (formData?.linkedin_url as string) || null} isLink />
+        <DetailRow label="GitHub" value={candidate.github_username || (formData?.github_username as string) || null} prefix="github.com/" />
+        <DetailRow label="Portfolio" value={candidate.personal_website_url || (formData?.portfolio_url as string) || null} isLink />
         <DetailRow label="Phone" value={candidate.phone || null} />
-        <DetailRow
-          label="Cover Letter"
-          value={(formData?.cover_letter as string) || null}
-          multiline
-        />
-        {/* Custom Question Answers */}
+        <DetailRow label="Cover Letter" value={(formData?.cover_letter as string) || null} multiline />
         {(() => {
           const answers = formData?.custom_answers;
           if (!answers || !Array.isArray(answers)) return null;
@@ -559,12 +660,12 @@ export default async function CandidateDetailPage({
         })()}
       </div>
 
-      {/* Email History */}
+      {/* ═══════════════════════════════════════════════════
+          SECTION 6: ACTIVITY
+          ═══════════════════════════════════════════════════ */}
       <div className="border-t border-[#E9E9E7] my-8" />
 
-      <h2 className="text-[16px] font-semibold text-[#37352F] mb-4">
-        Email History
-      </h2>
+      <h2 className="text-[16px] font-semibold text-[#37352F] mb-4">Email History</h2>
 
       {emailLogs && emailLogs.length > 0 ? (
         <div className="space-y-0">
@@ -572,24 +673,15 @@ export default async function CandidateDetailPage({
             <div
               key={log.id}
               className="flex items-center gap-4 py-3"
-              style={
-                i < emailLogs.length - 1
-                  ? { borderBottom: "1px solid #E9E9E7" }
-                  : undefined
-              }
+              style={i < emailLogs.length - 1 ? { borderBottom: "1px solid #E9E9E7" } : undefined}
             >
               <span className="text-[13px] text-[#37352F] font-medium flex-1">
-                {log.email_type === "acceptance"
-                  ? "Acceptance sent"
-                  : log.email_type === "rejection"
-                    ? "Rejection sent"
-                    : log.email_type === "interview_invite"
-                      ? "Interview invite sent"
-                      : "Email sent"}
+                {log.email_type === "acceptance" ? "Acceptance sent"
+                  : log.email_type === "rejection" ? "Rejection sent"
+                  : log.email_type === "interview_invite" ? "Interview invite sent"
+                  : "Email sent"}
               </span>
-              <span className="text-[12px] text-[#9B9A97] shrink-0">
-                {relativeTime(log.created_at)}
-              </span>
+              <span className="text-[12px] text-[#9B9A97] shrink-0">{relativeTime(log.created_at)}</span>
               <span
                 className={`text-[11px] font-medium px-2 py-0.5 rounded-full shrink-0 ${
                   log.status === "sent" || log.status === "delivered"
@@ -608,17 +700,54 @@ export default async function CandidateDetailPage({
         <p className="text-[13px] text-[#9B9A97]">No emails sent yet.</p>
       )}
 
-      {/* Internal Notes */}
       <div className="border-t border-[#E9E9E7] my-8" />
 
-      <h2 className="text-[16px] font-semibold text-[#37352F] mb-4">
-        Internal Notes
-      </h2>
+      <h2 className="text-[16px] font-semibold text-[#37352F] mb-4">Internal Notes</h2>
 
       <NotesSection
         candidateId={id}
         applicationId={primaryApp?.id || null}
       />
+    </div>
+  );
+}
+
+// ────────────────────────────────────────────────────────
+// SUB-COMPONENTS
+// ────────────────────────────────────────────────────────
+
+function RecBadge({ rec }: { rec: string }) {
+  const map: Record<string, { bg: string; text: string; border: string; label: string }> = {
+    strong_hire: { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200", label: "STRONG HIRE" },
+    hire: { bg: "bg-emerald-50", text: "text-emerald-600", border: "border-emerald-200", label: "HIRE" },
+    maybe: { bg: "bg-yellow-50", text: "text-yellow-700", border: "border-yellow-200", label: "MAYBE" },
+    no_hire: { bg: "bg-red-50", text: "text-red-600", border: "border-red-200", label: "NO HIRE" },
+    strong_no_hire: { bg: "bg-red-50", text: "text-red-700", border: "border-red-200", label: "STRONG NO HIRE" },
+  };
+  const style = map[rec] || map.maybe;
+  return (
+    <span className={`text-[11px] font-bold px-3 py-1 rounded-full ${style.bg} ${style.text} border ${style.border}`}>
+      {style.label}
+    </span>
+  );
+}
+
+function ScoreBar({ label, score }: { label: string; score: number }) {
+  return (
+    <div className="flex items-center gap-3">
+      <span className="text-[13px] text-[#9B9A97] w-28 shrink-0">{label}</span>
+      <div className="flex-1 h-1.5 bg-[#F7F6F3] rounded-full overflow-hidden">
+        <div
+          className="h-full rounded-full transition-all"
+          style={{ width: `${score}%`, background: scoreColor(score) }}
+        />
+      </div>
+      <span
+        className="text-[13px] font-medium w-8 text-right tabular-nums"
+        style={{ fontFamily: "'JetBrains Mono', monospace", color: scoreColor(score) }}
+      >
+        {score}
+      </span>
     </div>
   );
 }
@@ -646,22 +775,19 @@ function DetailRow({
         {!value ? (
           <span className="text-[14px] text-[#9B9A97]">&mdash;</span>
         ) : multiline ? (
-          <p className="text-[14px] text-[#37352F] whitespace-pre-wrap">
-            {value}
-          </p>
+          <p className="text-[14px] text-[#37352F] whitespace-pre-wrap">{value}</p>
         ) : isLink ? (
           <a
             href={value.startsWith("http") ? value : `https://${value}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[14px] text-blue-600 hover:text-blue-700 underline underline-offset-2 break-all"
+            className="text-[14px] text-[#2383E2] hover:text-[#1b6ec2] underline underline-offset-2 break-all transition-colors"
           >
             {value}
           </a>
         ) : prefix ? (
           <span className="text-[14px] text-[#37352F]">
-            <span className="text-[#9B9A97]">{prefix}</span>
-            {value}
+            <span className="text-[#9B9A97]">{prefix}</span>{value}
           </span>
         ) : (
           <span className="text-[14px] text-[#37352F]">{value}</span>
