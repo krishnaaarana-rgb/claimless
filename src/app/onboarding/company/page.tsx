@@ -208,7 +208,7 @@ export default function CompanyOnboardingPage() {
         </div>
 
         {/* Step Content */}
-        <div className="bg-card border border-border rounded-lg p-6 animate-fade-in-up">
+        <div className="bg-card border border-border rounded-lg p-6">
           {/* Step 1: Company Details */}
           {step === 1 && (
             <div className="space-y-5">

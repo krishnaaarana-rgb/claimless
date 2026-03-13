@@ -156,7 +156,7 @@ export default function NewJobPage() {
   if (success) {
     const applyUrl = `${typeof window !== "undefined" ? window.location.origin : ""}/apply/${success.id}`;
     return (
-      <div className="max-w-lg mx-auto mt-16 text-center space-y-6 animate-fade-in-up">
+      <div className="max-w-lg mx-auto mt-16 text-center space-y-6">
         <div className="w-16 h-16 mx-auto rounded-full bg-primary/15 border-2 border-primary flex items-center justify-center text-2xl text-primary">
           {"\u2713"}
         </div>

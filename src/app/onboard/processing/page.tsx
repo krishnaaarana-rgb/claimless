@@ -153,7 +153,7 @@ function ProcessingContent() {
         )}
 
         {result && (
-          <div className="max-w-md w-full text-center animate-fade-in-up">
+          <div className="max-w-md w-full text-center">
             <div className="w-12 h-12 rounded-full bg-primary/15 flex items-center justify-center mx-auto mb-4">
               <span className="text-primary text-lg">{"\u2713"}</span>
             </div>

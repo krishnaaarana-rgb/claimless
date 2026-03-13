@@ -170,7 +170,7 @@ export default function TestScrapePage() {
       {result && (
         <div className="space-y-6">
           {/* Score + Summary */}
-          <Card className="bg-card border-border animate-fade-in-up">
+          <Card className="bg-card border-border ">
             <CardContent className="pt-6 flex gap-8 items-start">
               <ScoreRing score={result.overall_score} />
               <div className="flex-1 min-w-0">
@@ -189,7 +189,7 @@ export default function TestScrapePage() {
           </Card>
 
           {/* Verified Skills */}
-          <Card className="bg-card border-border animate-fade-in-up" style={{ animationDelay: "0.05s" }}>
+          <Card className="bg-card border-border" style={{ animationDelay: "0.05s" }}>
             <CardHeader><CardTitle className="text-base">Verified Skills</CardTitle></CardHeader>
             <CardContent>
               <div className="space-y-3">
@@ -211,7 +211,7 @@ export default function TestScrapePage() {
           </Card>
 
           {/* Architectural Decisions */}
-          <Card className="bg-card border-border animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
+          <Card className="bg-card border-border" style={{ animationDelay: "0.1s" }}>
             <CardHeader><CardTitle className="text-base">Architectural Decisions</CardTitle></CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -228,7 +228,7 @@ export default function TestScrapePage() {
           </Card>
 
           {/* Top Repos */}
-          <Card className="bg-card border-border animate-fade-in-up" style={{ animationDelay: "0.15s" }}>
+          <Card className="bg-card border-border" style={{ animationDelay: "0.15s" }}>
             <CardHeader><CardTitle className="text-base">Top Repositories</CardTitle></CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -249,7 +249,7 @@ export default function TestScrapePage() {
 
           {/* Languages & Frameworks row */}
           <div className="grid grid-cols-2 gap-6">
-            <Card className="bg-card border-border animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
+            <Card className="bg-card border-border" style={{ animationDelay: "0.2s" }}>
               <CardHeader><CardTitle className="text-base">Languages</CardTitle></CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
@@ -262,7 +262,7 @@ export default function TestScrapePage() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-card border-border animate-fade-in-up" style={{ animationDelay: "0.25s" }}>
+            <Card className="bg-card border-border" style={{ animationDelay: "0.25s" }}>
               <CardHeader><CardTitle className="text-base">Frameworks & Tools</CardTitle></CardHeader>
               <CardContent>
                 <div className="space-y-2">
@@ -280,7 +280,7 @@ export default function TestScrapePage() {
           </div>
 
           {/* Interview Context */}
-          <Card className="bg-card border-border animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
+          <Card className="bg-card border-border" style={{ animationDelay: "0.3s" }}>
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base">Interview Context (for Vapi Voice Agent)</CardTitle>
