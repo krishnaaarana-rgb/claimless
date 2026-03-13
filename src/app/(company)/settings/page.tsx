@@ -13,6 +13,7 @@ interface CompanySettings {
   default_form_fields: Record<string, { enabled: boolean; required: boolean }>;
   brand_accent_color: string;
   brand_logo_url: string | null;
+  brand_tagline: string | null;
   stage_names: Record<string, string>;
   interview_duration_minutes: number;
   interview_style: string;
@@ -238,6 +239,7 @@ function GeneralTab({ getValue, updateDraft }: TabProps) {
   const autoReject = getValue("ats_auto_reject") ?? true;
   const accentColor = getValue("brand_accent_color") ?? "#2383E2";
   const logoUrl = getValue("brand_logo_url") ?? "";
+  const tagline = getValue("brand_tagline") ?? "";
   const stageNames = getValue("stage_names") ?? {};
 
   return (
@@ -333,7 +335,47 @@ function GeneralTab({ getValue, updateDraft }: TabProps) {
               className="w-full rounded-lg border border-[#E9E9E7] px-4 py-2.5 text-[14px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2]"
               placeholder="https://your-cdn.com/logo.png"
             />
+            {logoUrl && (
+              <div className="mt-2 p-3 bg-[#F7F6F3] rounded-lg border border-[#E9E9E7] inline-block">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={logoUrl} alt="Logo preview" className="max-h-10 max-w-[200px] object-contain" />
+              </div>
+            )}
           </div>
+          <div>
+            <label className="block text-[13px] font-medium text-[#37352F] mb-1.5">
+              Tagline
+            </label>
+            <input
+              type="text"
+              value={tagline || ""}
+              onChange={(e) =>
+                updateDraft("brand_tagline", e.target.value || null)
+              }
+              className="w-full rounded-lg border border-[#E9E9E7] px-4 py-2.5 text-[14px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2]"
+              placeholder="Your agency's tagline for Client Briefs"
+            />
+            <HelperText>Shown on shared Client Briefs below your agency name.</HelperText>
+          </div>
+
+          {/* Brief Preview */}
+          {(logoUrl || tagline) && (
+            <div className="mt-2 p-4 bg-white rounded-lg border border-[#E9E9E7]">
+              <p className="text-[10px] text-[#9B9A97] uppercase tracking-wider mb-2">Brief header preview</p>
+              <div className="flex items-center gap-3">
+                {logoUrl ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img src={logoUrl} alt="Logo" className="h-8 max-w-[120px] object-contain" />
+                ) : (
+                  <div className="w-3 h-3 rounded-full" style={{ background: accentColor }} />
+                )}
+                <div>
+                  <span className="text-[13px] font-semibold text-[#37352F]">Your Agency</span>
+                  {tagline && <p className="text-[11px] text-[#9B9A97]">{tagline}</p>}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

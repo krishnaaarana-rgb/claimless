@@ -31,6 +31,13 @@ export async function GET(
     primary_color: string;
   } | null;
 
+  // Fetch branding from company_settings (overrides companies table defaults)
+  const { data: branding } = await supabase
+    .from("company_settings")
+    .select("brand_accent_color, brand_logo_url")
+    .eq("company_id", job.company_id)
+    .single();
+
   return NextResponse.json({
     job: {
       id: job.id,
@@ -43,8 +50,8 @@ export async function GET(
     },
     company: {
       name: company?.name ?? "Company",
-      logo_url: company?.logo_url ?? null,
-      primary_color: company?.primary_color ?? "#3b82f6",
+      logo_url: branding?.brand_logo_url || company?.logo_url || null,
+      primary_color: branding?.brand_accent_color || company?.primary_color || "#2383E2",
     },
   });
 }

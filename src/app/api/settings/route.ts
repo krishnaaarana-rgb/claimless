@@ -99,6 +99,10 @@ export async function PATCH(request: NextRequest) {
     updates.brand_logo_url = body.brand_logo_url || null;
   }
 
+  if (body.brand_tagline !== undefined) {
+    updates.brand_tagline = body.brand_tagline || null;
+  }
+
   // Email templates
   for (const key of [
     "email_acceptance_subject",

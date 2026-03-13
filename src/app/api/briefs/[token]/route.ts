@@ -34,12 +34,21 @@ export async function GET(
     })
     .eq("id", brief.id);
 
-  // 4. Fetch company info
-  const { data: company } = await supabase
-    .from("companies")
-    .select("name, primary_color")
-    .eq("id", brief.company_id)
-    .single();
+  // 4. Fetch company info + branding
+  const [companyRes, brandingRes] = await Promise.all([
+    supabase
+      .from("companies")
+      .select("name")
+      .eq("id", brief.company_id)
+      .single(),
+    supabase
+      .from("company_settings")
+      .select("brand_accent_color, brand_logo_url, brand_tagline")
+      .eq("company_id", brief.company_id)
+      .single(),
+  ]);
+  const company = companyRes.data;
+  const branding = brandingRes.data;
 
   // 5. Fetch applications with candidate and job data
   const { data: applications } = await supabase
@@ -143,7 +152,9 @@ export async function GET(
     note: brief.note,
     company: {
       name: company?.name || "Company",
-      primary_color: (company as { primary_color?: string } | null)?.primary_color || "#2383E2",
+      primary_color: branding?.brand_accent_color || "#2383E2",
+      logo_url: branding?.brand_logo_url || null,
+      tagline: branding?.brand_tagline || null,
     },
     job: jobInfo,
     candidates,

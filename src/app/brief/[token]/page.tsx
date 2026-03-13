@@ -48,6 +48,8 @@ interface BriefData {
   company: {
     name: string;
     primary_color: string;
+    logo_url: string | null;
+    tagline: string | null;
   };
   job: { id: string; title: string; department: string | null; location: string | null } | null;
   candidates: BriefCandidate[];
@@ -128,14 +130,24 @@ export default function PublicBriefPage({
         {/* Header */}
         <div className="flex items-center justify-between mb-8 pb-6 border-b border-[#E9E9E7]">
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <div
-                className="w-3 h-3 rounded-full"
-                style={{ background: company.primary_color }}
-              />
-              <span className="text-[13px] font-medium text-[#9B9A97]">
-                {company.name}
-              </span>
+            <div className="flex items-center gap-3 mb-2">
+              {company.logo_url ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={company.logo_url} alt={company.name} className="h-8 max-w-[140px] object-contain" />
+              ) : (
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{ background: company.primary_color }}
+                />
+              )}
+              <div>
+                <span className="text-[13px] font-semibold text-[#37352F]">
+                  {company.name}
+                </span>
+                {company.tagline && (
+                  <p className="text-[11px] text-[#9B9A97]">{company.tagline}</p>
+                )}
+              </div>
             </div>
             <h1 className="text-[24px] font-bold text-[#37352F] leading-tight">
               {data.title || (isSingle
