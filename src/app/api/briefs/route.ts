@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
   // Get company
   const admin = createAdminClient();
   const { data: member } = await admin
-    .from("team_members")
+    .from("company_users")
     .select("company_id")
     .eq("user_id", user.id)
     .single();
@@ -86,7 +86,7 @@ export async function GET() {
 
   const admin = createAdminClient();
   const { data: member } = await admin
-    .from("team_members")
+    .from("company_users")
     .select("company_id")
     .eq("user_id", user.id)
     .single();

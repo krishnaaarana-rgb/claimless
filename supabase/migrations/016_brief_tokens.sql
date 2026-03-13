@@ -28,7 +28,7 @@ CREATE POLICY "Company members can manage their briefs"
   FOR ALL
   USING (
     company_id IN (
-      SELECT company_id FROM team_members WHERE user_id = auth.uid()
+      SELECT company_id FROM company_users WHERE user_id = auth.uid()
     )
   );
 
