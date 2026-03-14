@@ -77,6 +77,12 @@ const FIELD_CONFIG: {
     placeholder: "https://your-website.com",
   },
   {
+    key: "loom_url",
+    label: "Video introduction (Loom)",
+    type: "url",
+    placeholder: "https://www.loom.com/share/...",
+  },
+  {
     key: "cover_letter",
     label: "Cover letter",
     type: "textarea",
@@ -192,6 +198,7 @@ export default function ApplyPage({
             linkedin_url: formValues.linkedin_url || null,
             github_username: formValues.github_username || null,
             portfolio_url: formValues.portfolio_url || null,
+            loom_url: formValues.loom_url || null,
             cover_letter: formValues.cover_letter || null,
             resume_filename: resumeFile?.name || null,
             resume_text: formValues._resume_text || null,

@@ -97,9 +97,14 @@ export async function POST(
     (application.application_form_data?.resume_text as string) ||
     "No resume provided";
 
+  // 3b. Get interview brief generated from screening (works for ALL candidates)
+  const screeningBrief = (screeningData.interview_brief as string) || "";
+
   // 4. Get GitHub profile + pre-generated interview context if available
   let githubContext = "";
-  let preGeneratedContext = "";
+  let preGeneratedContext = screeningBrief
+    ? `\nSCREENING BRIEF:\n${screeningBrief}`
+    : "";
   const ghUser = candidate.github_username;
   const hasValidGithub = ghUser && /^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,37}[a-zA-Z0-9])?$/.test(ghUser) && !ghUser.includes("http") && !ghUser.includes("localhost");
   if (hasValidGithub) {

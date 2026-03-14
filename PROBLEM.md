@@ -153,6 +153,18 @@ People who only know theory say *"it should work fine"* or give textbook risks t
 
 This single question is one of the strongest signals of real-world experience across any industry.
 
+**7. The "Teach Me" Technique**
+
+For any skill the candidate claims, the AI asks: *"How would you explain [concept] to someone who just joined the team?"*
+
+People who truly understand something explain it simply and add nuance — "the basic idea is X, but what most people miss is Y." People who memorised a definition ramble, use jargon to cover gaps, or deflect. This separates genuine expertise from surface knowledge in 30 seconds.
+
+**8. Specificity Enforcement**
+
+When a candidate gives vague answers — "we used best practices", "I collaborated with the team", "we implemented a solution" — the AI always follows up: *"Walk me through exactly what that looked like day-to-day"* or *"Give me a specific example."*
+
+If they can't get specific after two prompts, the AI moves on. That's the answer — they don't have one.
+
 #### Interview Output
 
 After the conversation, the AI produces:
@@ -181,7 +193,7 @@ Traditional screening misses the small signals that predict job success. Here's 
 | Perfect STAR answers to every question | Likely coached, not experienced | Anti-coaching follow-ups break the pattern |
 | Confident delivery with vague specifics | Good interviewer, uncertain practitioner | Depth pursuit forces specifics — 3 levels deep |
 | Claims don't match timeline | Possible exaggeration or fabrication | Profile verification + real-time cross-referencing |
-| Can describe WHAT but not WHY | Surface knowledge, not understanding | "Teach me" technique and failure mode testing |
+| Can describe WHAT but not WHY | Surface knowledge, not understanding | "Teach Me" technique reveals whether they understand or memorised |
 | Avoids discussing failures or mistakes | Lacks self-awareness or real experience | Direct asks for failures, opposite scenarios |
 | Gives different numbers for the same metric | Fabricating or uncertain about real results | Perfect recall catches contradictions across 30 minutes |
 | Strong on theory, weak on practice | Academic knowledge without application | Live scenario testing reveals the gap instantly |
@@ -191,7 +203,7 @@ Traditional screening misses the small signals that predict job success. Here's 
 
 The biggest quality advantage isn't any single technique — it's that Claimless applies ALL of them to EVERY candidate, EVERY time.
 
-Your 1st candidate of the day gets the same 8 assessment techniques as your 500th. The nervous introvert gets probed just as deeply as the charismatic storyteller. The Friday afternoon candidate gets the same rigour as the Monday morning one.
+Your 1st candidate of the day gets the same assessment techniques as your 500th. The nervous introvert gets probed just as deeply as the charismatic storyteller. The Friday afternoon candidate gets the same rigour as the Monday morning one.
 
 No human team can do this. Not because they're bad — because they're human.
 
@@ -206,13 +218,13 @@ Claimless flips this. Our screening is both faster AND deeper because:
 | Traditional Process | Claimless Process |
 |---|---|
 | Recruiter reads resume (5-10 min) | AI analyses full profile in < 2 min |
-| Schedule phone screen (2-5 days of back-and-forth) | Candidate takes interview on their own time, 24/7 |
+| Schedule phone screen (2-5 days of back-and-forth) | Auto-invite: candidate gets interview link immediately when screening passes |
 | Conduct 30-min phone screen | 15-30 min AI interview with deeper probing than a human screen |
 | Write up notes (10-15 min) | Scored assessment generated instantly with evidence |
 | Discuss with team, decide next steps | Report ready for recruiter + client immediately |
 | **Total: 5-10 business days per candidate** | **Total: same day, often within hours** |
 
-The candidate experience is better too. No scheduling ping-pong. No waiting 3 days for a callback. No wondering what happens next. They apply, they interview when it suits them, they get progressed quickly.
+With auto-invite enabled, there's zero human bottleneck between application and interview. Candidate applies → AI screens → passes → interview link sent automatically → candidate interviews when it suits them → scored report lands in the recruiter's dashboard. The entire pipeline can run without anyone touching it.
 
 For agencies, this means:
 - **Candidates don't drop out** of your pipeline because they accepted another offer while waiting for your phone screen
@@ -260,22 +272,25 @@ Cost savings are good. Revenue growth is better.
 
 ## Why This Works Across Every Industry
 
-Claimless is not a "tech hiring tool." The verification layer adapts to every industry. The AI interviewer is trained with domain knowledge for:
+Claimless is not a "tech hiring tool." The AI interviewer is loaded with domain knowledge, terminology, red flags, and skill rubrics for 13 industries. It generates role-specific scenarios on the fly based on this knowledge — not from a static question bank.
 
-| Industry | What the AI Knows | Example Scenario It Would Use |
+| Industry | Domain Knowledge Loaded | The Kind of Scenario It Generates |
 |---|---|---|
-| Healthcare | AHPRA, clinical governance, triage protocols, patient safety frameworks, aged care standards | "ICU patient desaturating, family at bedside demanding answers, and the registrar isn't responding to pages. What do you do?" |
-| Finance | APRA, ASIC, AML/CTF, Basel III, responsible lending, financial planning standards | "Client wants to go 100% into speculative crypto. They're 58. How do you handle this conversation?" |
-| Legal | Practising certificates, conflicts of interest, professional conduct rules, jurisdictional nuances | "Opposing counsel just disclosed evidence that helps your client but hurts another client of the firm. Walk me through it." |
-| Construction & Trades | WHS/SafeWork, SWMS, white cards, chain of responsibility, building codes | "Worker refuses to wear PPE on a high-rise site, claims medical exemption, no documentation. What's your process?" |
-| Sales | Pipeline management, consultative selling, negotiation frameworks, CRM discipline, territory planning | "You've hit 60% of quarterly target with 3 weeks left. Your top 3 deals are all stuck. What's your recovery plan?" |
-| HR & People | Fair Work Act, Modern Awards, NES, enterprise bargaining, WHS, unfair dismissal provisions | "Three redundancies needed, all in the same team, one is pregnant, one is on a workers' comp return-to-work plan. How do you approach this?" |
-| Marketing | Campaign strategy, attribution modelling, brand management, regulatory compliance (ACMA, TGA for health) | "Campaign launched yesterday, organic reach is 10x what you projected but sentiment is 40% negative. What do you do in the next 2 hours?" |
-| Education | AITSL standards, curriculum frameworks, WWCC, differentiated learning, NAPLAN literacy | "Student with an undiagnosed learning difficulty is falling behind, parents are disengaged, and your class has 28 other students. How do you approach this?" |
-| Customer Service | Consumer law, escalation frameworks, NPS/CSAT drivers, complaint resolution, ombudsman processes | "Customer threatens social media exposure, their complaint is partially valid, and your manager is unavailable. Talk me through it." |
-| Operations | Supply chain risk, ISO frameworks, continuous improvement, vendor management, capacity planning | "Key supplier just notified you of a 6-week delay on a critical component. You have 2 weeks of stock. What's your plan?" |
+| Healthcare | AHPRA, clinical governance, triage protocols, patient safety, aged care standards | Multi-patient triage prioritisation, clinical decision-making under pressure, adverse event response |
+| Finance | APRA, ASIC, AML/CTF, Basel III, responsible lending, financial planning standards | Client risk conversations, regulatory compliance dilemmas, portfolio rebalancing under market stress |
+| Legal | Practising certificates, conflicts of interest, professional conduct, jurisdictional nuances | Ethical conflicts, evidence handling, multi-party representation challenges |
+| Construction & Trades | WHS/SafeWork, SWMS, white cards, chain of responsibility, NCC/BCA | Site safety incidents, subcontractor disputes, programme recovery under pressure |
+| Sales | Pipeline management, consultative selling, negotiation frameworks, territory planning | Account retention under competitive threat, quota recovery plans, deal strategy |
+| HR & People | Fair Work Act, Modern Awards, NES, enterprise bargaining, WHS, unfair dismissal | Complex redundancy scenarios, protected attribute situations, performance management |
+| Marketing | Campaign strategy, attribution modelling, brand management, ACMA/TGA compliance | Crisis communication, negative sentiment response, budget reallocation decisions |
+| Education | AITSL standards, curriculum frameworks, WWCC, differentiated learning, NAPLAN | Classroom management with diverse needs, disengaged parent engagement, learning difficulty identification |
+| Customer Service | Consumer law, escalation frameworks, NPS/CSAT, complaint resolution, ombudsman | Escalation handling without authority, partially valid complaints, social media threat response |
+| Operations | Supply chain risk, ISO frameworks, continuous improvement, vendor management | Supply disruption recovery, capacity planning under constraint, quality failure response |
+| Design | Accessibility (DDA/WCAG), UX research, design systems, stakeholder management | Design trade-off decisions, accessibility vs deadline conflicts, user research methodology |
+| Data & Analytics | Privacy Act/APPs, CDR framework, data governance, statistical methodology | Data breach response, methodology trade-offs, stakeholder communication of findings |
+| Technology | ASD Essential Eight, PSPF, cloud architecture, system design, DevOps | System failure diagnosis, architecture trade-offs, scaling under load, security incident response |
 
-The AI doesn't need to "know" an industry the way a recruiter does after 10 years. It has **encyclopaedic knowledge of every industry simultaneously** and generates scenarios from that knowledge in real-time. No human can match this breadth.
+Each industry has specific hard skills, soft skills, sample questions, and level descriptors (basic → expert) that the AI uses to calibrate question difficulty and evaluate responses. The scenarios aren't scripted — they're generated from the AI's domain knowledge combined with the candidate's specific background, making every interview unique.
 
 Your recruiter's edge is DEPTH in their specific niche + relationships. The AI's edge is consistent, testable, unbiased assessment at scale.
 

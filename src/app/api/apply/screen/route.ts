@@ -74,14 +74,16 @@ export async function POST(request: NextRequest) {
     // 2. Fetch company settings for threshold
     let atsThreshold = 40;
     let atsAutoReject = true;
+    let autoInviteInterview = false;
     const { data: companySettings } = await supabase
       .from("company_settings")
-      .select("ats_pass_threshold, ats_auto_reject")
+      .select("ats_pass_threshold, ats_auto_reject, auto_invite_interview")
       .eq("company_id", app.company_id)
       .single();
     if (companySettings) {
       atsThreshold = companySettings.ats_pass_threshold ?? 40;
       atsAutoReject = companySettings.ats_auto_reject ?? true;
+      autoInviteInterview = companySettings.auto_invite_interview ?? false;
     }
 
     // 3. Scrape portfolio website if URL provided
@@ -152,17 +154,42 @@ export async function POST(request: NextRequest) {
       screening.match_score
     );
 
+    // 4b. Generate interview brief from screening data (for ALL candidates, not just GitHub)
+    const interviewBrief = [
+      `Candidate: ${candidate.full_name || "Unknown"}`,
+      `Role: ${job.title}`,
+      `ATS Score: ${screening.match_score}/100 (${screening.recommendation})`,
+      `Summary: ${screening.summary}`,
+      screening.strengths.length > 0 ? `Strengths: ${screening.strengths.join("; ")}` : "",
+      screening.concerns.length > 0 ? `Concerns to probe: ${screening.concerns.join("; ")}` : "",
+      screening.consistency_flags && screening.consistency_flags.length > 0
+        ? `Resume consistency flags: ${screening.consistency_flags.join("; ")}`
+        : "",
+      screening.key_qualifications
+        .filter((q) => !q.met)
+        .map((q) => `Unmet qualification: ${q.qualification} — ${q.evidence}`)
+        .join("\n"),
+      screening.suggested_interview_topics.length > 0
+        ? `Topics to explore: ${screening.suggested_interview_topics.join("; ")}`
+        : "",
+    ]
+      .filter(Boolean)
+      .join("\n");
+
     // 5. Update application with results
     const updateData: Record<string, unknown> = {
       stage_1_score: screening.match_score,
       stage_1_passed: screening.pass,
       match_score: screening.match_score,
-      match_breakdown: screening,
+      match_breakdown: {
+        ...screening,
+        interview_brief: interviewBrief,
+      },
       updated_at: new Date().toISOString(),
     };
 
     if (screening.pass) {
-      updateData.current_stage = "stage_1_passed";
+      updateData.current_stage = autoInviteInterview ? "interview_invited" : "stage_1_passed";
     } else if (atsAutoReject) {
       updateData.current_stage = "rejected";
       updateData.status = "rejected";
@@ -175,6 +202,36 @@ export async function POST(request: NextRequest) {
       .from("applications")
       .update(updateData)
       .eq("id", application_id);
+
+    // Auto-create interview token if screening passed and auto-invite is enabled
+    if (screening.pass && autoInviteInterview) {
+      const token = crypto.randomUUID();
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 7); // 7-day expiry
+
+      await supabase.from("interview_tokens").insert({
+        application_id,
+        token,
+        status: "pending",
+        expires_at: expiresAt.toISOString(),
+      });
+
+      // Fire interview invite email (fire and forget)
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+      const interviewUrl = `${baseUrl}/interview/${token}/prep`;
+      console.log("[screen] Auto-invited to interview:", interviewUrl);
+
+      // Trigger invite email via the existing invite endpoint
+      fetch(`${baseUrl}/api/candidates/${(app as Record<string, unknown>).candidate_id}/invite`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          application_id,
+          interview_url: interviewUrl,
+          auto_invited: true,
+        }),
+      }).catch(() => {});
+    }
 
     // Dispatch screening completed webhook
     dispatchWebhook(app.company_id, "candidate.screening_completed", {
@@ -202,6 +259,19 @@ export async function POST(request: NextRequest) {
 
     // Push results to any connected ATS integrations (fire and forget)
     pushResultsToATS(app.company_id, application_id, "screening_completed").catch(() => {});
+
+    // Auto-trigger Loom analysis if candidate submitted a Loom URL (fire and forget)
+    const loomUrl = formData.loom_url as string;
+    if (loomUrl?.includes("loom.com")) {
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+      fetch(`${baseUrl}/api/loom/analyze`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ application_id, loom_url: loomUrl }),
+      }).catch((err) => {
+        console.error("[screen] Loom analysis trigger failed:", err);
+      });
+    }
 
     // Send email notification (fire and forget, non-fatal)
     const { sendATSNotification } = await import("@/lib/email/notifications");
