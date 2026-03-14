@@ -73,7 +73,7 @@ export async function POST(
         .from("company_settings")
         .select("interview_duration_minutes")
         .eq("company_id", job.company_id)
-        .single();
+        .maybeSingle();
 
       return NextResponse.json({
         assistant_id: existingAssistantId,

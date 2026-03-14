@@ -68,14 +68,16 @@ export async function POST(request: NextRequest) {
       application.candidates?.full_name
     );
 
-    // Build full transcript text
+    // Build full transcript text — filter out empty/null messages
     const transcriptText = (messages || [])
       .filter(
-        (m: VapiMessage) => m.role === "assistant" || m.role === "user"
+        (m: VapiMessage) =>
+          (m.role === "assistant" || m.role === "user") &&
+          (m.content || m.message || "").trim().length > 0
       )
       .map(
         (m: VapiMessage) =>
-          `${m.role === "assistant" ? "Interviewer" : "Candidate"}: ${m.content || m.message}`
+          `${m.role === "assistant" ? "Interviewer" : "Candidate"}: ${(m.content || m.message || "").trim()}`
       )
       .join("\n\n");
 
