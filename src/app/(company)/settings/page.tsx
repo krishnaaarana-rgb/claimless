@@ -44,6 +44,7 @@ const FORM_FIELDS = [
   { key: "linkedin_url", label: "LinkedIn URL" },
   { key: "github_username", label: "GitHub Username" },
   { key: "portfolio_url", label: "Portfolio URL" },
+  { key: "loom_url", label: "Video Introduction (Loom)" },
   { key: "cover_letter", label: "Cover Letter" },
 ];
 

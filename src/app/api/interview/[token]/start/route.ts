@@ -112,7 +112,7 @@ export async function POST(
       .from("candidate_profiles")
       .select("github_analysis, interview_context_summary, interview_suggested_questions")
       .eq("candidate_id", candidate.id)
-      .single();
+      .maybeSingle();
 
     if (profile?.github_analysis) {
       githubContext = `\n\nGITHUB PROFILE:\n${JSON.stringify(profile.github_analysis, null, 2)}`;
@@ -149,7 +149,7 @@ export async function POST(
       "interview_duration_minutes, interview_style, interview_focus, interview_custom_instructions"
     )
     .eq("company_id", job.company_id)
-    .single();
+    .maybeSingle();
 
   const duration = settings?.interview_duration_minutes || 15;
   const style = settings?.interview_style || "conversational";
