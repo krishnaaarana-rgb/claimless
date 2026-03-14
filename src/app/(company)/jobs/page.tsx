@@ -4,6 +4,11 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Plus, MoreHorizontal, Copy, Pause, X } from "lucide-react";
 
+interface AssignedUser {
+  user_id: string;
+  name: string;
+}
+
 interface JobItem {
   id: string;
   title: string;
@@ -17,6 +22,8 @@ interface JobItem {
   pass_rate: number | null;
   passed_count: number;
   interviewing_count: number;
+  assigned_to: AssignedUser[];
+  created_by_name: string | null;
   created_at: string;
 }
 
@@ -193,8 +200,26 @@ export default function JobsPage() {
                     )}
                     <span className="text-[12px] text-[#9B9A97]">
                       Created {relativeTime(job.created_at)}
+                      {job.created_by_name && ` by ${job.created_by_name}`}
                     </span>
                   </div>
+
+                  {/* Assigned recruiters */}
+                  {job.assigned_to && job.assigned_to.length > 0 && (
+                    <div className="flex items-center gap-1.5 mt-2">
+                      <span className="text-[11px] text-[#9B9A97] uppercase tracking-wider font-medium">Assigned:</span>
+                      <div className="flex items-center gap-1">
+                        {job.assigned_to.map((u) => (
+                          <span
+                            key={u.user_id}
+                            className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#DBEAFE] text-[#1D4ED8] border border-blue-200"
+                          >
+                            {u.name}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Actions */}

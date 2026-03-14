@@ -31,9 +31,16 @@ export async function GET() {
   const admin = createAdminClient();
   const { data: jobs, error } = await admin
     .from("jobs")
-    .select("*, applications(id, current_stage, match_score, match_breakdown)")
+    .select("*, applications(id, current_stage, match_score, match_breakdown), job_assignments(user_id)")
     .eq("company_id", companyId)
     .order("created_at", { ascending: false });
+
+  // Fetch all team members for name lookup
+  const { data: teamMembers } = await admin
+    .from("company_users")
+    .select("user_id, full_name, email")
+    .eq("company_id", companyId);
+  const memberMap = new Map((teamMembers || []).map((m) => [m.user_id, m]));
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -69,15 +76,29 @@ export async function GET() {
       }
     }
 
+    // Get assigned recruiters
+    const assignments = (job.job_assignments as { user_id: string }[] || [])
+      .map((a) => {
+        const member = memberMap.get(a.user_id);
+        return member ? { user_id: a.user_id, name: member.full_name || member.email } : null;
+      })
+      .filter(Boolean);
+
+    // Get creator name
+    const creator = job.created_by ? memberMap.get(job.created_by) : null;
+
     return {
       ...job,
       applications: undefined,
+      job_assignments: undefined,
       applicant_count: applicantCount,
       stage_counts: stageCount,
       avg_score: scoreCount > 0 ? Math.round(totalScore / scoreCount) : null,
       pass_rate: screenedCount > 0 ? Math.round((passedCount / screenedCount) * 100) : null,
       passed_count: stageCount.stage_1_passed || 0,
       interviewing_count: (stageCount.interview_invited || 0) + (stageCount.interview_completed || 0),
+      assigned_to: assignments,
+      created_by_name: creator?.full_name || creator?.email || null,
     };
   });
 

@@ -528,6 +528,9 @@ export default function CandidatesPage() {
 
   // Tab state (GHL-style: "all" or a job_id)
   const [activeTab, setActiveTab] = useState("all");
+  const [assignmentFilter, setAssignmentFilter] = useState<"all" | "mine">("all");
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [myAssignedJobIds, setMyAssignedJobIds] = useState<string[]>([]);
 
   // Filters
   const [search, setSearch] = useState("");
@@ -557,20 +560,36 @@ export default function CandidatesPage() {
 
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  // Fetch jobs for tabs
+  // Fetch jobs for tabs + user role + assignments
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch("/api/jobs");
-        const data = await res.json();
+        const [jobsRes, meRes, assignRes] = await Promise.all([
+          fetch("/api/jobs"),
+          fetch("/api/team/me"),
+          fetch("/api/jobs/assignments"),
+        ]);
+        const jobsData = await jobsRes.json();
         setJobs(
-          (data.jobs || []).map(
+          (jobsData.jobs || []).map(
             (j: { id: string; title: string; applicant_count?: number }) => ({
               id: j.id,
               title: j.title,
               applicant_count: j.applicant_count ?? 0,
             })
           )
+        );
+
+        const meData = await meRes.json();
+        if (meData.role) {
+          setUserRole(meData.role);
+          // Default members to "mine" view
+          if (meData.role === "member") setAssignmentFilter("mine");
+        }
+
+        const assignData = await assignRes.json();
+        setMyAssignedJobIds(
+          (assignData.assignments || []).map((a: { job_id: string }) => a.job_id)
         );
       } catch {
         // silent
@@ -591,6 +610,10 @@ export default function CandidatesPage() {
         if (min) params.set("min_score", min);
         if (max) params.set("max_score", max);
       }
+      // Filter by assigned jobs
+      if (assignmentFilter === "mine" && myAssignedJobIds.length > 0) {
+        params.set("job_ids", myAssignedJobIds.join(","));
+      }
       params.set("sort", sortField);
       params.set("order", sortOrder);
       params.set("page", String(page));
@@ -604,7 +627,7 @@ export default function CandidatesPage() {
     } finally {
       setLoading(false);
     }
-  }, [search, activeTab, statusFilter, scoreFilter, sortField, sortOrder, page]);
+  }, [search, activeTab, statusFilter, scoreFilter, sortField, sortOrder, page, assignmentFilter, myAssignedJobIds]);
 
   useEffect(() => {
     fetchCandidates();
@@ -861,7 +884,34 @@ export default function CandidatesPage() {
     <div className="space-y-0">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold text-[#37352F]">Candidates</h1>
+        <div className="flex items-center gap-4">
+          <h1 className="text-2xl font-bold text-[#37352F]">Candidates</h1>
+          {/* Assignment filter — show for all roles, default "Mine" for members */}
+          {myAssignedJobIds.length > 0 && (
+            <div className="flex items-center rounded-lg border border-[#E9E9E7] overflow-hidden">
+              <button
+                onClick={() => { setAssignmentFilter("mine"); setPage(1); }}
+                className={`px-3 py-1.5 text-[12px] font-medium transition-colors ${
+                  assignmentFilter === "mine"
+                    ? "bg-[#2383E2] text-white"
+                    : "bg-white text-[#9B9A97] hover:bg-[#F7F6F3]"
+                }`}
+              >
+                My Candidates
+              </button>
+              <button
+                onClick={() => { setAssignmentFilter("all"); setPage(1); }}
+                className={`px-3 py-1.5 text-[12px] font-medium transition-colors ${
+                  assignmentFilter === "all"
+                    ? "bg-[#2383E2] text-white"
+                    : "bg-white text-[#9B9A97] hover:bg-[#F7F6F3]"
+                }`}
+              >
+                All
+              </button>
+            </div>
+          )}
+        </div>
         <button
           onClick={handleExportCSV}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] font-medium border border-[#E9E9E7] text-[#37352F] hover:bg-[#F7F6F3] transition-colors"

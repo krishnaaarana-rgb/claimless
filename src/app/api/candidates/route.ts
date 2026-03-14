@@ -65,8 +65,14 @@ export async function GET(request: NextRequest) {
     .eq("company_id", companyId);
 
   // Apply filters
+  const jobIds = url.searchParams.get("job_ids");
   if (jobId) {
     query = query.eq("job_id", jobId);
+  } else if (jobIds) {
+    const ids = jobIds.split(",").filter(Boolean);
+    if (ids.length > 0) {
+      query = query.in("job_id", ids);
+    }
   }
 
   if (statusFilter) {
