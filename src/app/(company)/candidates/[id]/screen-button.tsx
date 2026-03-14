@@ -10,10 +10,11 @@ export function ScreenButton({ applicationId }: { applicationId: string }) {
   const handleScreen = async () => {
     setLoading(true);
     try {
-      const res = await fetch(
-        `/api/dashboard/applications/${applicationId}/screen`,
-        { method: "POST" }
-      );
+      const res = await fetch("/api/apply/screen", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ application_id: applicationId }),
+      });
       if (res.ok) {
         router.refresh();
       }

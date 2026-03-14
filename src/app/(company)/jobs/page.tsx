@@ -265,14 +265,32 @@ export default function JobsPage() {
                             Copy Link
                           </button>
                           <button
-                            onClick={() => setOpenMenu(null)}
+                            onClick={async () => {
+                              setOpenMenu(null);
+                              const newStatus = job.status === "paused" ? "active" : "paused";
+                              await fetch(`/api/jobs/${job.id}`, {
+                                method: "PATCH",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ status: newStatus }),
+                              });
+                              fetchJobs();
+                            }}
                             className="w-full text-left px-3 py-2 text-[13px] text-[#37352F] hover:bg-[#F7F6F3] flex items-center gap-2 transition-colors"
                           >
                             <Pause size={13} className="text-[#9B9A97]" />
-                            Pause
+                            {job.status === "paused" ? "Resume" : "Pause"}
                           </button>
                           <button
-                            onClick={() => setOpenMenu(null)}
+                            onClick={async () => {
+                              if (!confirm(`Close "${job.title}"? This will stop accepting new applications.`)) return;
+                              setOpenMenu(null);
+                              await fetch(`/api/jobs/${job.id}`, {
+                                method: "PATCH",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ status: "closed" }),
+                              });
+                              fetchJobs();
+                            }}
                             className="w-full text-left px-3 py-2 text-[13px] text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors"
                           >
                             <X size={13} className="text-red-400" />
