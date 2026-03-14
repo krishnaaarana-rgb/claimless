@@ -8,6 +8,16 @@ interface VapiMessage {
 }
 
 export async function POST(request: NextRequest) {
+  // Verify webhook is from Vapi using the server URL secret
+  const vapiSecret = process.env.VAPI_API_KEY;
+  if (vapiSecret) {
+    const authHeader = request.headers.get("x-vapi-secret") || request.headers.get("authorization");
+    if (authHeader !== vapiSecret && authHeader !== `Bearer ${vapiSecret}`) {
+      console.warn("[vapi-webhook] Invalid or missing auth header");
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+  }
+
   const body = await request.json();
   const event = body.message?.type || body.type;
 
@@ -88,12 +98,18 @@ export async function POST(request: NextRequest) {
       .join("\n\n");
 
     // Store transcript and recording URL
+    // Trim injected_prompt to keep JSONB size manageable (full prompt can be 5-10KB)
+    const existingFormData = { ...(application.application_form_data || {}) } as Record<string, unknown>;
+    if (typeof existingFormData.injected_prompt === "string" && (existingFormData.injected_prompt as string).length > 500) {
+      existingFormData.injected_prompt = (existingFormData.injected_prompt as string).slice(0, 500) + "... [truncated for storage]";
+    }
+
     await supabase
       .from("applications")
       .update({
         current_stage: "interview_completed",
         application_form_data: {
-          ...(application.application_form_data || {}),
+          ...existingFormData,
           interview_transcript: transcriptText,
           interview_recording_url:
             recordingUrl || stereoRecordingUrl || null,

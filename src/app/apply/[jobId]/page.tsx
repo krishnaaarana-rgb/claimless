@@ -147,20 +147,32 @@ export default function ApplyPage({
     setFormValues((prev) => ({ ...prev, [key]: value }));
   };
 
+  const [resumeWarning, setResumeWarning] = useState<string | null>(null);
+
   const handleResumeChange = async (file: File | null) => {
     setResumeFile(file);
     setResumeParsed(false);
-    if (file && file.type === "application/pdf") {
+    setResumeWarning(null);
+    if (!file) return;
+
+    // Check file type
+    if (file.type === "application/pdf") {
       try {
         const text = await extractPDFText(file);
         if (text.length > 0) {
           setFormValues((prev) => ({ ...prev, _resume_text: text }));
           setResumeParsed(true);
           console.log("[apply-page] PDF text extracted:", text.length, "chars");
+        } else {
+          setResumeWarning("Could not extract text from this PDF. It may be a scanned image. The AI will have limited context for screening.");
         }
       } catch (err) {
         console.error("[apply-page] PDF extraction failed:", err);
+        setResumeWarning("Failed to parse this PDF. Please try a different file or paste your resume in the cover letter field.");
       }
+    } else {
+      // .doc/.docx — we can't parse these client-side
+      setResumeWarning("Only PDF files can be auto-parsed for AI screening. Your file will be stored but the AI won't be able to read it. For best results, upload a PDF.");
     }
   };
 
@@ -400,11 +412,15 @@ export default function ApplyPage({
                     <p className="text-[12px] text-[#9B9A97]">
                       {resumeFile
                         ? resumeParsed
-                          ? "Resume parsed"
+                          ? "Resume parsed successfully"
                           : "Resume selected"
-                        : "PDF recommended for best results"}
-                      {resumeFile && " \u2014 PDF recommended for best results"}
+                        : "PDF recommended for best AI analysis"}
                     </p>
+                    {resumeWarning && (
+                      <p className="text-[12px] text-amber-600 mt-1">
+                        {resumeWarning}
+                      </p>
+                    )}
                   </div>
                 );
               }
