@@ -13,6 +13,7 @@ import {
   UserCog,
   Plug,
   LogOut,
+  FileText,
 } from "lucide-react";
 import { ToastProvider } from "@/components/toast";
 import type { Role } from "@/lib/auth/permissions";
@@ -32,6 +33,7 @@ const NAV_SECTIONS: { label: string; items: NavItem[] }[] = [
       { href: "/candidates", label: "Candidates", icon: Users },
       { href: "/jobs", label: "Jobs", icon: Briefcase },
       { href: "/interviews", label: "Interviews", icon: Mic },
+      { href: "/templates", label: "Templates", icon: FileText },
     ],
   },
   {
