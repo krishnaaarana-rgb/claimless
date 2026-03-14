@@ -69,9 +69,27 @@ export async function analyzeWithClaude<T>(
 
   try {
     return JSON.parse(cleaned) as T;
-  } catch (err) {
-    console.error("[claude] Failed to parse JSON response:", cleaned.slice(0, 500));
-    throw new Error(`Claude returned invalid JSON: ${(err as Error).message}`);
+  } catch {
+    // Fallback: try to extract the JSON object with regex
+    const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      try {
+        return JSON.parse(jsonMatch[0]) as T;
+      } catch {
+        // Second fallback: fix common JSON issues (unescaped quotes in strings)
+        try {
+          const fixed = jsonMatch[0]
+            .replace(/[\x00-\x1f]/g, " ") // Remove control characters
+            .replace(/,\s*([}\]])/g, "$1"); // Remove trailing commas
+          return JSON.parse(fixed) as T;
+        } catch (innerErr) {
+          console.error("[claude] Failed to parse JSON after fixes:", cleaned.slice(0, 500));
+          throw new Error(`Claude returned invalid JSON: ${(innerErr as Error).message}`);
+        }
+      }
+    }
+    console.error("[claude] No JSON object found in response:", cleaned.slice(0, 500));
+    throw new Error("Claude response did not contain a valid JSON object");
   }
 }
 
