@@ -38,6 +38,8 @@ export interface IndustryInterviewPromptInput {
     name: string;
     resume_text?: string;
     github_context?: string;
+    loom_context?: string;
+    pre_generated_context?: string;
     strengths?: string[];
     concerns?: string[];
     suggested_topics?: string[];
@@ -389,6 +391,14 @@ function buildCandidateContext(
 
   if (candidate.github_context) {
     context += `\n${candidate.github_context}\n`;
+  }
+
+  if (candidate.loom_context) {
+    context += `\n${candidate.loom_context}\n`;
+  }
+
+  if (candidate.pre_generated_context) {
+    context += `\n${candidate.pre_generated_context}\n`;
   }
 
   if (candidate.strengths && candidate.strengths.length > 0) {

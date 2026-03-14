@@ -48,35 +48,32 @@ The problem isn't that candidates lie (though many do). The problem is that **th
 
 When a candidate enters your pipeline (via ATS integration, direct application, or API), Claimless builds a verified profile by analysing everything available about them.
 
-**What we analyse depends on the role:**
+**What we analyse:**
 
-| Role Type | What We Verify | What This Reveals |
-|---|---|---|
-| Technical (dev, data, engineering) | Code repositories, shipped products, technical writing, open-source contributions | Real technical ability, code quality, architectural thinking, collaboration patterns |
-| Healthcare | Certifications, published research, clinical experience patterns, continuing education | Registration currency, specialisation depth, evidence-based practice awareness |
-| Finance & Accounting | Professional body memberships, regulatory knowledge signals, portfolio/reporting samples | Compliance readiness, technical depth beyond surface qualifications |
-| Sales & Marketing | Campaign portfolios, published content, demonstrable revenue impact, client testimonials | Real results vs. claimed results, strategic thinking, market understanding |
-| Operations & Management | Process documentation, project outcomes, certifications, methodology evidence | Actual hands-on experience vs. delegated management |
-| General / Any Role | Resume deep analysis, career progression logic, timeline consistency, skill claim verification | Whether their story adds up — do the dates, titles, responsibilities, and claimed outcomes make logical sense? |
+- **Resume deep analysis** — AI reads the full resume and checks for internal consistency: do the dates make sense? Does the career progression follow a logical path? Do the claimed responsibilities match the seniority level? Are there unexplained gaps or overlapping roles?
+- **Code repositories (technical roles)** — for developers, engineers, and data roles, we scrape their GitHub: top 10 repos, code quality, architectural decisions, languages used, commit patterns, test coverage, README quality. This reveals what they've actually built vs. what they claim.
+- **Personal website / portfolio** — we scrape and analyse whatever portfolio URL the candidate provides
+- **Candidate-submitted links** — candidates can submit up to 5 supporting links (case studies, published articles, certifications, Dribbble/Behance portfolios, project demos). We scrape and analyse each one.
+- **Company validation (AU)** — for Australian candidates, we verify employer details against the Australian Business Register (ABR). If someone claims "Senior Manager" at a company registered as a sole trader, that's a flag.
 
-The key insight: **we don't just check IF they have experience. We analyse WHETHER their claimed experience is internally consistent and externally verifiable.**
-
-A resume that says "Senior Manager, 2019-2022" at a company that had 4 employees in 2019 raises questions. A claimed "40% revenue increase" during a period when the entire industry contracted raises questions. We catch these patterns at scale — across every candidate, every time.
+The key insight: **we don't just check IF they have experience. We analyse WHETHER their claimed experience is internally consistent.** The AI catches patterns across the entire resume that a human skimming for 30 seconds would miss.
 
 **Output**: A verified candidate profile with evidence-backed skill scores, consistency flags, verified strengths, identified concerns, and a pre-generated interview brief that tells the AI interviewer exactly what to probe.
 
 ### Stage 2: Video Communication Analysis (Optional)
 
-Candidates submit a short video (Loom or similar) responding to role-specific prompts. Our AI analyses:
+Candidates submit a short Loom video responding to role-specific prompts. We automatically scrape the transcript and analyse it with AI:
 
-- **Communication clarity** — can they explain complex ideas simply?
-- **Confidence and presence** — not theatre, but genuine comfort with the material
-- **Technical depth** — do they go beyond surface-level when discussing their work?
-- **Cultural signals** — energy, enthusiasm, self-awareness
+- **Communication clarity** (0-10) — can they explain complex ideas simply? Is there a logical flow?
+- **Confidence and presence** (0-10) — genuine comfort with the material, not performative
+- **Technical depth** (0-10) — do they go beyond surface-level? Do they mention specific tools, methods, outcomes?
+- **Relevance to role** (0-10) — do they connect their experience to what the job actually needs?
+
+The AI also extracts key quotes from the transcript and flags red signals (negativity about past employers, inflated claims, generic talking points that could apply to any job).
 
 This isn't a beauty contest. It's a communication assessment. For client-facing roles, this matters enormously. For backend technical roles, it's optional.
 
-**Output**: A communication score with specific observations, feeding into the interview context.
+**Output**: A scored communication assessment with evidence, which is automatically injected into the Stage 3 interview prompt — so the AI interviewer knows how the candidate presented themselves on video and can probe any concerns raised.
 
 ### Stage 3: The AI Voice Interview — This Is the Core
 

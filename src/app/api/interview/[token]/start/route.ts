@@ -97,14 +97,15 @@ export async function POST(
     (application.application_form_data?.resume_text as string) ||
     "No resume provided";
 
-  // 4. Get GitHub profile if connected
+  // 4. Get GitHub profile + pre-generated interview context if available
   let githubContext = "";
+  let preGeneratedContext = "";
   const ghUser = candidate.github_username;
   const hasValidGithub = ghUser && /^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,37}[a-zA-Z0-9])?$/.test(ghUser) && !ghUser.includes("http") && !ghUser.includes("localhost");
   if (hasValidGithub) {
     const { data: profile } = await supabase
       .from("candidate_profiles")
-      .select("github_analysis")
+      .select("github_analysis, interview_context_summary, interview_suggested_questions")
       .eq("candidate_id", candidate.id)
       .single();
 
@@ -113,6 +114,27 @@ export async function POST(
     } else {
       githubContext = `\n\nThe candidate's GitHub profile is github.com/${ghUser}. Ask about their open source contributions or notable repos.`;
     }
+
+    // Inject pre-generated interview context if available
+    if (profile?.interview_context_summary) {
+      preGeneratedContext += `\n\nPRE-INTERVIEW BRIEFING:\n${profile.interview_context_summary}`;
+    }
+    if (profile?.interview_suggested_questions?.length) {
+      preGeneratedContext += `\n\nSUGGESTED QUESTIONS (use as inspiration, adapt based on conversation):\n${(profile.interview_suggested_questions as string[]).map((q: string, i: number) => `${i + 1}. ${q}`).join("\n")}`;
+    }
+  }
+
+  // 4b. Get Loom analysis context if available
+  let loomContext = "";
+  const { data: loomSubmission } = await supabase
+    .from("loom_submissions")
+    .select("loom_context_summary")
+    .eq("application_id", application.id)
+    .eq("status", "analyzed")
+    .single();
+
+  if (loomSubmission?.loom_context_summary) {
+    loomContext = `\n\n${loomSubmission.loom_context_summary}`;
   }
 
   // 5. Get company interview settings
@@ -147,6 +169,8 @@ export async function POST(
       name: candidateName,
       resume_text: resumeText,
       github_context: githubContext || undefined,
+      loom_context: loomContext || undefined,
+      pre_generated_context: preGeneratedContext || undefined,
       strengths: strengths.length > 0 ? strengths : undefined,
       concerns: concerns.length > 0 ? concerns : undefined,
       suggested_topics: interviewTopics.length > 0 ? interviewTopics : undefined,
@@ -221,6 +245,8 @@ CANDIDATE INTELLIGENCE (internal — use to guide questions, never reveal):
 RESUME:
 ${resumeText}
 ${githubContext}
+${loomContext}
+${preGeneratedContext}
 
 ${strengths.length > 0 ? `VERIFIED STRENGTHS: ${strengths.join(", ")}` : ""}
 ${concerns.length > 0 ? `CONCERNS TO PROBE: ${concerns.join(", ")}` : ""}
