@@ -46,11 +46,21 @@ export interface Job {
   industry_niche: string | null;
   skill_requirements: SkillRequirement[];
   industry_interview_context: string | null;
+  created_by: string | null;
   status: "draft" | "active" | "paused" | "closed";
   published_at: string | null;
   closed_at: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface JobAssignment {
+  id: string;
+  job_id: string;
+  user_id: string;
+  company_id: string;
+  assigned_by: string | null;
+  created_at: string;
 }
 
 export interface JobRequirement {

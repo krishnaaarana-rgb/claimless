@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getMembership, hasMinRole } from "@/lib/auth/permissions";
 
 async function getCompanyId(userId: string) {
   const admin = createAdminClient();
@@ -61,6 +62,12 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Only admin/owner can modify settings
+  const membership = await getMembership(user.id);
+  if (!membership || !hasMinRole(membership.role, "admin")) {
+    return NextResponse.json({ error: "Admin access required to modify settings" }, { status: 403 });
+  }
+
   const companyId = await getCompanyId(user.id);
   if (!companyId) {
     return NextResponse.json({ error: "No company found" }, { status: 404 });
@@ -83,6 +90,10 @@ export async function PATCH(request: NextRequest) {
 
   if (body.ats_auto_reject !== undefined) {
     updates.ats_auto_reject = Boolean(body.ats_auto_reject);
+  }
+
+  if (body.auto_invite_interview !== undefined) {
+    updates.auto_invite_interview = Boolean(body.auto_invite_interview);
   }
 
   if (body.brand_accent_color !== undefined) {

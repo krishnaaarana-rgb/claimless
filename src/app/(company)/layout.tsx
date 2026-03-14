@@ -15,8 +15,16 @@ import {
   LogOut,
 } from "lucide-react";
 import { ToastProvider } from "@/components/toast";
+import type { Role } from "@/lib/auth/permissions";
 
-const NAV_SECTIONS = [
+interface NavItem {
+  href: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  minRole?: Role;
+}
+
+const NAV_SECTIONS: { label: string; items: NavItem[] }[] = [
   {
     label: "OVERVIEW",
     items: [
@@ -27,14 +35,21 @@ const NAV_SECTIONS = [
     ],
   },
   {
-    label: "SETTINGS",
+    label: "MANAGE",
     items: [
-      { href: "/settings", label: "Settings", icon: Settings },
-      { href: "/integrations", label: "Integrations", icon: Plug },
-      { href: "/team", label: "Team", icon: UserCog },
+      { href: "/settings", label: "Settings", icon: Settings, minRole: "admin" },
+      { href: "/integrations", label: "Integrations", icon: Plug, minRole: "admin" },
+      { href: "/team", label: "Team", icon: UserCog, minRole: "admin" },
     ],
   },
 ];
+
+const ROLE_LEVEL: Record<Role, number> = {
+  owner: 4,
+  admin: 3,
+  member: 2,
+  viewer: 1,
+};
 
 export default function CompanyLayout({
   children,
@@ -45,6 +60,7 @@ export default function CompanyLayout({
   const router = useRouter();
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [userName, setUserName] = useState<string | null>(null);
+  const [userRole, setUserRole] = useState<Role | null>(null);
   const [signingOut, setSigningOut] = useState(false);
   const [candidateCount, setCandidateCount] = useState<number | null>(null);
   const [expanded, setExpanded] = useState(false);
@@ -55,9 +71,16 @@ export default function CompanyLayout({
       if (user) {
         setUserEmail(user.email ?? null);
         setUserName(user.user_metadata?.full_name ?? null);
+
+        // Fetch role
+        fetch("/api/team/me")
+          .then((r) => r.json())
+          .then((d) => {
+            if (d.role) setUserRole(d.role as Role);
+          })
+          .catch(() => {});
       }
     });
-    // Fetch candidate count for sidebar badge
     fetch("/api/dashboard/stats")
       .then((r) => r.json())
       .then((d) => setCandidateCount(d.total_candidates ?? null))
@@ -84,6 +107,21 @@ export default function CompanyLayout({
     : userEmail
       ? userEmail[0].toUpperCase()
       : "?";
+
+  const canSeeItem = (item: NavItem) => {
+    if (!item.minRole) return true;
+    if (!userRole) return false;
+    return ROLE_LEVEL[userRole] >= ROLE_LEVEL[item.minRole];
+  };
+
+  const roleBadge = userRole && userRole !== "owner" ? (
+    <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full leading-none" style={{
+      background: userRole === "admin" ? "#DBEAFE" : userRole === "member" ? "#E9E9E7" : "#FEF3C7",
+      color: userRole === "admin" ? "#1D4ED8" : userRole === "member" ? "#73726E" : "#92400E",
+    }}>
+      {userRole}
+    </span>
+  ) : null;
 
   return (
     <ToastProvider>
@@ -119,80 +157,82 @@ export default function CompanyLayout({
 
           {/* Navigation */}
           <nav className="flex-1 px-2">
-            {NAV_SECTIONS.map((section) => (
-              <div key={section.label} style={{ marginTop: expanded ? 24 : 12 }} className="first:!mt-2">
-                {/* Section label */}
-                {expanded && (
-                  <div
-                    className="px-3 mb-2 text-[10px] font-medium uppercase tracking-[0.05em] whitespace-nowrap"
-                    style={{ color: "#9B9A97" }}
-                  >
-                    {section.label}
-                  </div>
-                )}
-                <div className="space-y-0.5">
-                  {section.items.map((item) => {
-                    const isActive =
-                      pathname === item.href ||
-                      pathname.startsWith(item.href + "/");
-                    const Icon = item.icon;
-                    return (
-                      <div key={item.href} className="relative group/nav">
-                        <Link
-                          href={item.href}
-                          className={`flex items-center rounded-md text-[13px] font-medium transition-colors ${
-                            isActive ? "text-[#37352F]" : "hover:bg-[#EFEFEF]"
-                          }`}
-                          style={{
-                            ...(expanded
-                              ? {
-                                  gap: 12,
-                                  paddingLeft: 12,
-                                  paddingTop: 8,
-                                  paddingBottom: 8,
-                                  justifyContent: "flex-start",
-                                  ...(isActive
-                                    ? { background: "#EFEFEF", color: "#37352F", fontWeight: 600 }
-                                    : { color: "#73726E" }),
-                                }
-                              : {
-                                  justifyContent: "center",
-                                  paddingTop: 8,
-                                  paddingBottom: 8,
-                                  ...(isActive
-                                    ? { background: "#EFEFEF", color: "#37352F" }
-                                    : { color: "#73726E" }),
-                                }),
-                            transition: "all 200ms ease-in-out",
-                          }}
-                        >
-                          <Icon size={18} strokeWidth={1.8} className="shrink-0" />
-                          {expanded && (
-                            <span className="flex-1 whitespace-nowrap">
+            {NAV_SECTIONS.map((section) => {
+              const visibleItems = section.items.filter(canSeeItem);
+              if (visibleItems.length === 0) return null;
+              return (
+                <div key={section.label} style={{ marginTop: expanded ? 24 : 12 }} className="first:!mt-2">
+                  {expanded && (
+                    <div
+                      className="px-3 mb-2 text-[10px] font-medium uppercase tracking-[0.05em] whitespace-nowrap"
+                      style={{ color: "#9B9A97" }}
+                    >
+                      {section.label}
+                    </div>
+                  )}
+                  <div className="space-y-0.5">
+                    {visibleItems.map((item) => {
+                      const isActive =
+                        pathname === item.href ||
+                        pathname.startsWith(item.href + "/");
+                      const Icon = item.icon;
+                      return (
+                        <div key={item.href} className="relative group/nav">
+                          <Link
+                            href={item.href}
+                            className={`flex items-center rounded-md text-[13px] font-medium transition-colors ${
+                              isActive ? "text-[#37352F]" : "hover:bg-[#EFEFEF]"
+                            }`}
+                            style={{
+                              ...(expanded
+                                ? {
+                                    gap: 12,
+                                    paddingLeft: 12,
+                                    paddingTop: 8,
+                                    paddingBottom: 8,
+                                    justifyContent: "flex-start",
+                                    ...(isActive
+                                      ? { background: "#EFEFEF", color: "#37352F", fontWeight: 600 }
+                                      : { color: "#73726E" }),
+                                  }
+                                : {
+                                    justifyContent: "center",
+                                    paddingTop: 8,
+                                    paddingBottom: 8,
+                                    ...(isActive
+                                      ? { background: "#EFEFEF", color: "#37352F" }
+                                      : { color: "#73726E" }),
+                                  }),
+                              transition: "all 200ms ease-in-out",
+                            }}
+                          >
+                            <Icon size={18} strokeWidth={1.8} className="shrink-0" />
+                            {expanded && (
+                              <span className="flex-1 whitespace-nowrap">
+                                {item.label}
+                              </span>
+                            )}
+                            {item.label === "Candidates" && candidateCount != null && candidateCount > 0 && expanded && (
+                              <span
+                                className="text-[11px] font-medium px-1.5 py-0.5 rounded-full leading-none mr-1"
+                                style={{ background: "#EFEFEF", color: "#73726E" }}
+                              >
+                                {candidateCount}
+                              </span>
+                            )}
+                          </Link>
+                          {!expanded && (
+                            <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 rounded bg-[#37352F] text-white text-[12px] whitespace-nowrap opacity-0 group-hover/nav:opacity-100 pointer-events-none transition-opacity z-40">
                               {item.label}
-                            </span>
+                            </div>
                           )}
-                          {item.label === "Candidates" && candidateCount != null && candidateCount > 0 && expanded && (
-                            <span
-                              className="text-[11px] font-medium px-1.5 py-0.5 rounded-full leading-none mr-1"
-                              style={{ background: "#EFEFEF", color: "#73726E" }}
-                            >
-                              {candidateCount}
-                            </span>
-                          )}
-                        </Link>
-                        {/* Tooltip when collapsed */}
-                        {!expanded && (
-                          <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 rounded bg-[#37352F] text-white text-[12px] whitespace-nowrap opacity-0 group-hover/nav:opacity-100 pointer-events-none transition-opacity z-40">
-                            {item.label}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </nav>
 
           {/* User card */}
@@ -214,8 +254,11 @@ export default function CompanyLayout({
                 {expanded && (
                   <>
                     <div className="flex-1 min-w-0">
-                      <div className="text-[13px] font-medium text-[#37352F] truncate">
-                        {userName || userEmail}
+                      <div className="flex items-center gap-2">
+                        <span className="text-[13px] font-medium text-[#37352F] truncate">
+                          {userName || userEmail}
+                        </span>
+                        {roleBadge}
                       </div>
                       {userName && (
                         <div className="text-[11px] truncate" style={{ color: "#9B9A97" }}>

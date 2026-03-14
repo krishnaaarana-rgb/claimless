@@ -141,6 +141,7 @@ export async function POST(request: NextRequest) {
       industry_niche: body.industry_niche || null,
       skill_requirements: body.skill_requirements || [],
       industry_interview_context: industryInterviewContext,
+      created_by: user.id,
       status: isDraft ? "draft" : "active",
       published_at: isDraft ? null : new Date().toISOString(),
     })
@@ -149,6 +150,20 @@ export async function POST(request: NextRequest) {
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  // Auto-assign the creator to this job
+  if (job) {
+    try {
+      await admin.from("job_assignments").insert({
+        job_id: job.id,
+        user_id: user.id,
+        company_id: companyId,
+        assigned_by: user.id,
+      });
+    } catch {
+      // Non-fatal if assignment fails
+    }
   }
 
   return NextResponse.json({ job });
