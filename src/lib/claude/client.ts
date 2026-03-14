@@ -80,7 +80,11 @@ export async function analyzeWithClaude<T>(
         try {
           const fixed = jsonMatch[0]
             .replace(/[\x00-\x1f]/g, " ") // Remove control characters
-            .replace(/,\s*([}\]])/g, "$1"); // Remove trailing commas
+            .replace(/,\s*([}\]])/g, "$1") // Remove trailing commas
+            .replace(/\u2018|\u2019/g, "'") // Curly single quotes → straight
+            .replace(/\u201C|\u201D/g, '\\"') // Curly double quotes → escaped
+            .replace(/\u2014/g, "--") // Em dash → double hyphen
+            .replace(/\u2013/g, "-"); // En dash → hyphen
           return JSON.parse(fixed) as T;
         } catch (innerErr) {
           console.error("[claude] Failed to parse JSON after fixes:", cleaned.slice(0, 500));

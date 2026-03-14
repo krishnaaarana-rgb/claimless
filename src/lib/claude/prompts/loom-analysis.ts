@@ -79,8 +79,10 @@ Produce a JSON object:
   "summary": "2-3 sentence assessment of the candidate's video",
   "strengths": ["specific things they did well, with evidence from transcript"],
   "concerns": ["specific concerns, with evidence"],
-  "key_quotes": ["2-3 notable quotes from the transcript that reveal something important — good or bad"]
+  "key_quotes": ["2-3 short paraphrased quotes from the transcript (use single quotes inside, no special characters)"]
 }
+
+CRITICAL: Your response must be valid JSON. Do not use double quotes inside string values — use single quotes instead. Do not use special characters, em-dashes, or curly quotes.
 
 SCORING:
 - 8-10: Exceptional. Clear, specific, demonstrates real expertise. Move to interview.
