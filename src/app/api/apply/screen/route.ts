@@ -101,6 +101,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // 3b. Scrape candidate-submitted supporting links
+    const rawLinks = (formData.supporting_links as string[]) || [];
+    const supportingLinksContent: { url: string; content: string }[] = [];
+    for (const link of rawLinks.slice(0, 5)) {
+      if (link?.trim()) {
+        try {
+          const content = await scrapeWebsite(link.trim());
+          if (content) {
+            supportingLinksContent.push({ url: link.trim(), content });
+          }
+        } catch {
+          console.warn("[apply/screen] Failed to scrape supporting link:", link);
+        }
+      }
+    }
+    if (supportingLinksContent.length > 0) {
+      console.log("[apply/screen] Scraped", supportingLinksContent.length, "supporting links");
+    }
+
     // 4. Run ATS screening
     const customAnswers =
       (formData.custom_answers as { question: string; answer: string }[]) || [];
@@ -121,6 +140,7 @@ export async function POST(request: NextRequest) {
         null,
       portfolioUrl,
       websiteContent,
+      supportingLinksContent: supportingLinksContent.length > 0 ? supportingLinksContent : undefined,
       customAnswers: customAnswers.filter((a) => a.answer?.trim()),
       threshold: atsThreshold,
     });

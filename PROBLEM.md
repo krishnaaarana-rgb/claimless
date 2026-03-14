@@ -53,8 +53,7 @@ When a candidate enters your pipeline (via ATS integration, direct application, 
 - **Resume deep analysis** — AI reads the full resume and checks for internal consistency: do the dates make sense? Does the career progression follow a logical path? Do the claimed responsibilities match the seniority level? Are there unexplained gaps or overlapping roles?
 - **Code repositories (technical roles)** — for developers, engineers, and data roles, we scrape their GitHub: top 10 repos, code quality, architectural decisions, languages used, commit patterns, test coverage, README quality. This reveals what they've actually built vs. what they claim.
 - **Personal website / portfolio** — we scrape and analyse whatever portfolio URL the candidate provides
-- **Candidate-submitted links** — candidates can submit up to 5 supporting links (case studies, published articles, certifications, Dribbble/Behance portfolios, project demos). We scrape and analyse each one.
-- **Company validation (AU)** — for Australian candidates, we verify employer details against the Australian Business Register (ABR). If someone claims "Senior Manager" at a company registered as a sole trader, that's a flag.
+- **Candidate-submitted links** — candidates can submit up to 5 supporting links (case studies, published articles, certifications, Dribbble/Behance portfolios, project demos). We scrape and analyse each one, cross-referencing with resume claims.
 
 The key insight: **we don't just check IF they have experience. We analyse WHETHER their claimed experience is internally consistent.** The AI catches patterns across the entire resume that a human skimming for 30 seconds would miss.
 

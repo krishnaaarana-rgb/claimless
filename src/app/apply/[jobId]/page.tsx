@@ -98,6 +98,7 @@ export default function ApplyPage({
 
   const [formValues, setFormValues] = useState<Record<string, string>>({});
   const [customAnswers, setCustomAnswers] = useState<Record<number, string>>({});
+  const [supportingLinks, setSupportingLinks] = useState<string[]>([""]);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [resumeParsed, setResumeParsed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -194,6 +195,7 @@ export default function ApplyPage({
             cover_letter: formValues.cover_letter || null,
             resume_filename: resumeFile?.name || null,
             resume_text: formValues._resume_text || null,
+            supporting_links: supportingLinks.filter((l) => l.trim()),
             custom_answers: customQs.map((q, i) => ({
               question: q.question,
               answer: customAnswers[i] || "",
@@ -438,6 +440,56 @@ export default function ApplyPage({
                 </div>
               );
             })}
+
+            {/* Supporting Links */}
+            <div className="space-y-2">
+              <label className="block text-[13px] font-semibold text-[#37352F]">
+                Supporting links
+                <span className="font-normal text-[#9B9A97] ml-1">(optional)</span>
+              </label>
+              <p className="text-[12px] text-[#9B9A97]">
+                Add links to case studies, published work, certifications, project demos, or anything that showcases your skills.
+              </p>
+              {supportingLinks.map((link, i) => (
+                <div key={i} className="flex gap-2">
+                  <input
+                    type="url"
+                    placeholder="https://..."
+                    value={link}
+                    onChange={(e) =>
+                      setSupportingLinks((prev) =>
+                        prev.map((l, j) => (j === i ? e.target.value : l))
+                      )
+                    }
+                    className="flex-1 rounded-lg border border-[#E9E9E7] bg-white px-4 py-2.5 text-[13px] text-[#37352F] placeholder:text-[#D3D1CB] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2] transition-colors"
+                  />
+                  {supportingLinks.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSupportingLinks((prev) =>
+                          prev.filter((_, j) => j !== i)
+                        )
+                      }
+                      className="px-2.5 text-[#9B9A97] hover:text-red-500 transition-colors text-[16px]"
+                    >
+                      &times;
+                    </button>
+                  )}
+                </div>
+              ))}
+              {supportingLinks.length < 5 && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setSupportingLinks((prev) => [...prev, ""])
+                  }
+                  className="text-[12px] font-medium text-[#2383E2] hover:text-[#1a6bc4] transition-colors"
+                >
+                  + Add another link
+                </button>
+              )}
+            </div>
 
             {/* Custom Questions */}
             {customQuestions.map((q, i) => (
