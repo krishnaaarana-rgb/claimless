@@ -114,6 +114,80 @@ function formatDate(dateStr: string): string {
   });
 }
 
+/* ---------- Workflow Templates Section ---------- */
+function WorkflowTemplatesSection() {
+  const [templates, setTemplates] = useState<{ id: string; name: string; description: string; content: Record<string, unknown> }[]>([]);
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const [showSection, setShowSection] = useState(false);
+
+  useEffect(() => {
+    if (!showSection) return;
+    fetch("/api/templates?category=automation_workflow")
+      .then((r) => r.json())
+      .then((d) => setTemplates(d.templates || []))
+      .catch(() => {});
+  }, [showSection]);
+
+  return (
+    <section className="mb-10">
+      <button
+        onClick={() => setShowSection(!showSection)}
+        className="flex items-center gap-2 text-[15px] font-semibold text-[#37352F] hover:text-[#37352F] transition-colors"
+      >
+        {showSection ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        Workflow Templates
+      </button>
+      <p className="text-[13px] text-[#9B9A97] mt-1">
+        Pre-built automation workflows for N8N, Zapier, and Make.com
+      </p>
+
+      {showSection && (
+        <div className="mt-4 space-y-3">
+          {templates.map((t) => (
+            <div key={t.id} className="border border-[#E9E9E7] rounded-lg bg-white overflow-hidden">
+              <button
+                onClick={() => setExpanded(expanded === t.id ? null : t.id)}
+                className="w-full text-left px-5 py-4 flex items-center justify-between hover:bg-[#F7F6F3] transition-colors"
+              >
+                <div>
+                  <div className="text-[14px] font-medium text-[#37352F]">{t.name}</div>
+                  <div className="text-[12px] text-[#9B9A97] mt-0.5">{t.description}</div>
+                </div>
+                {expanded === t.id ? <ChevronUp size={14} className="text-[#9B9A97]" /> : <ChevronDown size={14} className="text-[#9B9A97]" />}
+              </button>
+              {expanded === t.id && t.content && (
+                <div className="px-5 pb-4 border-t border-[#E9E9E7]">
+                  <div className="mt-3 space-y-2">
+                    {(t.content.trigger as string) && (
+                      <div className="text-[12px]">
+                        <span className="font-semibold text-[#37352F]">Trigger:</span>{" "}
+                        <span className="text-[#9B9A97]">{t.content.trigger as string}</span>
+                      </div>
+                    )}
+                    {Array.isArray(t.content.steps) && (t.content.steps as { name: string; type: string; notes?: string }[]).map((step, i) => (
+                      <div key={i} className="flex gap-3 text-[12px]">
+                        <span className="text-[#2383E2] font-mono font-medium shrink-0 w-5">{i + 1}.</span>
+                        <div>
+                          <span className="font-medium text-[#37352F]">{step.name}</span>
+                          <span className="text-[#9B9A97] ml-1.5">({step.type})</span>
+                          {step.notes && <p className="text-[#9B9A97] mt-0.5">{step.notes}</p>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+          {templates.length === 0 && (
+            <div className="text-[13px] text-[#9B9A97] py-4">Loading templates...</div>
+          )}
+        </div>
+      )}
+    </section>
+  );
+}
+
 /* ---------- page ---------- */
 export default function IntegrationsPage() {
   const { toast } = useToast();
@@ -1028,6 +1102,9 @@ export default function IntegrationsPage() {
           </div>
         </div>
       )}
+
+      {/* ===================== WORKFLOW TEMPLATES ===================== */}
+      <WorkflowTemplatesSection />
 
       {/* ===================== API DOCUMENTATION ===================== */}
       <section className="mb-10">

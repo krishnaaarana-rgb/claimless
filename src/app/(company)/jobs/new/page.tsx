@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import IndustrySkillPicker, { type SkillRequirement } from "@/components/IndustrySkillPicker";
+import { TemplatePicker } from "@/components/template-picker";
 
 const EMPLOYMENT_TYPES = [
   { value: "full_time", label: "Full-time" },
@@ -227,9 +228,22 @@ export default function NewJobPage() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="description">
-            Job description <span className="text-destructive">*</span>
-          </Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="description">
+              Job description <span className="text-destructive">*</span>
+            </Label>
+            <TemplatePicker
+              category="job_description"
+              industry={industry || undefined}
+              buttonLabel="Start from template"
+              onSelect={(t) => {
+                const c = t.content as { title?: string; description?: string; department?: string };
+                if (c.description) setDescription(c.description);
+                if (c.title && !title) setTitle(c.title);
+                if (c.department && !department) setDepartment(c.department);
+              }}
+            />
+          </div>
           <Textarea
             id="description"
             placeholder="Paste your full job description..."

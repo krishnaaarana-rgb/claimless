@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Settings, Mail, FileText, Mic, Send } from "lucide-react";
+import { TemplatePicker } from "@/components/template-picker";
 
 interface CompanySettings {
   ats_pass_threshold: number;
@@ -459,9 +460,20 @@ function EmailTemplatesTab({ getValue, updateDraft }: TabProps) {
       <div>
         <div className="flex items-center justify-between mb-3">
           <SectionLabel>Acceptance Email</SectionLabel>
-          <button onClick={() => resetTemplate("acceptance")} className="text-[12px] text-[#9B9A97] hover:text-[#2383E2]">
-            Reset to default
-          </button>
+          <div className="flex items-center gap-3">
+            <TemplatePicker
+              category="email"
+              buttonLabel="Use Template"
+              onSelect={(t) => {
+                const c = t.content as { subject?: string; body?: string };
+                if (c.subject) updateDraft("email_acceptance_subject", c.subject);
+                if (c.body) updateDraft("email_acceptance_body", c.body);
+              }}
+            />
+            <button onClick={() => resetTemplate("acceptance")} className="text-[12px] text-[#9B9A97] hover:text-[#2383E2]">
+              Reset to default
+            </button>
+          </div>
         </div>
         <div className="space-y-3">
           <input
@@ -492,9 +504,20 @@ function EmailTemplatesTab({ getValue, updateDraft }: TabProps) {
       <div className="border-t border-[#E9E9E7] pt-6">
         <div className="flex items-center justify-between mb-3">
           <SectionLabel>Rejection Email</SectionLabel>
-          <button onClick={() => resetTemplate("rejection")} className="text-[12px] text-[#9B9A97] hover:text-[#2383E2]">
-            Reset to default
-          </button>
+          <div className="flex items-center gap-3">
+            <TemplatePicker
+              category="email"
+              buttonLabel="Use Template"
+              onSelect={(t) => {
+                const c = t.content as { subject?: string; body?: string };
+                if (c.subject) updateDraft("email_rejection_subject", c.subject);
+                if (c.body) updateDraft("email_rejection_body", c.body);
+              }}
+            />
+            <button onClick={() => resetTemplate("rejection")} className="text-[12px] text-[#9B9A97] hover:text-[#2383E2]">
+              Reset to default
+            </button>
+          </div>
         </div>
         <div className="space-y-3">
           <input
@@ -611,7 +634,14 @@ function AIInterviewTab({ getValue, updateDraft }: TabProps) {
         />
       </div>
       <div>
-        <label className="block text-[13px] font-medium text-[#37352F] mb-1.5">Custom Instructions</label>
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="block text-[13px] font-medium text-[#37352F]">Custom Instructions</label>
+          <TemplatePicker
+            category="interview_questions"
+            buttonLabel="Load Template"
+            onSelect={(t) => updateDraft("interview_custom_instructions", typeof t.content === "string" ? t.content : JSON.stringify(t.content))}
+          />
+        </div>
         <textarea
           value={getValue("interview_custom_instructions") || ""}
           onChange={(e) => updateDraft("interview_custom_instructions", e.target.value || null)}
