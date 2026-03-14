@@ -136,7 +136,7 @@ export async function POST(
     .select("loom_context_summary")
     .eq("application_id", application.id)
     .eq("status", "analyzed")
-    .single();
+    .maybeSingle();
 
   if (loomSubmission?.loom_context_summary) {
     loomContext = `\n\n${loomSubmission.loom_context_summary}`;

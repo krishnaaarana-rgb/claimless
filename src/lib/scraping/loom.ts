@@ -37,13 +37,12 @@ export async function scrapeLoomTranscript(
 
     // 2. Extract transcript source URL from the page
     const sourceMatch = html.match(/"source_url":"([^"]+)"/);
-    if (!sourceMatch) {
-      // Try alternative pattern
-      const transcriptMatch = html.match(/"transcript_url":"([^"]+)"/);
-      if (!transcriptMatch) return null;
-    }
+    const transcriptMatch = html.match(/"transcript_url":"([^"]+)"/);
 
-    const transcriptUrl = (sourceMatch?.[1] || "").replace(/\\/g, "");
+    const rawUrl = sourceMatch?.[1] || transcriptMatch?.[1];
+    if (!rawUrl) return null;
+
+    const transcriptUrl = rawUrl.replace(/\\/g, "");
     if (!transcriptUrl) return null;
 
     // 3. Extract duration if available

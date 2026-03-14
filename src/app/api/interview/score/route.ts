@@ -55,6 +55,20 @@ export async function POST(request: NextRequest) {
   const screeningData = (application.match_breakdown || {}) as Record<string, unknown>;
   const strengths = (screeningData.strengths as string[]) || [];
   const concerns = (screeningData.concerns as string[]) || [];
+  const resumeText = (formData?.resume_text as string) || "";
+  const interviewBrief = (screeningData.interview_brief as string) || "";
+  const consistencyFlags = (screeningData.consistency_flags as string[]) || [];
+
+  // Get loom context for scoring (evaluator should see what interviewer saw)
+  let loomScoringContext = "";
+  const { data: loomForScoring } = await supabase
+    .from("loom_submissions")
+    .select("loom_context_summary")
+    .eq("application_id", application.id)
+    .maybeSingle();
+  if (loomForScoring?.loom_context_summary) {
+    loomScoringContext = loomForScoring.loom_context_summary;
+  }
 
   if (job.industry && job.skill_requirements && job.skill_requirements.length > 0) {
     // Industry-aware rubric scoring
@@ -70,6 +84,9 @@ export async function POST(request: NextRequest) {
         },
         candidate: {
           name: candidate.full_name || "Candidate",
+          resume_text: resumeText || undefined,
+          loom_context: loomScoringContext || undefined,
+          pre_generated_context: interviewBrief || undefined,
           strengths: strengths.length > 0 ? strengths : undefined,
           concerns: concerns.length > 0 ? concerns : undefined,
         },
@@ -93,10 +110,14 @@ CANDIDATE: ${candidate.full_name}
 ATS SCORE: ${application.match_score || "N/A"}
 ${strengths.length > 0 ? `PRE-INTERVIEW STRENGTHS: ${strengths.join(", ")}` : ""}
 ${concerns.length > 0 ? `PRE-INTERVIEW CONCERNS: ${concerns.join(", ")}` : ""}
+${consistencyFlags.length > 0 ? `RESUME CONSISTENCY FLAGS: ${consistencyFlags.join(", ")}` : ""}
+${interviewBrief ? `\nSCREENING BRIEF:\n${interviewBrief}` : ""}
+${loomScoringContext ? `\nVIDEO ASSESSMENT:\n${loomScoringContext}` : ""}
 
 JOB DESCRIPTION:
 ${job.description || "Not provided"}
 
+${resumeText ? `CANDIDATE RESUME:\n${resumeText.slice(0, 3000)}\n` : ""}
 INTERVIEW TRANSCRIPT:
 ${transcript}
 

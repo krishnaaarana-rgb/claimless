@@ -168,7 +168,7 @@ export interface Application {
   stage_2_passed: boolean | null;
   stage_3_passed: boolean | null;
   match_score: number | null;
-  match_breakdown: Record<string, number> | null;
+  match_breakdown: Record<string, unknown> | null;
   status: "active" | "shortlisted" | "rejected" | "hired" | "withdrawn";
   rejected_reason: string | null;
   shortlisted_at: string | null;

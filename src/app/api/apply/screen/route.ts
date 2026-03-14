@@ -25,6 +25,7 @@ export async function POST(request: NextRequest) {
       .select(
         `
         id,
+        candidate_id,
         company_id,
         application_form_data,
         candidates (full_name, email, github_username, linkedin_url, personal_website_url),
@@ -222,7 +223,7 @@ export async function POST(request: NextRequest) {
       console.log("[screen] Auto-invited to interview:", interviewUrl);
 
       // Trigger invite email via the existing invite endpoint
-      fetch(`${baseUrl}/api/candidates/${(app as Record<string, unknown>).candidate_id}/invite`, {
+      fetch(`${baseUrl}/api/candidates/${app.candidate_id}/invite`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

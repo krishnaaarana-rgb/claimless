@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
       .update({
         current_stage: "interview_completed",
         application_form_data: {
-          ...application.application_form_data,
+          ...(application.application_form_data || {}),
           interview_transcript: transcriptText,
           interview_recording_url:
             recordingUrl || stereoRecordingUrl || null,
