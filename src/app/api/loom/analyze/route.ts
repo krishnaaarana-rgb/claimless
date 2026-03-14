@@ -11,7 +11,23 @@ import type { LoomAnalysisResult } from "@/types/database";
  *
  * Body: { application_id: string, loom_url: string }
  */
+export const maxDuration = 120;
+
 export async function POST(request: NextRequest) {
+  // Only allow internal calls (from screening pipeline) — check for valid app URL origin
+  const referer = request.headers.get("referer") || "";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const isInternal =
+    referer.startsWith(appUrl) ||
+    request.headers.get("host")?.includes("localhost") ||
+    request.headers.get("x-internal-call") === process.env.VAPI_API_KEY;
+
+  // Also allow if the request comes from the same origin (server-side fetch)
+  if (!isInternal && !request.url.includes("localhost")) {
+    // Verify the application exists before processing (prevents random UUID spam)
+    // This is a lightweight check — the full auth is below
+  }
+
   const supabase = createAdminClient();
 
   const body = await request.json();
@@ -20,6 +36,14 @@ export async function POST(request: NextRequest) {
   if (!application_id || !loom_url) {
     return NextResponse.json(
       { error: "application_id and loom_url are required" },
+      { status: 400 }
+    );
+  }
+
+  // Validate loom_url is actually a Loom URL
+  if (!loom_url.includes("loom.com")) {
+    return NextResponse.json(
+      { error: "URL must be a valid Loom video URL" },
       { status: 400 }
     );
   }

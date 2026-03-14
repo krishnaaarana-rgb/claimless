@@ -3,6 +3,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { buildInterviewScoringPrompt } from "@/lib/claude/prompts/industry-interview";
 import type { SkillRequirement } from "@/types/industry-skills";
 
+export const maxDuration = 120;
+
 const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
 
 export async function POST(request: NextRequest) {
@@ -189,7 +191,23 @@ SCORING CALIBRATION:
       );
     }
 
-    const scoring = JSON.parse(jsonMatch[0]);
+    let scoring;
+    try {
+      scoring = JSON.parse(jsonMatch[0]);
+    } catch {
+      console.error("[interview-score] Invalid JSON in scoring response:", jsonMatch[0].slice(0, 200));
+      return NextResponse.json({ error: "Failed to parse scoring JSON" }, { status: 500 });
+    }
+
+    // Validate and clamp scores to 0-100
+    const clamp = (v: unknown) => typeof v === "number" ? Math.max(0, Math.min(100, Math.round(v))) : null;
+    scoring.overall_score = clamp(scoring.overall_score ?? scoring.interview_score) ?? 50;
+    scoring.communication_score = clamp(scoring.communication_score);
+    scoring.technical_score = clamp(scoring.technical_score);
+    scoring.cultural_fit_score = clamp(scoring.cultural_fit_score);
+    scoring.confidence_score = clamp(scoring.confidence_score);
+    scoring.hard_skill_average = clamp(scoring.hard_skill_average);
+    scoring.soft_skill_average = clamp(scoring.soft_skill_average);
 
     // Store scoring results
     await supabase

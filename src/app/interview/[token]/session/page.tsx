@@ -66,6 +66,7 @@ export default function InterviewSession() {
   const transcriptEndRef = useRef<HTMLDivElement>(null);
   const startedRef = useRef(false);
   const closingDetectedRef = useRef(false);
+  const aiSpeakingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Reset silence timer on any activity
   const markActivity = useCallback(() => {
@@ -200,8 +201,12 @@ export default function InterviewSession() {
       vapi.on("speech-start", () => {
         setAiSpeaking(true);
         markActivity();
+        // Safety timeout: reset aiSpeaking if speech-end never fires (30s max)
+        if (aiSpeakingTimeoutRef.current) clearTimeout(aiSpeakingTimeoutRef.current);
+        aiSpeakingTimeoutRef.current = setTimeout(() => setAiSpeaking(false), 30000);
       });
       vapi.on("speech-end", () => {
+        if (aiSpeakingTimeoutRef.current) clearTimeout(aiSpeakingTimeoutRef.current);
         setAiSpeaking(false);
         markActivity();
       });

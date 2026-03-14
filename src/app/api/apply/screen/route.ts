@@ -5,6 +5,9 @@ import { scrapeWebsite } from "@/lib/scraping/website";
 import { dispatchWebhook } from "@/lib/webhooks/dispatcher";
 import { pushResultsToATS } from "@/lib/integrations/outbound-push";
 
+// Allow up to 5 minutes for scraping + Claude analysis
+export const maxDuration = 300;
+
 export async function POST(request: NextRequest) {
   const body = await request.json();
   const { application_id } = body;

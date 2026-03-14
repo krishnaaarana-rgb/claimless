@@ -63,6 +63,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
+    // Idempotency: skip if already processed (Vapi may retry webhooks)
+    if (application.current_stage === "interview_completed") {
+      console.log("[vapi-webhook] Already processed, skipping:", assistantId);
+      return NextResponse.json({ ok: true, already_processed: true });
+    }
+
     console.log(
       "[vapi-webhook] Processing end-of-call for:",
       application.candidates?.full_name

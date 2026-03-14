@@ -67,7 +67,12 @@ export async function analyzeWithClaude<T>(
     .replace(/```\n?/g, "")
     .trim();
 
-  return JSON.parse(cleaned) as T;
+  try {
+    return JSON.parse(cleaned) as T;
+  } catch (err) {
+    console.error("[claude] Failed to parse JSON response:", cleaned.slice(0, 500));
+    throw new Error(`Claude returned invalid JSON: ${(err as Error).message}`);
+  }
 }
 
 export async function generateTextWithClaude(

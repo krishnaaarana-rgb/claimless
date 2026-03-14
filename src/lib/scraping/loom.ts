@@ -45,6 +45,22 @@ export async function scrapeLoomTranscript(
     const transcriptUrl = rawUrl.replace(/\\/g, "");
     if (!transcriptUrl) return null;
 
+    // SSRF protection: only fetch from known Loom CDN domains
+    try {
+      const parsedUrl = new URL(transcriptUrl);
+      const allowedHosts = ["cdn.loom.com", "www.loom.com", "loom.com"];
+      const isLoomDomain = allowedHosts.some(
+        (h) => parsedUrl.hostname === h || parsedUrl.hostname.endsWith(`.${h}`)
+      );
+      const isS3 = parsedUrl.hostname.endsWith(".amazonaws.com");
+      if (!isLoomDomain && !isS3) {
+        console.warn("[loom] Blocked non-Loom transcript URL:", parsedUrl.hostname);
+        return null;
+      }
+    } catch {
+      return null;
+    }
+
     // 3. Extract duration if available
     let durationSeconds: number | null = null;
     const durationMatch = html.match(/"duration_in_seconds":(\d+)/);

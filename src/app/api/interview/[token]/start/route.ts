@@ -3,6 +3,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { buildIndustryInterviewPrompt, buildAustralianComplianceBlock } from "@/lib/claude/prompts/industry-interview";
 import type { SkillRequirement } from "@/types/industry-skills";
 
+export const maxDuration = 60;
+
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ token: string }> }
