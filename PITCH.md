@@ -107,6 +107,95 @@ This isn't just a tool you use — it becomes part of your competitive moat. Cli
 
 ---
 
+## "But Our People Know This Industry — Why Would AI Screen Better?"
+
+We hear this a lot. It's the right question, and it deserves a straight answer.
+
+Your best recruiter — the one who's been in healthcare hiring for 12 years, who can smell a bad candidate from the first 30 seconds of a phone call — is genuinely great. We're not pretending otherwise.
+
+But here's what even your best recruiter can't do:
+
+### They Can't Read Code
+
+When a software engineer says "I architected a microservices platform that handles 50,000 requests per second," your recruiter nods and writes it down. They have no way to verify that.
+
+Claimless pulls their GitHub, reads their actual code, analyses the architecture they built, checks their commit patterns, evaluates whether they wrote tests, and cross-references the timeline. If that "microservices platform" is actually a to-do app with two endpoints — we know before the interview even starts.
+
+This isn't limited to tech roles. When a financial analyst says they "built complex models in Python," we can check. When a data engineer says they "designed the ETL pipeline," we can see exactly what they built and how.
+
+**Your recruiter has instinct. We have evidence.**
+
+### They Can't Be Consistent Across 200 Candidates
+
+Your best screener at 9am on a Monday is not the same screener at 4pm on a Friday after 15 back-to-back calls. That's not a criticism — it's human. Fatigue, mood, unconscious bias, the halo effect from a confident voice or a prestigious university — all of these creep in.
+
+Candidate #1 gets a sharp, focused 30-minute conversation. Candidate #187 gets a distracted 15-minute call while your recruiter is answering Slack messages.
+
+Claimless gives candidate #187 exactly the same depth, attention, and rigour as candidate #1. Same questions adapted to their background. Same scoring criteria. Same follow-up probing. Every single time.
+
+**Your recruiter is great 80% of the time. We're great 100% of the time.**
+
+### They Can't Cross-Reference in Real-Time
+
+During a phone screen, a candidate says:
+- Minute 3: "I led the migration from monolith to microservices at my last company"
+- Minute 18: "Most of my experience is on the frontend — I've always preferred the UI side"
+
+Your recruiter might catch that contradiction. Probably not — they're busy thinking about the next question, taking notes, watching the clock.
+
+Claimless catches every contradiction. It remembers every word, cross-references against the resume and GitHub data, and probes the gap naturally: *"That's interesting — you mentioned leading the backend migration, but it sounds like your passion is really on the frontend. How did you bridge both worlds during that project?"*
+
+Not confrontational. Just curious. And the answer tells you everything.
+
+**Your recruiter has notes. We have perfect recall.**
+
+### They Can't Test — Only Ask
+
+This is the biggest gap. A traditional phone screen is 30 minutes of *telling*. The candidate tells you about their experience. You take their word for it.
+
+Claimless doesn't just ask — it **tests**. When a candidate claims they're strong at distributed systems, our AI throws them a live scenario:
+
+> *"You're on-call and you get paged — your cache layer is stampeding after a key expiry. Thousands of requests are hitting the database directly. Walk me through what you do, step by step."*
+
+If they nail it, we add a complication. *"Nice — now your primary database replica is lagging 30 seconds behind. What changes?"* We push until we find their ceiling.
+
+No recruiter does this. Not because they're bad at their job — because it requires deep, real-time technical knowledge across every domain they hire for. A healthcare recruiter can't throw cloud infrastructure scenarios. A fintech recruiter can't test someone's understanding of APRA prudential standards on the fly.
+
+Our AI can. For every industry. Every role. Every skill level.
+
+**Your recruiter asks "tell me about a time when..." We say "here's the situation — show me what you'd do."**
+
+### They Can't Detect Coached Candidates
+
+The rise of AI interview prep has created a new problem: candidates who give perfect, polished answers to every behavioural question but can't actually do the job.
+
+They've practised the STAR format. They have a rehearsed story for "tell me about a challenge." They sound great on the phone.
+
+Claimless breaks the rehearsed pattern:
+- *"That's a great example — now tell me about a time the OPPOSITE happened"*
+- *"What was the dumbest mistake you made during that project?"*
+- *"If you had to redo that entire approach from scratch, what would you change?"*
+
+Coached candidates crumble on unexpected follow-ups. Real practitioners handle them naturally because they're drawing from actual experience, not a script.
+
+**Your recruiter hears the polished answer. We find out if there's anything behind it.**
+
+### So What's the Recruiter's Edge?
+
+Everything that matters after verification.
+
+No AI can sit across from a hiring manager and read the room — understand that when they say "we need someone technical" what they really mean is "the last person was too technical and couldn't communicate with the sales team."
+
+No AI can coach a nervous candidate through salary negotiation, help them see their own worth, and land them an offer that makes everyone happy.
+
+No AI can call a passive candidate who isn't looking, build a relationship over 6 months, and be the trusted voice that convinces them to make the move when the right role comes along.
+
+That's what your recruiters are for. The human parts. The relationship parts. The parts that actually require 12 years of industry experience.
+
+Claimless handles the verification so your recruiters can focus on what they're genuinely irreplaceable at — and what actually makes you money.
+
+---
+
 ## What Your Recruiters Actually Do (And Don't Do)
 
 Let's be clear: **Claimless doesn't replace recruiters. It replaces the worst parts of their job.**
