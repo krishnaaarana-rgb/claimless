@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
 
   if (existingCandidate) {
     candidateId = existingCandidate.id;
-    await supabase
+    const { error: updateError } = await supabase
       .from("candidates")
       .update({
         full_name: candidateData.full_name,
@@ -147,6 +147,9 @@ export async function POST(request: NextRequest) {
         personal_website_url: candidateData.portfolio_url || null,
       })
       .eq("id", candidateId);
+    if (updateError) {
+      console.warn("[inbound] Candidate update failed:", updateError.message);
+    }
   } else {
     const { data: newCandidate, error: insertError } = await supabase
       .from("candidates")

@@ -128,23 +128,20 @@ export async function POST(request: NextRequest) {
       .in("status", ["pending", "active"]);
 
     // Score the interview with Claude (fire and forget)
+    // ATS push happens INSIDE the score route after scoring completes,
+    // not here — avoids race condition where push fires before scores exist
     const baseUrl =
       process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
     fetch(`${baseUrl}/api/interview/score`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ application_id: application.id }),
+      body: JSON.stringify({
+        application_id: application.id,
+        company_id: application.jobs.company_id,
+      }),
     }).catch((err) =>
       console.error("[vapi-webhook] Score trigger failed:", err)
     );
-
-    // Push results to ATS integrations (fire and forget)
-    const { pushResultsToATS } = await import("@/lib/integrations/outbound-push");
-    pushResultsToATS(
-      application.jobs.company_id,
-      application.id,
-      "interview_completed"
-    ).catch(() => {});
 
     // Dispatch webhook
     const { dispatchWebhook } = await import("@/lib/webhooks/dispatcher");

@@ -8,7 +8,8 @@ export const maxDuration = 120;
 const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
 
 export async function POST(request: NextRequest) {
-  const { application_id } = await request.json();
+  const body = await request.json();
+  const { application_id } = body;
   const supabase = createAdminClient();
 
   // Fetch application with transcript, job details, and candidate
@@ -228,6 +229,17 @@ SCORING CALIBRATION:
       scoring.overall_score || scoring.interview_score,
       scoring.recommendation
     );
+
+    // Push scored results to ATS integrations (now that scoring is complete)
+    const companyId = body.company_id || (application.jobs as unknown as { company_id: string })?.company_id;
+    if (companyId) {
+      try {
+        const { pushResultsToATS } = await import("@/lib/integrations/outbound-push");
+        await pushResultsToATS(companyId, application.id, "interview_completed");
+      } catch (pushErr) {
+        console.error("[interview-score] ATS push failed:", pushErr);
+      }
+    }
 
     return NextResponse.json({ success: true, scoring });
   } catch (error) {
