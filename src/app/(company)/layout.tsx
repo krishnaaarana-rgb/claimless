@@ -110,7 +110,7 @@ export default function CompanyLayout({
 
   const canSeeItem = (item: NavItem) => {
     if (!item.minRole) return true;
-    if (!userRole) return false;
+    if (!userRole) return true; // Show all items until role is confirmed (fail-open)
     return ROLE_LEVEL[userRole] >= ROLE_LEVEL[item.minRole];
   };
 

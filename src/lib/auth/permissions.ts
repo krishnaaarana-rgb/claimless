@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export type Role = "owner" | "admin" | "member" | "viewer";
@@ -13,6 +13,7 @@ export interface Membership {
 
 /**
  * Get the authenticated user or return null.
+ * Only works in server-side contexts (API routes, server components).
  */
 export async function getAuthUser() {
   const supabase = await createClient();
