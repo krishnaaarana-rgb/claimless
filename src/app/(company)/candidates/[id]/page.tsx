@@ -118,7 +118,29 @@ export default async function CandidateDetailPage({
         .order("created_at", { ascending: false })
     : { data: null };
 
-  const screening = primaryApp?.match_breakdown as ATSScreeningResult | null;
+  // Fetch Loom analysis if available
+  const { data: loomData } = primaryApp
+    ? await supabase
+        .from("loom_submissions")
+        .select("*")
+        .eq("application_id", primaryApp.id)
+        .eq("status", "analyzed")
+        .maybeSingle()
+    : { data: null };
+
+  const loomAnalysis = loomData?.analysis as {
+    communication_clarity_score: number;
+    confidence_score: number;
+    technical_depth_score: number;
+    relevance_score: number;
+    overall_score: number;
+    summary: string;
+    strengths: string[];
+    concerns: string[];
+    key_quotes: string[];
+  } | null;
+
+  const screening = primaryApp?.match_breakdown as (ATSScreeningResult & { consistency_flags?: string[] }) | null;
   const formData = (primaryApp as unknown as { application_form_data?: Record<string, unknown> })
     ?.application_form_data as Record<string, unknown> | null;
 
@@ -226,7 +248,7 @@ export default async function CandidateDetailPage({
           SECTION 2: ASSESSMENT AT A GLANCE
           The "3-second verdict" — what agencies show clients
           ═══════════════════════════════════════════════════ */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div className={`grid grid-cols-1 gap-4 mb-8 ${loomAnalysis ? "md:grid-cols-4" : "md:grid-cols-3"}`}>
         {/* Overall Score */}
         <div className="bg-white border border-[#E9E9E7] rounded-lg p-5 flex flex-col items-center justify-center text-center">
           <span className="text-[11px] font-semibold text-[#9B9A97] uppercase tracking-wider mb-2">Overall</span>
@@ -316,6 +338,39 @@ export default async function CandidateDetailPage({
             <span className="text-[12px] text-[#9B9A97]">Not interviewed yet</span>
           )}
         </div>
+
+        {/* Loom Video Score Card */}
+        {loomAnalysis && (
+          <div className="bg-white border border-[#E9E9E7] rounded-lg p-5">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[11px] font-semibold text-[#9B9A97] uppercase tracking-wider">Video</span>
+              <span
+                className={`text-[24px] font-bold tabular-nums ${scoreColorClass(loomAnalysis.overall_score * 10)}`}
+                style={{ fontFamily: "'JetBrains Mono', monospace" }}
+              >
+                {loomAnalysis.overall_score}
+              </span>
+            </div>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-[12px]">
+                <span className="text-[#9B9A97]">Communication</span>
+                <span className="text-[#37352F] font-medium">{loomAnalysis.communication_clarity_score}/10</span>
+              </div>
+              <div className="flex items-center justify-between text-[12px]">
+                <span className="text-[#9B9A97]">Confidence</span>
+                <span className="text-[#37352F] font-medium">{loomAnalysis.confidence_score}/10</span>
+              </div>
+              <div className="flex items-center justify-between text-[12px]">
+                <span className="text-[#9B9A97]">Technical Depth</span>
+                <span className="text-[#37352F] font-medium">{loomAnalysis.technical_depth_score}/10</span>
+              </div>
+              <div className="flex items-center justify-between text-[12px]">
+                <span className="text-[#9B9A97]">Relevance</span>
+                <span className="text-[#37352F] font-medium">{loomAnalysis.relevance_score}/10</span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* AI Summary */}
@@ -618,6 +673,21 @@ export default async function CandidateDetailPage({
             </div>
           )}
 
+          {/* Consistency Flags */}
+          {(screening.consistency_flags?.length ?? 0) > 0 && (
+            <div className="mb-8">
+              <h3 className="text-[13px] font-semibold text-[#37352F] mb-3">Resume Consistency Flags</h3>
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 space-y-2">
+                {screening.consistency_flags!.map((flag, i) => (
+                  <div key={i} className="text-[13px] text-amber-800 flex gap-2">
+                    <span className="shrink-0">&#9888;</span>
+                    {flag}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Interview Topics */}
           {(screening.suggested_interview_topics?.length ?? 0) > 0 && !interviewScoring && (
             <div className="mb-4">
@@ -642,6 +712,73 @@ export default async function CandidateDetailPage({
           <h2 className="text-[16px] font-semibold text-[#37352F] mb-3">ATS Assessment</h2>
           <p className="text-[14px] text-[#9B9A97] mb-4">This candidate has not been screened yet.</p>
           <ScreenButton applicationId={primaryApp.id} />
+        </>
+      )}
+
+      {/* ═══════════════════════════════════════════════════
+          SECTION 4.5: LOOM VIDEO ANALYSIS
+          ═══════════════════════════════════════════════════ */}
+      {loomAnalysis && (
+        <>
+          <div className="border-t border-[#E9E9E7] my-8" />
+
+          <h2 className="text-[16px] font-semibold text-[#37352F] mb-5">
+            Video Analysis
+          </h2>
+
+          {/* Summary */}
+          <div className="bg-[#F7F6F3] border border-[#E9E9E7] rounded-lg p-5 mb-6">
+            <p className="text-[14px] text-[#37352F] leading-relaxed">
+              {loomAnalysis.summary}
+            </p>
+          </div>
+
+          {/* Strengths & Concerns */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
+            {loomAnalysis.strengths.length > 0 && (
+              <div>
+                <h3 className="text-[13px] font-semibold text-[#37352F] mb-3">Strengths</h3>
+                <ul className="space-y-2">
+                  {loomAnalysis.strengths.map((s, i) => (
+                    <li key={i} className="text-[13px] text-[#9B9A97] flex gap-2">
+                      <span className="text-emerald-500 shrink-0">+</span>
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {loomAnalysis.concerns.length > 0 && (
+              <div>
+                <h3 className="text-[13px] font-semibold text-[#37352F] mb-3">Concerns</h3>
+                <ul className="space-y-2">
+                  {loomAnalysis.concerns.map((c, i) => (
+                    <li key={i} className="text-[13px] text-[#9B9A97] flex gap-2">
+                      <span className="text-red-500 shrink-0">-</span>
+                      {c}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+
+          {/* Key Quotes */}
+          {loomAnalysis.key_quotes.length > 0 && (
+            <div className="mb-4">
+              <h3 className="text-[13px] font-semibold text-[#37352F] mb-3">Notable Quotes</h3>
+              <div className="space-y-3">
+                {loomAnalysis.key_quotes.map((q, i) => (
+                  <blockquote
+                    key={i}
+                    className="text-[13px] text-[#37352F] italic border-l-2 border-[#2383E2] pl-4 py-1"
+                  >
+                    &ldquo;{q}&rdquo;
+                  </blockquote>
+                ))}
+              </div>
+            </div>
+          )}
         </>
       )}
 

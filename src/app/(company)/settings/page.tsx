@@ -6,6 +6,7 @@ import { Settings, Mail, FileText, Mic, Send } from "lucide-react";
 interface CompanySettings {
   ats_pass_threshold: number;
   ats_auto_reject: boolean;
+  auto_invite_interview: boolean;
   email_acceptance_subject: string;
   email_acceptance_body: string;
   email_rejection_subject: string;
@@ -237,6 +238,7 @@ function HelperText({ children }: { children: React.ReactNode }) {
 function GeneralTab({ getValue, updateDraft }: TabProps) {
   const threshold = getValue("ats_pass_threshold") ?? 40;
   const autoReject = getValue("ats_auto_reject") ?? true;
+  const autoInvite = getValue("auto_invite_interview") ?? false;
   const accentColor = getValue("brand_accent_color") ?? "#2383E2";
   const logoUrl = getValue("brand_logo_url") ?? "";
   const tagline = getValue("brand_tagline") ?? "";
@@ -286,6 +288,23 @@ function GeneralTab({ getValue, updateDraft }: TabProps) {
             <Toggle
               checked={autoReject}
               onChange={(v) => updateDraft("ats_auto_reject", v)}
+            />
+          </div>
+
+          {/* Auto-invite to interview */}
+          <div className="flex items-center justify-between">
+            <div>
+              <label className="block text-[13px] font-medium text-[#37352F]">
+                Auto-invite to interview
+              </label>
+              <HelperText>
+                Automatically send interview invites when candidates pass screening.
+                No manual step required — candidates go straight from apply to interview.
+              </HelperText>
+            </div>
+            <Toggle
+              checked={autoInvite}
+              onChange={(v) => updateDraft("auto_invite_interview", v)}
             />
           </div>
         </div>
