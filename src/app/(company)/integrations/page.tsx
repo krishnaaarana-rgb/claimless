@@ -447,7 +447,7 @@ export default function IntegrationsPage() {
 
   /* ---------- render ---------- */
   return (
-    <div className="max-w-4xl">
+    <div className="w-full">
       <div className="mb-8">
         <h1 className="text-xl font-semibold text-[#37352F]">Integrations</h1>
         <p className="text-[13px] text-[#9B9A97] mt-1">

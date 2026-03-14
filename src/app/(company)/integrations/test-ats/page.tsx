@@ -162,7 +162,7 @@ export default function TestATSPage() {
   -d '${payload.replace(/'/g, "'\\''")}'`;
 
   return (
-    <div className="max-w-4xl">
+    <div className="w-full">
       <div className="mb-6">
         <Link
           href="/integrations"

@@ -124,7 +124,7 @@ export default function TestScrapePage() {
   };
 
   return (
-    <div className="max-w-5xl space-y-8">
+    <div className="w-full space-y-8">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Stage 1 — Proof of Work Scraper</h1>
         <p className="mt-1 text-muted-foreground text-sm">Enter a GitHub username to generate a verified candidate profile</p>

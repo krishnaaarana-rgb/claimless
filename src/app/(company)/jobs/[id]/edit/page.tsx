@@ -197,7 +197,7 @@ export default function EditJobPage({
 
   if (loading) {
     return (
-      <div className="max-w-3xl space-y-6">
+      <div className="w-full space-y-6">
         <div className="h-8 bg-muted rounded w-48 animate-pulse" />
         <div className="bg-card border border-border rounded-lg p-6 animate-pulse space-y-4">
           <div className="h-10 bg-muted rounded" />
@@ -208,7 +208,7 @@ export default function EditJobPage({
   }
 
   return (
-    <div className="max-w-3xl space-y-6">
+    <div className="w-full space-y-6">
       <div className="flex items-center gap-4">
         <Link
           href="/jobs"

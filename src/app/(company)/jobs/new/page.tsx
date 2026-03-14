@@ -196,7 +196,7 @@ export default function NewJobPage() {
   }
 
   return (
-    <div className="max-w-3xl space-y-6">
+    <div className="w-full space-y-6">
       <div className="flex items-center gap-4">
         <Link
           href="/jobs"

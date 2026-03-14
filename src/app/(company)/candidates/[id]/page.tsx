@@ -167,7 +167,7 @@ export default async function CandidateDetailPage({
   const recommendation = interviewScoring?.recommendation;
 
   return (
-    <div className="max-w-4xl">
+    <div className="w-full">
       {/* Back */}
       <Link
         href="/candidates"
