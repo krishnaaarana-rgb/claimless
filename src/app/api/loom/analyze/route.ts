@@ -48,6 +48,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  try {
   // 1. Get application + job + candidate
   const { data: application } = await supabase
     .from("applications")
@@ -140,4 +141,12 @@ Notable quotes: ${analysis.key_quotes.join(" | ")}`;
     transcript_length: loomData.transcript.length,
     duration_seconds: loomData.durationSeconds,
   });
+
+  } catch (err) {
+    console.error("[loom] Analysis failed:", err);
+    return NextResponse.json(
+      { error: `Loom analysis failed: ${(err as Error).message}` },
+      { status: 500 }
+    );
+  }
 }
