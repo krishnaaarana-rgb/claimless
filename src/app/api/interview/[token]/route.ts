@@ -43,7 +43,7 @@ export async function GET(
       current_stage,
       candidates (id, full_name, email, github_username),
       jobs (id, title, description, employment_type, github_required),
-      companies (name)
+      companies (name, logo_url, primary_color)
     `
     )
     .eq("id", tokenData.application_id)
@@ -68,7 +68,7 @@ export async function GET(
     github_required: boolean;
   } | null;
 
-  const company = app.companies as unknown as { name: string } | null;
+  const company = app.companies as unknown as { name: string; logo_url: string | null; primary_color: string | null } | null;
 
   // Fetch interview duration from company settings
   const { data: settings } = await supabase
@@ -85,6 +85,8 @@ export async function GET(
     job_title: job?.title || "",
     job_description: job?.description || "",
     company_name: company?.name || "",
+    company_logo_url: company?.logo_url || null,
+    company_color: company?.primary_color || "#2383E2",
     github_required: job?.github_required || false,
     interview_duration: settings?.interview_duration_minutes || 15,
   });

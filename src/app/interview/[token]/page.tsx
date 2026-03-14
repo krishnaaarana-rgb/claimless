@@ -20,6 +20,8 @@ interface InterviewData {
   github_username: string | null;
   job_title: string;
   company_name: string;
+  company_logo_url: string | null;
+  company_color: string;
   github_required: boolean;
   interview_duration: number;
 }
@@ -218,8 +220,8 @@ export default function InterviewPrepPage() {
         {/* Header */}
         <div className="mb-10">
           <div className="flex items-center gap-2 mb-3">
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
-            <span className="text-[13px] text-[#9B9A97] font-medium">Claimless Interview</span>
+            <span className="w-2 h-2 rounded-full" style={{ background: data?.company_color || "#059669" }} />
+            <span className="text-[13px] text-[#9B9A97] font-medium">{data?.company_name || "Interview"}</span>
           </div>
           <h1 className="text-[24px] font-bold text-[#37352F] tracking-tight">
             {data?.job_title}
@@ -373,7 +375,8 @@ export default function InterviewPrepPage() {
           <button
             onClick={handleStart}
             disabled={!canStart || starting}
-            className="group px-8 py-3.5 rounded-lg text-[15px] font-semibold text-white bg-[#37352F] hover:bg-[#2C2B28] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            className="group px-8 py-3.5 rounded-lg text-[15px] font-semibold text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-90"
+            style={{ background: data?.company_color || "#37352F" }}
           >
             {starting ? (
               <span className="flex items-center gap-2">

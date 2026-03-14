@@ -50,6 +50,8 @@ export default function InterviewSession() {
   const [aiSpeaking, setAiSpeaking] = useState(false);
   const [jobTitle, setJobTitle] = useState("");
   const [candidateName, setCandidateName] = useState("");
+  const [companyName, setCompanyName] = useState("Claimless");
+  const [companyColor, setCompanyColor] = useState("#2383E2");
   const [error, setError] = useState("");
   const [cameraActive, setCameraActive] = useState(false);
 
@@ -179,10 +181,12 @@ export default function InterviewSession() {
         return;
       }
 
-      const { assistant_id, public_key, job_title, candidate_name } =
+      const { assistant_id, public_key, job_title, candidate_name, company_name: cName, company_color: cColor } =
         await res.json();
       setJobTitle(job_title);
       setCandidateName(candidate_name || preferredName || "You");
+      if (cName) setCompanyName(cName);
+      if (cColor) setCompanyColor(cColor);
       setStatus("connecting");
 
       const vapi = new Vapi(public_key);
@@ -344,9 +348,9 @@ export default function InterviewSession() {
       <div className="flex items-center justify-between px-5 py-3 bg-white border-b border-[#E9E9E7]">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shrink-0" />
+            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: companyColor }} />
             <span className="text-[14px] font-semibold text-[#37352F]">
-              Claimless
+              {companyName}
             </span>
           </div>
           <span className="text-[#D3D1CB]">|</span>
@@ -485,9 +489,8 @@ export default function InterviewSession() {
             >
               {/* AI avatar */}
               <div
-                className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-all ${
-                  aiSpeaking ? "bg-[#2383E2]" : "bg-[#E9E9E7]"
-                }`}
+                className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-all"
+                style={{ background: aiSpeaking ? companyColor : "#E9E9E7" }}
               >
                 {aiSpeaking ? (
                   <div className="flex items-center gap-[2px] h-4">
@@ -544,11 +547,8 @@ export default function InterviewSession() {
                 <div key={i} className="group">
                   <div className="flex items-center gap-2 mb-1">
                     <span
-                      className={`text-[11px] font-semibold ${
-                        entry.role === "assistant"
-                          ? "text-[#2383E2]"
-                          : "text-[#37352F]"
-                      }`}
+                      className="text-[11px] font-semibold"
+                      style={{ color: entry.role === "assistant" ? companyColor : "#37352F" }}
                     >
                       {entry.role === "assistant"
                         ? "Interviewer"

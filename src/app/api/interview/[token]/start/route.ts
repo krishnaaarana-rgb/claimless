@@ -77,12 +77,20 @@ export async function POST(
         .eq("company_id", job.company_id)
         .maybeSingle();
 
+      const { data: companyBrand } = await supabase
+        .from("companies")
+        .select("name, logo_url, primary_color")
+        .eq("id", job.company_id)
+        .maybeSingle();
+
       return NextResponse.json({
         assistant_id: existingAssistantId,
         public_key: process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY,
         candidate_name: (application.application_form_data?.preferred_name as string) || candidate.full_name || "the candidate",
         job_title: job.title,
         duration_minutes: settings?.interview_duration_minutes || 15,
+        company_name: companyBrand?.name || "Claimless",
+        company_color: companyBrand?.primary_color || "#2383E2",
       });
     }
   }
@@ -394,12 +402,21 @@ ${auBlock}`;
     })
     .eq("id", application.id);
 
-  // 9. Return to client
+  // 9. Fetch company branding
+  const { data: companyBrand } = await supabase
+    .from("companies")
+    .select("name, logo_url, primary_color")
+    .eq("id", job.company_id)
+    .maybeSingle();
+
+  // 10. Return to client
   return NextResponse.json({
     assistant_id: assistant.id,
     public_key: process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY,
     candidate_name: candidateName,
     job_title: job.title,
     duration_minutes: duration,
+    company_name: companyBrand?.name || "Claimless",
+    company_color: companyBrand?.primary_color || "#2383E2",
   });
 }

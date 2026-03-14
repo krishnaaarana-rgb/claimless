@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { dispatchWebhook } from "@/lib/webhooks/dispatcher";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
+  // Rate limit: 10 applications per minute per IP
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0] || "unknown";
+  const { allowed } = await checkRateLimit(`apply:${ip}`, 10, 60);
+  if (!allowed) {
+    return NextResponse.json({ error: "Too many applications. Please try again in a minute." }, { status: 429 });
+  }
+
   const body = await request.json();
   const { job_id, form_data } = body;
 

@@ -3,13 +3,20 @@ import { validateApiKey } from "@/lib/auth/api-key";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { normalizeATSPayload, type ATSProvider } from "@/lib/integrations/ats-adapters";
 import { dispatchWebhook } from "@/lib/webhooks/dispatcher";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 // Allow enough time for screening (scraping + Claude) to complete
 export const maxDuration = 300;
 
 // POST /api/v1/inbound — receive candidate + job data from external ATS
-// Flow: validate API key → normalize payload → match/create job → upsert candidate → create application → trigger ATS screening
 export async function POST(request: NextRequest) {
+  // Rate limit: 60 requests per minute per IP
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0] || "unknown";
+  const { allowed } = await checkRateLimit(`inbound:${ip}`, 60, 60);
+  if (!allowed) {
+    return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
+  }
+
   // 1. Auth
   const authHeader = request.headers.get("authorization");
   if (!authHeader?.startsWith("Bearer ")) {

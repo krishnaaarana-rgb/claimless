@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { scrapeLoomTranscript } from "@/lib/scraping/loom";
 import { buildLoomAnalysisPrompt } from "@/lib/claude/prompts/loom-analysis";
 import { analyzeWithClaude } from "@/lib/claude/client";
+import { checkRateLimit } from "@/lib/rate-limit";
 import type { LoomAnalysisResult } from "@/types/database";
 
 /**
@@ -14,18 +15,11 @@ import type { LoomAnalysisResult } from "@/types/database";
 export const maxDuration = 120;
 
 export async function POST(request: NextRequest) {
-  // Only allow internal calls (from screening pipeline) — check for valid app URL origin
-  const referer = request.headers.get("referer") || "";
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  const isInternal =
-    referer.startsWith(appUrl) ||
-    request.headers.get("host")?.includes("localhost") ||
-    request.headers.get("x-internal-call") === process.env.VAPI_API_KEY;
-
-  // Also allow if the request comes from the same origin (server-side fetch)
-  if (!isInternal && !request.url.includes("localhost")) {
-    // Verify the application exists before processing (prevents random UUID spam)
-    // This is a lightweight check — the full auth is below
+  // Rate limit: 10 requests per minute per IP
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0] || "unknown";
+  const { allowed } = await checkRateLimit(`loom:${ip}`, 10, 60);
+  if (!allowed) {
+    return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
   }
 
   const supabase = createAdminClient();

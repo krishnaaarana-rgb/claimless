@@ -8,6 +8,7 @@ interface CompletionData {
   candidate_name: string;
   job_title: string;
   company_name: string;
+  company_color: string;
 }
 
 export default function InterviewComplete() {
@@ -23,6 +24,7 @@ export default function InterviewComplete() {
             candidate_name: json.candidate_name || "",
             job_title: json.job_title || "",
             company_name: json.company_name || "",
+            company_color: json.company_color || "#059669",
           });
         }
       })
@@ -33,7 +35,7 @@ export default function InterviewComplete() {
     <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="text-center max-w-md px-6">
         {/* Checkmark */}
-        <div className="w-14 h-14 rounded-full bg-emerald-500 flex items-center justify-center mx-auto mb-6">
+        <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: data?.company_color || "#059669" }}>
           <Check size={28} strokeWidth={2.5} className="text-white" />
         </div>
 
@@ -49,7 +51,7 @@ export default function InterviewComplete() {
         </p>
 
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#F7F6F3] text-[13px] text-[#9B9A97]">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          <span className="w-1.5 h-1.5 rounded-full" style={{ background: data?.company_color || "#059669" }} />
           Interview submitted successfully
         </div>
 
