@@ -78,10 +78,12 @@ export async function GET(
     },
     screening: screening
       ? {
+          match_score: atsScore,
           recommendation: screening.recommendation,
           summary: screening.summary,
           strengths: screening.strengths,
           concerns: screening.concerns,
+          consistency_flags: screening.consistency_flags || [],
           key_qualifications: screening.key_qualifications,
           suggested_interview_topics: screening.suggested_interview_topics,
         }

@@ -4,6 +4,9 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { normalizeATSPayload, type ATSProvider } from "@/lib/integrations/ats-adapters";
 import { dispatchWebhook } from "@/lib/webhooks/dispatcher";
 
+// Allow enough time for screening (scraping + Claude) to complete
+export const maxDuration = 300;
+
 // POST /api/v1/inbound — receive candidate + job data from external ATS
 // Flow: validate API key → normalize payload → match/create job → upsert candidate → create application → trigger ATS screening
 export async function POST(request: NextRequest) {
@@ -250,13 +253,17 @@ export async function POST(request: NextRequest) {
     source: `ats_${provider}`,
   });
 
-  // 12. Fire-and-forget ATS screening
+  // 12. Trigger ATS screening — await the fetch so it doesn't get killed on function exit
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  fetch(`${baseUrl}/api/apply/screen`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ application_id: application.id }),
-  }).catch(() => {});
+  try {
+    await fetch(`${baseUrl}/api/apply/screen`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ application_id: application.id }),
+    });
+  } catch (screenErr) {
+    console.error("[inbound] Screening trigger failed:", screenErr);
+  }
 
   // 13. Return
   return NextResponse.json({
@@ -265,7 +272,7 @@ export async function POST(request: NextRequest) {
     candidate_id: candidateId,
     job_id: jobId,
     job_title: jobTitle,
-    message: `Candidate "${candidateData.full_name}" submitted for "${jobTitle}". ATS screening will run automatically.`,
+    message: `Candidate "${candidateData.full_name}" submitted for "${jobTitle}". ATS screening completed.`,
   });
 }
 
