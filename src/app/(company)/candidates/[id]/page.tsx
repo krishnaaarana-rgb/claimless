@@ -189,7 +189,7 @@ export default async function CandidateDetailPage({
               <span className="text-[14px] text-[#9B9A97]">{candidate.email}</span>
             )}
             {candidate.phone && (
-              <span className="text-[14px] text-[#9B9A97]">{candidate.phone}</span>
+              <a href={`tel:${candidate.phone}`} className="text-[14px] text-[#9B9A97] hover:text-[#2383E2] transition-colors">{candidate.phone}</a>
             )}
           </div>
           {primaryApp && (
@@ -582,14 +582,22 @@ export default async function CandidateDetailPage({
           {/* Recording & Transcript */}
           <div className="flex flex-wrap gap-3 mb-2">
             {interviewRecordingUrl && (
-              <a
-                href={interviewRecordingUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#2383E2] hover:text-[#1b6ec2] transition-colors"
-              >
-                <span>▶</span> Play Recording
-              </a>
+              <>
+                <a
+                  href={interviewRecordingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#2383E2] hover:text-[#1b6ec2] transition-colors"
+                >
+                  <span>▶</span> Open Recording
+                </a>
+                <audio
+                  src={interviewRecordingUrl}
+                  controls
+                  preload="none"
+                  className="w-full mt-2 rounded-lg"
+                />
+              </>
             )}
           </div>
           {interviewTranscript && (
@@ -597,9 +605,27 @@ export default async function CandidateDetailPage({
               <summary className="text-[13px] font-medium text-[#2383E2] hover:text-[#1b6ec2] cursor-pointer transition-colors">
                 View Full Transcript
               </summary>
-              <pre className="mt-3 p-4 bg-[#F7F6F3] rounded-lg text-[12px] text-[#9B9A97] whitespace-pre-wrap leading-relaxed max-h-[400px] overflow-y-auto border border-[#E9E9E7]">
-                {interviewTranscript}
-              </pre>
+              <div className="mt-3">
+                <div className="flex justify-end mb-2">
+                  <button
+                    onClick={() => {
+                      const blob = new Blob([interviewTranscript], { type: "text/plain" });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = `transcript-${candidate.full_name || "candidate"}.txt`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    }}
+                    className="text-[12px] font-medium text-[#9B9A97] hover:text-[#2383E2] transition-colors"
+                  >
+                    Download .txt
+                  </button>
+                </div>
+                <pre className="p-4 bg-[#F7F6F3] rounded-lg text-[12px] text-[#9B9A97] whitespace-pre-wrap leading-relaxed max-h-[400px] overflow-y-auto border border-[#E9E9E7]">
+                  {interviewTranscript}
+                </pre>
+              </div>
             </details>
           )}
         </>

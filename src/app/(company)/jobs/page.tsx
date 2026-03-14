@@ -241,6 +241,14 @@ export default function JobsPage() {
                   >
                     Edit
                   </Link>
+                  {job.applicant_count > 1 && (
+                    <Link
+                      href={`/jobs/${job.id}/compare`}
+                      className="px-3 py-1.5 rounded-lg text-[13px] font-medium border border-[#E9E9E7] text-[#37352F] hover:bg-[#F7F6F3] transition-colors"
+                    >
+                      Compare
+                    </Link>
+                  )}
                   <div className="relative">
                     <button
                       onClick={() =>

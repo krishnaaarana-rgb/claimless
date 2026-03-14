@@ -303,6 +303,15 @@ export default function ApplyPage({
             ) : null}
             . We&apos;ll review your application and get back to you soon.
           </p>
+          <div className="mt-6 bg-white border border-[#E9E9E7] rounded-lg p-4 text-left">
+            <h3 className="text-[13px] font-semibold text-[#37352F] mb-2">What happens next?</h3>
+            <ol className="space-y-2 text-[13px] text-[#9B9A97]">
+              <li className="flex gap-2"><span className="text-[#2383E2] font-medium shrink-0">1.</span> Your application is being reviewed by our AI screening system right now</li>
+              <li className="flex gap-2"><span className="text-[#2383E2] font-medium shrink-0">2.</span> If you match the role, you&apos;ll receive an email with next steps</li>
+              <li className="flex gap-2"><span className="text-[#2383E2] font-medium shrink-0">3.</span> This may include a short AI-powered voice interview you can complete anytime</li>
+            </ol>
+            <p className="text-[12px] text-[#D3D1CB] mt-3">Check your email (including spam folder) for updates.</p>
+          </div>
         </div>
         <div className="mt-12 text-[11px] text-[#9B9A97]">
           Powered by <span className="font-medium text-[#9B9A97]">Claimless</span>
