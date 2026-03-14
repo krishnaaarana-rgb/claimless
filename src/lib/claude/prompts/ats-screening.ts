@@ -18,6 +18,7 @@ export interface ATSScreeningResult {
     | "fail"
     | "strong_fail";
   suggested_interview_topics: string[];
+  consistency_flags?: string[];
 }
 
 export interface ATSScreenInput {
@@ -32,6 +33,8 @@ export interface ATSScreenInput {
   githubUsername: string | null;
   portfolioUrl: string | null;
   websiteContent?: string | null;
+  /** Content scraped from candidate-submitted supporting links */
+  supportingLinksContent?: { url: string; content: string }[];
   customAnswers: { question: string; answer: string }[];
   threshold?: number;
   industry?: string | null;
@@ -39,6 +42,15 @@ export interface ATSScreenInput {
 }
 
 const SYSTEM_PROMPT = `You are an ATS screening system. Evaluate this candidate's application against the job description. Base your assessment ONLY on the information provided — do not make assumptions about information not given. If a resume is provided, weight it heavily. If portfolio/website content is provided, consider it as additional evidence of the candidate's work and expertise. If no resume is provided, evaluate based on whatever information IS available but note the limitation. Be fair and look for potential, not just keyword matches.
+
+RESUME CONSISTENCY ANALYSIS (apply these checks to every resume):
+- TIMELINE LOGIC: Do the dates make sense? Are there overlapping roles that seem impossible? Unexplained gaps longer than 6 months? Check if career progression is logical (e.g. "Senior Manager" after only 1 year in the industry is a flag).
+- TITLE vs RESPONSIBILITY: Does the claimed title match the described responsibilities? A "VP of Engineering" who only describes individual coding work is a concern.
+- NUMBERS SANITY: Do any claimed metrics seem implausible? "Grew team from 2 to 200" in one year at a startup with no funding rounds mentioned? "Saved $10M" as a junior analyst?
+- CONSISTENCY: Do different parts of the resume tell the same story? If skills section says "Python expert" but experience section never mentions Python, note it.
+- CAREER PROGRESSION: Is the trajectory logical? Jumping from intern to director in 2 years, or moving between completely unrelated industries every 6 months, are patterns worth flagging.
+
+Include any consistency issues found in the "concerns" array. If the resume is clean and consistent, note that as a strength.
 
 You MUST output ONLY valid JSON matching this exact schema:
 {
@@ -48,7 +60,8 @@ You MUST output ONLY valid JSON matching this exact schema:
   "strengths": ["..."],
   "concerns": ["..."],
   "key_qualifications": [{ "qualification": "...", "met": true/false, "evidence": "..." }],
-  "suggested_interview_topics": ["..."]
+  "suggested_interview_topics": ["..."],
+  "consistency_flags": ["any timeline, title, or number inconsistencies found — empty array if clean"]
 }
 
 Scoring guide:
@@ -84,6 +97,19 @@ function buildUserPrompt(input: ATSScreenInput): string {
   lines.push("COVER LETTER:");
   lines.push(input.coverLetter || "No cover letter provided");
   lines.push("");
+
+  // Supporting links submitted by candidate
+  if (input.supportingLinksContent && input.supportingLinksContent.length > 0) {
+    lines.push("CANDIDATE-SUBMITTED SUPPORTING LINKS:");
+    for (const link of input.supportingLinksContent) {
+      lines.push(`--- ${link.url} ---`);
+      lines.push(link.content);
+      lines.push("");
+    }
+    lines.push("Evaluate the supporting links as additional evidence of the candidate's work, expertise, and claims. Cross-reference with resume where possible.");
+    lines.push("");
+  }
+
   // Industry and skill requirements context
   if (input.industry) {
     lines.push(`INDUSTRY: ${input.industry}`);

@@ -2172,6 +2172,150 @@ export const INDUSTRIES: Record<string, IndustryDefinition> = {
   },
 
   // ──────────────────────────────────────────────────────
+  // CONSTRUCTION & TRADES
+  // ──────────────────────────────────────────────────────
+  construction: {
+    id: "construction",
+    label: "Construction & Trades",
+    icon: "🏗️",
+    description: "Construction, building, civil engineering, and skilled trades roles",
+    interview_context: {
+      persona:
+        "You are a seasoned construction industry hiring manager. You understand site operations, safety requirements, project delivery, and trade qualifications. You value practical experience and safety consciousness above all.",
+      tone: "Direct and practical — this is an industry where getting things wrong has real consequences.",
+      domain_terminology: [
+        "SWMS", "WHS", "white card", "site induction", "toolbox talk",
+        "take-five", "JSA", "PPE", "scaffold", "formwork", "rebar",
+        "practical completion", "defects liability", "variation",
+        "RFI", "ITP", "hold point", "witness point", "as-built",
+      ],
+      red_flags_to_probe: [
+        "Vague answers about safety procedures or incident response",
+        "No mention of WHS obligations or duty of care",
+        "Can't describe chain of responsibility",
+        "Lack of practical, hands-on examples",
+        "No awareness of environmental or community impact",
+      ],
+      what_great_looks_like:
+        "Strong candidates describe specific site scenarios, demonstrate safety-first thinking, understand chain of responsibility, can discuss project delivery challenges practically, and show trade qualifications with real-world application.",
+    },
+    hard_skills: [
+      {
+        name: "WHS & Safety Management",
+        category: "hard_skill" as SkillCategory,
+        description: "Workplace health and safety compliance, risk assessment, incident management",
+        sample_questions: [
+          "Walk me through how you'd conduct a site safety induction for a new subcontractor.",
+          "Describe a time you identified a safety hazard on site. What did you do?",
+        ],
+        level_descriptors: {
+          basic: "Holds white card, follows basic safety procedures, wears PPE correctly",
+          intermediate: "Can write SWMS, conduct toolbox talks, manage site-specific risks",
+          advanced: "Develops WHS management plans, leads incident investigations, manages safety across multiple trades",
+          expert: "Implements company-wide safety systems, interfaces with regulators, drives cultural change around safety",
+        },
+      },
+      {
+        name: "Project Delivery",
+        category: "hard_skill" as SkillCategory,
+        description: "Managing construction projects from planning through practical completion",
+        sample_questions: [
+          "Tell me about a project that went over budget or behind schedule. How did you recover?",
+          "How do you manage variations and scope changes mid-project?",
+        ],
+        level_descriptors: {
+          basic: "Understands project phases, can follow a programme, tracks basic milestones",
+          intermediate: "Manages small-medium projects, handles subcontractor coordination, manages RFIs and variations",
+          advanced: "Delivers complex multi-trade projects, manages stakeholder relationships, drives programme recovery",
+          expert: "Oversees portfolio of projects, sets delivery standards, mentors project managers",
+        },
+      },
+      {
+        name: "Trade Technical Skills",
+        category: "hard_skill" as SkillCategory,
+        description: "Hands-on trade competency — specific to the trade (electrical, plumbing, carpentry, etc.)",
+        sample_questions: [
+          "Walk me through a complex job you completed recently. What made it challenging?",
+          "What's the most common mistake you see in your trade, and how do you prevent it?",
+        ],
+        level_descriptors: {
+          basic: "Apprentice level, works under supervision, learning core techniques",
+          intermediate: "Qualified tradesperson, works independently, handles standard jobs confidently",
+          advanced: "Handles complex/non-standard work, mentors apprentices, troubleshoots difficult problems",
+          expert: "Recognised specialist, consulted on complex jobs, can design solutions for unusual requirements",
+        },
+      },
+      {
+        name: "Reading Plans & Specifications",
+        category: "hard_skill" as SkillCategory,
+        description: "Interpreting construction drawings, specifications, and technical documentation",
+        sample_questions: [
+          "How do you handle a discrepancy between the drawings and the specs?",
+          "Describe a time you caught an error in the plans before it became a problem on site.",
+        ],
+        level_descriptors: {
+          basic: "Can read basic floor plans and elevations",
+          intermediate: "Interprets detailed construction drawings, cross-references specs",
+          advanced: "Reviews shop drawings, identifies clashes, coordinates across disciplines",
+          expert: "Manages BIM coordination, reviews complex structural/services drawings",
+        },
+      },
+    ],
+    soft_skills: [
+      {
+        name: "Site Leadership",
+        category: "soft_skill" as SkillCategory,
+        description: "Leading teams on site, managing subcontractors, maintaining productivity and morale",
+        sample_questions: [
+          "How do you handle a subcontractor who's not meeting quality standards?",
+          "Tell me about managing a difficult situation between trades on site.",
+        ],
+        level_descriptors: {
+          basic: "Works well in a team, follows instructions, communicates clearly",
+          intermediate: "Leads small crews, coordinates daily tasks, handles basic conflicts",
+          advanced: "Manages multiple subcontractors, drives productivity, resolves complex disputes",
+          expert: "Sets site culture, manages large teams across multiple fronts, mentors foremen",
+        },
+      },
+      {
+        name: "Problem Solving Under Pressure",
+        category: "soft_skill" as SkillCategory,
+        description: "Making decisions quickly when things go wrong on site",
+        sample_questions: [
+          "You discover a major defect that will delay the programme by 2 weeks. The client is expecting handover. What do you do?",
+          "It's 6am, your crane operator calls in sick, and you have a critical lift today. Walk me through your next steps.",
+        ],
+        level_descriptors: {
+          basic: "Escalates problems appropriately, stays calm",
+          intermediate: "Develops workarounds, communicates impacts, keeps work progressing",
+          advanced: "Finds creative solutions under pressure, manages stakeholder expectations during crises",
+          expert: "Anticipates problems before they occur, builds contingency into plans, mentors others in crisis management",
+        },
+      },
+    ],
+    sub_niches: [
+      {
+        id: "residential",
+        label: "Residential Construction",
+        additional_skills: ["NCC/BCA compliance", "Client handover", "Warranty management"],
+        interview_hints: "Focus on homeowner relationship management, defects liability, and finishing quality. Ask about managing client expectations during builds.",
+      },
+      {
+        id: "commercial",
+        label: "Commercial Construction",
+        additional_skills: ["Stakeholder management", "EBA/Award knowledge", "Environmental management"],
+        interview_hints: "Focus on programme management, multi-trade coordination, and working within strict procurement and compliance frameworks.",
+      },
+      {
+        id: "civil",
+        label: "Civil & Infrastructure",
+        additional_skills: ["Earthworks", "Survey", "Environmental approvals", "Traffic management"],
+        interview_hints: "Focus on large-scale logistics, environmental management, community impact, and working with government/council stakeholders.",
+      },
+    ],
+  },
+
+  // ──────────────────────────────────────────────────────
   // GENERAL / OTHER
   // ──────────────────────────────────────────────────────
   general: {
