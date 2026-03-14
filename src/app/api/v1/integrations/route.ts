@@ -102,7 +102,8 @@ export async function PATCH(request: NextRequest) {
   const { error } = await admin
     .from("ats_integrations")
     .update({ ...allowedFields, updated_at: new Date().toISOString() })
-    .eq("id", id);
+    .eq("id", id)
+    .eq("company_id", companyId);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
