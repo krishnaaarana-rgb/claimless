@@ -350,7 +350,7 @@ ${auBlock}`;
     name,
     model: {
       provider: "openrouter",
-      model: "openai/gpt-4o",
+      model: "openai/gpt-5",
       messages: [{ role: "system", content: systemPrompt }],
       temperature: 0.7,
     },
@@ -437,7 +437,7 @@ ${auBlock}`;
         preferred_name: candidateName,
         injected_prompt: systemPrompt,
         injected_prompt_length: systemPrompt.length,
-        interview_model: "openai/gpt-4o-mini",
+        interview_model: "openai/gpt-5",
       },
     })
     .eq("id", application.id);
