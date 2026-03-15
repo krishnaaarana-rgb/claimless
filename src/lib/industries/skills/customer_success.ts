@@ -99,6 +99,96 @@ export const customer_successIndustry: IndustryDefinition = {
           expert: "Builds the CS analytics function, defines company-wide customer health methodology, uses predictive models to drive proactive intervention at scale",
         },
       },
+      {
+        name: "Implementation & Onboarding",
+        category: "hard_skill",
+        description: "Managing end-to-end customer implementations including project planning, data migration, training delivery, and go-live support",
+        sample_questions: [
+          "Walk me through the most complex implementation you've managed. What made it complex and how did you keep it on track?",
+          "A customer's data migration is failing halfway through go-live and the executive sponsor is losing confidence. How do you handle the next 48 hours?",
+        ],
+        level_descriptors: {
+          basic: "Follows implementation playbooks, assists with data setup and basic configuration, delivers standard training sessions",
+          intermediate: "Manages implementations independently, builds project plans with milestones and dependencies, leads data migration planning, adapts training to customer context",
+          advanced: "Leads complex enterprise implementations with multiple workstreams, designs implementation methodologies, manages executive stakeholders through go-live risks, reduces time-to-value through process innovation",
+          expert: "Builds scalable implementation programs across customer segments (tech-touch to white-glove), develops implementation IP and frameworks, leads post-implementation reviews that feed back into product and process improvements",
+        },
+      },
+      {
+        name: "Churn Prevention",
+        category: "hard_skill",
+        description: "Building early warning systems, intervention playbooks, save offers, and win-back campaigns to reduce customer churn",
+        sample_questions: [
+          "You inherit a portfolio with 15% annual churn and no structured save process. Walk me through how you build a churn prevention program from scratch.",
+          "A strategic customer tells you they're evaluating competitors and their contract renews in 60 days. What's your playbook?",
+        ],
+        level_descriptors: {
+          basic: "Recognises churn signals (declining usage, support escalations, missed QBRs), escalates at-risk accounts to management",
+          intermediate: "Executes save plays from established playbooks, conducts churn risk assessments, leads retention conversations, documents reasons for churn to identify patterns",
+          advanced: "Designs early warning systems with leading indicators, builds intervention playbooks for different churn scenarios, creates and manages save offer frameworks, analyses churn cohorts to drive systemic improvements",
+          expert: "Builds enterprise churn prevention programs, develops predictive churn models, designs win-back campaigns for churned customers, shapes pricing and packaging strategy based on retention insights",
+        },
+      },
+      {
+        name: "Customer Advocacy",
+        category: "hard_skill",
+        description: "Building customer reference programs, producing case studies, running NPS programs, and fostering community engagement",
+        sample_questions: [
+          "You need to build a customer reference program but your happiest customers are tired of being asked for favours. How do you create a program that works for both sides?",
+          "Your NPS dropped 15 points in a quarter. Walk me through how you investigate the root cause and what you do with the findings.",
+        ],
+        level_descriptors: {
+          basic: "Identifies happy customers for testimonials, collects NPS responses, supports case study interviews",
+          intermediate: "Manages a customer reference pipeline, produces case studies end-to-end, runs NPS programs with follow-up workflows, coordinates customer speakers for events",
+          advanced: "Builds structured advocacy programs (reference boards, advisory councils, beta communities), designs NPS programs that drive action not just measurement, develops customer marketing partnerships",
+          expert: "Develops enterprise advocacy strategy that feeds sales, marketing, and product, builds self-sustaining customer communities, shapes brand perception through customer voice, measures advocacy impact on pipeline and retention",
+        },
+      },
+      {
+        name: "Support Operations",
+        category: "hard_skill",
+        description: "Managing ticketing systems, SLA frameworks, knowledge base content, and escalation processes to deliver consistent support quality",
+        sample_questions: [
+          "You take over a support team that's consistently missing SLAs and the knowledge base is outdated. Where do you start and how do you prioritise?",
+          "Your ticket volume has doubled but headcount is frozen. How do you maintain quality while managing the increased load?",
+        ],
+        level_descriptors: {
+          basic: "Works within ticketing systems, follows SLA guidelines, uses knowledge base articles to resolve common issues, escalates appropriately",
+          intermediate: "Manages ticket queues and triage, maintains and improves knowledge base content, tracks SLA performance, identifies recurring issues for root cause resolution",
+          advanced: "Designs SLA frameworks and escalation matrices, builds knowledge base strategy and governance, implements support tooling (chatbots, auto-routing, macros), analyses support data to drive product improvements",
+          expert: "Builds scalable support operations across channels and tiers, develops self-service strategies that deflect volume while improving CSAT, designs support analytics programs, leads support transformation initiatives",
+        },
+      },
+      {
+        name: "Success Planning",
+        category: "hard_skill",
+        description: "Collaborating with customers on goal setting, business reviews (QBR/EBR), outcome tracking, and stakeholder alignment to drive measurable value",
+        sample_questions: [
+          "Walk me through how you build a success plan with a new enterprise customer. How do you ensure it doesn't become a document that sits in a drawer?",
+          "Your customer's executive sponsor says the QBRs feel like status updates, not strategic conversations. How do you redesign the format?",
+        ],
+        level_descriptors: {
+          basic: "Documents customer goals, prepares basic QBR decks with usage data, tracks action items from business reviews",
+          intermediate: "Co-creates success plans with customer stakeholders, runs QBRs that connect product usage to business outcomes, manages outcome tracking against agreed KPIs, aligns internal teams around customer goals",
+          advanced: "Designs success planning frameworks for different customer segments, leads EBRs with C-suite that drive strategic alignment, builds outcome measurement methodologies, uses success plans to drive expansion conversations",
+          expert: "Builds the success planning function for the CS org, develops frameworks that scale from SMB to enterprise, shapes how the company measures and communicates customer value, influences product strategy through aggregate outcome data",
+        },
+      },
+      {
+        name: "Product Feedback Loop",
+        category: "hard_skill",
+        description: "Systematically capturing feature requests, coordinating beta programs, facilitating user testing, and aligning product and CS teams on customer needs",
+        sample_questions: [
+          "You have 50 customers asking for different features and product can only build 3 this quarter. How do you prioritise, communicate to customers, and maintain trust with those who don't get what they want?",
+          "Product says they need more customer input but your CSMs say they don't have time to run feedback sessions. How do you build a sustainable feedback loop?",
+        ],
+        level_descriptors: {
+          basic: "Logs feature requests accurately, shares customer feedback with product in team channels, recruits customers for surveys and beta programs when asked",
+          intermediate: "Categorises and prioritises feature requests with business context (revenue impact, churn risk), manages beta program logistics, facilitates user testing sessions, maintains a feedback repository",
+          advanced: "Builds structured product-CS feedback processes, leads customer advisory boards, designs beta programs with clear success criteria, presents aggregated customer insights to product leadership with strategic recommendations",
+          expert: "Develops the product feedback function across the CS org, builds systems that connect customer voice to product roadmap decisions at scale, shapes product strategy through customer insights, creates frameworks that align CS and product incentives",
+        },
+      },
     ],
     soft_skills: [
       {

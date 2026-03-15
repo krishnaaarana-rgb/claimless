@@ -114,6 +114,96 @@ export const data_analyticsIndustry: IndustryDefinition = {
           expert: "Builds product analytics practice for the organization, establishes experimentation platforms, shapes product strategy through data-driven insights at the leadership level",
         },
       },
+      {
+        name: "Python for Data",
+        category: "hard_skill",
+        description: "Using Python data tools — pandas, numpy, scikit-learn, and Jupyter notebooks — for data manipulation, analysis, and exploration",
+        sample_questions: [
+          "Walk me through how you'd approach cleaning and analysing a messy dataset with 5 million rows and 200 columns in Python. What libraries do you reach for and how do you handle memory constraints?",
+          "You need to build a reproducible analysis pipeline that a non-technical stakeholder can re-run monthly. How do you structure the project and what tooling do you use?",
+        ],
+        level_descriptors: {
+          basic: "Writes pandas scripts for data loading, filtering, and basic aggregations, uses Jupyter notebooks for exploratory analysis, creates simple plots with matplotlib",
+          intermediate: "Builds efficient data pipelines with pandas and numpy, handles complex transformations (merges, pivots, window functions), uses scikit-learn for standard ML tasks, writes clean and documented notebooks",
+          advanced: "Optimises Python code for large-scale data processing (chunking, vectorisation, Dask), builds reusable analysis libraries, integrates Python workflows with production systems, mentors others on Python best practices",
+          expert: "Architects Python-based analytics platforms, develops custom libraries and frameworks for the organisation, contributes to open-source data tools, defines coding standards for the data team",
+        },
+      },
+      {
+        name: "Cloud Data Platforms",
+        category: "hard_skill",
+        description: "Working with modern cloud data platforms — Snowflake, BigQuery, Redshift, Databricks, and dbt — to build and manage scalable data infrastructure",
+        sample_questions: [
+          "You're migrating from an on-premise data warehouse to a cloud platform. Walk me through how you'd evaluate Snowflake vs. BigQuery vs. Databricks for your use case.",
+          "Your Snowflake costs have tripled in 6 months and finance is asking questions. How do you diagnose the problem and optimise spend without breaking anything?",
+        ],
+        level_descriptors: {
+          basic: "Queries data in cloud platforms, understands basic concepts (compute/storage separation, clustering, partitioning), runs dbt models written by others",
+          intermediate: "Builds and maintains data models in dbt, configures platform features (materialisation strategies, caching, access controls), monitors query performance and costs",
+          advanced: "Architects data platform solutions for the organisation, designs multi-environment setups (dev/staging/prod), optimises cost and performance at scale, leads platform migrations, builds dbt projects with testing and documentation",
+          expert: "Defines cloud data platform strategy across the enterprise, evaluates and adopts emerging platforms, builds platform engineering teams, shapes data architecture decisions that balance cost, performance, and flexibility",
+        },
+      },
+      {
+        name: "BI & Dashboarding",
+        category: "hard_skill",
+        description: "Building dashboards and self-serve analytics experiences using tools like Tableau, Power BI, and Looker, with a focus on design principles and enabling data-driven decisions",
+        sample_questions: [
+          "You're building a dashboard for the executive team and they want 30 metrics on one page. How do you push back and what do you build instead?",
+          "Your company has invested in Looker but adoption is low — people still ask the data team for ad-hoc queries. How do you build a self-serve analytics culture?",
+        ],
+        level_descriptors: {
+          basic: "Creates basic dashboards with filters and drill-downs, uses BI tools to answer defined questions, understands chart type selection",
+          intermediate: "Designs dashboards with clear visual hierarchy and storytelling, builds LookML models or Tableau data sources, creates self-serve views for business users, manages dashboard performance",
+          advanced: "Defines BI strategy and tool standards for the organisation, designs semantic layers, builds dashboard design guidelines, leads BI tool evaluations and migrations, trains business users on self-serve analytics",
+          expert: "Architects enterprise BI platforms serving hundreds of users, develops analytics product thinking for internal tools, shapes how the organisation consumes and acts on data, builds BI centres of excellence",
+        },
+      },
+      {
+        name: "Experimentation & A/B Testing",
+        category: "hard_skill",
+        description: "Designing and analysing controlled experiments including hypothesis formation, sample sizing, statistical significance testing, and guardrail metric monitoring",
+        sample_questions: [
+          "Walk me through how you'd design an A/B test for a checkout flow change. How do you determine sample size, and what would make you stop the test early?",
+          "Your A/B test shows a statistically significant lift in conversion but a drop in average order value. How do you make a recommendation?",
+        ],
+        level_descriptors: {
+          basic: "Understands A/B testing fundamentals (control vs. treatment, statistical significance), reads experiment results, flags when sample sizes seem too small",
+          intermediate: "Designs experiments end-to-end (hypothesis, success metrics, guardrails, sample size calculation), analyses results with appropriate statistical methods, communicates findings with confidence intervals",
+          advanced: "Runs complex experimentation programs (multi-variate, sequential testing, interaction effects), builds guardrail metric frameworks, detects and handles novelty effects and selection bias, develops experimentation standards for the team",
+          expert: "Builds experimentation platforms and culture for the organisation, develops Bayesian experimentation frameworks, leads statistical innovation (multi-armed bandits, causal inference), shapes product strategy through experimentation insights",
+        },
+      },
+      {
+        name: "Data Modelling",
+        category: "hard_skill",
+        description: "Designing data models including star schema, dimensional modelling, normalisation, and data vault approaches to support analytics and reporting at scale",
+        sample_questions: [
+          "You're designing the data model for a new analytics warehouse. Walk me through how you decide between a star schema and a data vault approach.",
+          "A fact table is growing by 100 million rows per day and downstream queries are getting slower. How do you diagnose and redesign?",
+        ],
+        level_descriptors: {
+          basic: "Understands relational modelling concepts (normalisation, primary/foreign keys), reads and navigates existing star schemas, creates basic dimension and fact tables",
+          intermediate: "Designs dimensional models (star and snowflake schemas), handles slowly changing dimensions, builds conformed dimensions across business processes, documents data models clearly",
+          advanced: "Architects enterprise data models spanning multiple domains, implements data vault methodology, designs for both analytical and operational use cases, optimises models for query performance at scale",
+          expert: "Defines data modelling strategy and standards for the organisation, evaluates and adopts emerging modelling paradigms, leads data model governance, builds modelling practices that balance flexibility with consistency",
+        },
+      },
+      {
+        name: "Real-time Analytics",
+        category: "hard_skill",
+        description: "Building real-time data pipelines and dashboards using streaming technologies like Kafka and Kinesis, and event-driven architecture patterns",
+        sample_questions: [
+          "Walk me through how you'd build a real-time dashboard for monitoring transaction fraud. What architecture would you use and what trade-offs would you make between latency and accuracy?",
+          "Your batch pipeline runs nightly but the business wants near-real-time reporting. How do you evaluate whether to build a streaming pipeline and what's your implementation approach?",
+        ],
+        level_descriptors: {
+          basic: "Understands the difference between batch and streaming, reads from Kafka topics or Kinesis streams, builds basic real-time visualisations using existing infrastructure",
+          intermediate: "Builds streaming pipelines with Kafka or Kinesis, implements event-driven data flows, handles late-arriving data and windowing, creates real-time dashboards with appropriate refresh strategies",
+          advanced: "Architects real-time analytics platforms, designs event schemas and streaming topologies, implements exactly-once processing semantics, balances real-time and batch approaches (Lambda/Kappa architecture), optimises for throughput and latency",
+          expert: "Defines enterprise streaming strategy, builds real-time analytics platforms serving mission-critical use cases (fraud detection, operational monitoring), develops event-driven architecture standards, evaluates emerging streaming technologies",
+        },
+      },
     ],
     soft_skills: [
       {
