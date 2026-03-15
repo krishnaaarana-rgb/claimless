@@ -50,14 +50,17 @@ When a candidate enters your pipeline (via ATS integration, direct application, 
 
 **What we analyse:**
 
-- **Resume deep analysis** — AI reads the full resume and checks for internal consistency: do the dates make sense? Does the career progression follow a logical path? Do the claimed responsibilities match the seniority level? Are there unexplained gaps or overlapping roles?
+- **Resume deep analysis** — AI reads the full resume and checks for internal consistency: do the dates make sense? Does the career progression follow a logical path? Do the claimed responsibilities match the seniority level? Are there unexplained gaps or overlapping roles? Generates consistency flags for any issues found.
+- **Project file analysis** — candidates can upload up to 5 files (PDFs, documents, images) as proof of work. PDFs are text-extracted server-side and analysed by the AI alongside the resume. The content is also injected into the voice interview prompt so the AI can ask specific questions about what the candidate submitted.
 - **Code repositories (technical roles)** — for developers, engineers, and data roles, we scrape their GitHub: top 10 repos, code quality, architectural decisions, languages used, commit patterns, test coverage, README quality. This reveals what they've actually built vs. what they claim.
-- **Personal website / portfolio** — we scrape and analyse whatever portfolio URL the candidate provides
+- **Personal website / portfolio** — we scrape and analyse whatever portfolio URL the candidate provides.
 - **Candidate-submitted links** — candidates can submit up to 5 supporting links (case studies, published articles, certifications, Dribbble/Behance portfolios, project demos). We scrape and analyse each one, cross-referencing with resume claims.
 
-The key insight: **we don't just check IF they have experience. We analyse WHETHER their claimed experience is internally consistent.** The AI catches patterns across the entire resume that a human skimming for 30 seconds would miss.
+All uploaded files are stored in Supabase Storage with signed download URLs. Recruiters can download resumes and project files from the candidate detail page at any time.
 
-**Output**: A verified candidate profile with evidence-backed skill scores, consistency flags, verified strengths, identified concerns, and a pre-generated interview brief that tells the AI interviewer exactly what to probe.
+The key insight: **we don't just check IF they have experience. We analyse WHETHER their claimed experience is internally consistent.** The AI catches patterns across the entire resume that a human skimming for 30 seconds would miss. Any consistency flags (timeline gaps, inflated claims, title mismatches) are automatically fed to the voice interviewer to probe during the live conversation.
+
+**Output**: A verified candidate profile with evidence-backed skill scores, consistency flags (fed directly to the AI interviewer), verified strengths, identified concerns, and a pre-generated interview brief that tells the AI interviewer exactly what to probe — including specific questions about uploaded project files.
 
 ### Stage 2: Video Communication Analysis (Optional)
 
@@ -78,9 +81,11 @@ This isn't a beauty contest. It's a communication assessment. For client-facing 
 
 This is where Claimless fundamentally changes what "screening" means.
 
-Every candidate has a live voice conversation with an AI interviewer that is:
-- **Fully briefed** on everything from Stage 1 and 2 — their verified profile, skill scores, concerns, strengths
+Every candidate has a live voice conversation with an AI interviewer (powered by GPT-4o via Vapi) that is:
+- **Fully briefed** on everything from Stage 1 and 2 — resume text, project file content, consistency flags, screening strengths/concerns, Loom video analysis, GitHub data (for tech roles)
+- **Armed with consistency flags** — if the screening detected a timeline gap, inflated numbers, or title mismatch, the AI knows and will probe naturally without revealing it detected the issue
 - **Trained on the specific industry and role** — it knows healthcare regulations if it's interviewing a nurse, it knows APRA standards if it's interviewing a compliance analyst, it knows sales methodologies if it's interviewing a BDM
+- **Structured in mandatory phases** — not optional techniques. The AI MUST use live problem solving (at least twice), depth pursuit, anti-coaching detection, and failure mode testing in every interview. It cannot skip them or wrap up early.
 - **Designed to test, not just ask** — this is the critical difference
 
 #### How the AI Interview Catches What Humans Miss
