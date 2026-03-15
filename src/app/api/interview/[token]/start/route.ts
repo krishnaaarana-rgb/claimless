@@ -110,10 +110,23 @@ export async function POST(
   // 3b. Get interview brief generated from screening (works for ALL candidates)
   const screeningBrief = (screeningData.interview_brief as string) || "";
 
-  // 3c. Get project file names for interview context
-  const projectFiles = (application.application_form_data?.project_files as { name: string }[]) || [];
-  const projectFileContext = projectFiles.length > 0
-    ? `\nPROJECT FILES SUBMITTED: ${projectFiles.map((f) => f.name).join(", ")}. Ask the candidate about these specific files and what they demonstrate.`
+  // 3c. Get project file context + consistency flags for interview
+  const projectFiles = (application.application_form_data?.project_files as { name: string; path: string; type: string }[]) || [];
+  let projectFileContext = "";
+  if (projectFiles.length > 0) {
+    projectFileContext = `\nPROJECT FILES SUBMITTED: ${projectFiles.map((f) => f.name).join(", ")}. Ask the candidate about these specific files — what they built, why, and what the outcome was.`;
+
+    // Include extracted text from PDF project files (stored during screening)
+    const projectFileExtracts = (screeningData.project_file_extracts as string) || "";
+    if (projectFileExtracts) {
+      projectFileContext += `\n\nPROJECT FILE CONTENT (extracted for your reference — use this to ask specific, detailed questions about their work):\n${projectFileExtracts.slice(0, 3000)}`;
+    }
+  }
+
+  // 3d. Get consistency flags from screening (timeline issues, inflated claims)
+  const consistencyFlags = (screeningData.consistency_flags as string[]) || [];
+  const flagsContext = consistencyFlags.length > 0
+    ? `\n\nRESUME CONSISTENCY FLAGS (probe these naturally during the interview — don't reveal you know):\n${consistencyFlags.map((f) => `- ${f}`).join("\n")}`
     : "";
 
   // 4. Get GitHub profile + pre-generated interview context if available
@@ -122,6 +135,7 @@ export async function POST(
     ? `\nSCREENING BRIEF:\n${screeningBrief}`
     : "";
   preGeneratedContext += projectFileContext;
+  preGeneratedContext += flagsContext;
   const ghUser = candidate.github_username;
   const hasValidGithub = ghUser && /^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,37}[a-zA-Z0-9])?$/.test(ghUser) && !ghUser.includes("http") && !ghUser.includes("localhost");
   if (hasValidGithub) {

@@ -221,6 +221,7 @@ export async function POST(request: NextRequest) {
       match_breakdown: {
         ...screening,
         interview_brief: interviewBrief,
+        project_file_extracts: projectFileTexts.length > 0 ? projectFileTexts.join("\n\n") : null,
       },
       updated_at: new Date().toISOString(),
     };
