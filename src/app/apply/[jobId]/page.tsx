@@ -107,6 +107,7 @@ export default function ApplyPage({
   const [supportingLinks, setSupportingLinks] = useState<string[]>([""]);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [resumeParsed, setResumeParsed] = useState(false);
+  const [projectFiles, setProjectFiles] = useState<{ file: File; uploading: boolean; uploaded: boolean; path?: string }[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
@@ -197,6 +198,41 @@ export default function ApplyPage({
     setSubmitting(true);
 
     try {
+      // Upload resume file to storage if present
+      let resumeStoragePath: string | null = null;
+      if (resumeFile) {
+        const fd = new FormData();
+        fd.append("file", resumeFile);
+        fd.append("bucket", "candidate-files");
+        fd.append("path", `resumes/${jobId}`);
+        const uploadRes = await fetch("/api/upload", { method: "POST", body: fd });
+        if (uploadRes.ok) {
+          const uploadData = await uploadRes.json();
+          resumeStoragePath = uploadData.path;
+        }
+      }
+
+      // Upload project files to storage
+      const uploadedProjectFiles: { name: string; path: string; type: string; size: number }[] = [];
+      for (const pf of projectFiles) {
+        if (pf.file) {
+          const fd = new FormData();
+          fd.append("file", pf.file);
+          fd.append("bucket", "candidate-files");
+          fd.append("path", `projects/${jobId}`);
+          const uploadRes = await fetch("/api/upload", { method: "POST", body: fd });
+          if (uploadRes.ok) {
+            const uploadData = await uploadRes.json();
+            uploadedProjectFiles.push({
+              name: pf.file.name,
+              path: uploadData.path,
+              type: pf.file.type,
+              size: pf.file.size,
+            });
+          }
+        }
+      }
+
       const customQs = job?.application_form_config?.custom_questions || [];
       const res = await fetch("/api/apply", {
         method: "POST",
@@ -213,7 +249,9 @@ export default function ApplyPage({
             loom_url: formValues.loom_url || null,
             cover_letter: formValues.cover_letter || null,
             resume_filename: resumeFile?.name || null,
+            resume_storage_path: resumeStoragePath,
             resume_text: formValues._resume_text || null,
+            project_files: uploadedProjectFiles,
             supporting_links: supportingLinks.filter((l) => l.trim()),
             custom_answers: customQs.map((q, i) => ({
               question: q.question,
@@ -520,6 +558,47 @@ export default function ApplyPage({
                 >
                   + Add another link
                 </button>
+              )}
+            </div>
+
+            {/* Project Files */}
+            <div className="space-y-2">
+              <label className="block text-[13px] font-semibold text-[#37352F]">
+                Project files
+                <span className="font-normal text-[#9B9A97] ml-1">(optional)</span>
+              </label>
+              <p className="text-[12px] text-[#9B9A97]">
+                Upload project documents, case studies, certifications, or portfolio samples. PDF, DOC, PNG, JPG (max 10MB each, up to 5 files).
+              </p>
+              {projectFiles.map((pf, i) => (
+                <div key={i} className="flex items-center gap-2 text-[13px]">
+                  <span className="flex-1 text-[#37352F] truncate">{pf.file.name}</span>
+                  <span className="text-[11px] text-[#9B9A97]">{(pf.file.size / 1024).toFixed(0)}KB</span>
+                  <button
+                    type="button"
+                    onClick={() => setProjectFiles((prev) => prev.filter((_, j) => j !== i))}
+                    className="text-[#9B9A97] hover:text-red-500 transition-colors"
+                  >
+                    &times;
+                  </button>
+                </div>
+              ))}
+              {projectFiles.length < 5 && (
+                <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-medium border border-dashed border-[#E9E9E7] text-[#9B9A97] hover:border-[#2383E2] hover:text-[#2383E2] transition-colors cursor-pointer">
+                  + Add file
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file && file.size <= 10 * 1024 * 1024) {
+                        setProjectFiles((prev) => [...prev, { file, uploading: false, uploaded: false }]);
+                      }
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
               )}
             </div>
 

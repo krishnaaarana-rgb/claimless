@@ -54,6 +54,7 @@ export default function NewJobPage() {
   const [industry, setIndustry] = useState<string | null>(null);
   const [industryNiche, setIndustryNiche] = useState<string | null>(null);
   const [skillRequirements, setSkillRequirements] = useState<SkillRequirement[]>([]);
+  const [jobFiles, setJobFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<{ id: string; title: string } | null>(null);
@@ -111,6 +112,20 @@ export default function NewJobPage() {
 
     setLoading(true);
     try {
+      // Upload job files first
+      const uploadedFiles: { name: string; path: string; type: string }[] = [];
+      for (const f of jobFiles) {
+        const fd = new FormData();
+        fd.append("file", f);
+        fd.append("bucket", "job-files");
+        fd.append("path", "briefs");
+        const uploadRes = await fetch("/api/upload", { method: "POST", body: fd });
+        if (uploadRes.ok) {
+          const d = await uploadRes.json();
+          uploadedFiles.push({ name: f.name, path: d.path, type: f.type });
+        }
+      }
+
       const res = await fetch("/api/jobs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -125,6 +140,7 @@ export default function NewJobPage() {
           industry: industry || null,
           industry_niche: industryNiche || null,
           skill_requirements: skillRequirements.length > 0 ? skillRequirements : null,
+          attachments: uploadedFiles.length > 0 ? uploadedFiles : null,
           status,
         }),
       });
@@ -257,6 +273,44 @@ export default function NewJobPage() {
             candidates and prepare interview questions.
           </p>
         </div>
+      </div>
+
+      {/* Role Brief / Attachments */}
+      <div className="space-y-2">
+        <Label>Attachments <span className="text-muted-foreground font-normal">(optional)</span></Label>
+        <p className="text-[12px] text-muted-foreground">
+          Upload role briefs, org charts, team structure docs, or any files that help the AI interviewer understand the role better.
+        </p>
+        {jobFiles.map((f, i) => (
+          <div key={i} className="flex items-center gap-2 text-[13px]">
+            <span className="flex-1 truncate">{f.name}</span>
+            <span className="text-[11px] text-muted-foreground">{(f.size / 1024).toFixed(0)}KB</span>
+            <button
+              type="button"
+              onClick={() => setJobFiles((prev) => prev.filter((_, j) => j !== i))}
+              className="text-muted-foreground hover:text-destructive transition-colors"
+            >
+              &times;
+            </button>
+          </div>
+        ))}
+        {jobFiles.length < 5 && (
+          <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-medium border border-dashed border-border text-muted-foreground hover:border-primary hover:text-primary transition-colors cursor-pointer">
+            + Add file
+            <input
+              type="file"
+              accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file && file.size <= 10 * 1024 * 1024 && jobFiles.length < 5) {
+                  setJobFiles((prev) => [...prev, file]);
+                }
+                e.target.value = "";
+              }}
+            />
+          </label>
+        )}
       </div>
 
       <IndustrySkillPicker
