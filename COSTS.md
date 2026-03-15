@@ -31,25 +31,24 @@
 
 This is where the real money goes. Vapi bundles four services into one call:
 
-| Service | What It Does | Volume (15-min interview) | Unit Price | Cost Per Candidate |
-|---|---|---|---|---|
-| **Vapi Platform** | Orchestration, WebRTC, call management | 15 min | $0.05/min | **$0.75** |
-| **GPT-5 (via OpenRouter)** | Real-time conversation (the interviewer's brain) — GPT-5 for superior instruction following on mandatory interview phases | ~15 min of back-and-forth, ~15,000-25,000 tokens total | $1.25/$10 per 1M input/output | **$0.08-0.12** |
-| **Deepgram Nova-2** (STT) | Transcribes candidate speech to text in real-time | 15 min audio | $0.0059/min | **$0.09** |
-| **ElevenLabs** (TTS) | Generates interviewer voice from text | ~3,000-5,000 characters spoken | ~$0.08-0.12/min effective | **$1.20-1.80** |
-| **Claude Sonnet 4.5** — Post-interview Scoring | Analyses full transcript with candidate context, scores skills, generates report | ~8,000 input / ~2,000 output | $3/$15 per 1M | **$0.054** |
-| **Resend** (email) | Interview completion notification | 1 email | $0.40/1000 | **$0.001** |
-| **Supabase Storage** | Resume + project file storage | ~1-10MB per candidate | $0.021/GB/month | **<$0.001** |
-| | | | **Stage 3 Total (15 min)** | **~$2.20-2.85** |
+Vapi bundles hosting + LLM + STT + TTS into a single per-minute rate. Verified from Vapi dashboard:
+
+| Service | What It Does | Rate | 15-min cost |
+|---|---|---|---|
+| **Vapi all-in** (hosting + GPT-5 + Deepgram + ElevenLabs) | Real-time voice interview — orchestration, LLM conversation, speech-to-text, text-to-speech | **$0.12/min** (verified) | **$1.80** |
+| **Claude Sonnet 4.5** — Post-interview Scoring | Analyses full transcript with candidate context, scores skills, generates report | $3/$15 per 1M tokens | **$0.054** |
+| **Resend** (email) | Interview completion notification | $0.40/1000 | **$0.001** |
+| **Supabase Storage** | Resume + project file storage | $0.021/GB/month | **<$0.001** |
+| | | **Stage 3 Total (15 min)** | **~$1.86** |
 
 ### Call Duration Impact on Cost
 
-| Interview Length | Vapi Platform | Deepgram | ElevenLabs | GPT-5 | Stage 3 Total |
-|---|---|---|---|---|---|
-| 10 min | $0.50 | $0.06 | $0.80-1.20 | $0.05-0.08 | **$1.43-1.86** |
-| 15 min (default) | $0.75 | $0.09 | $1.20-1.80 | $0.08-0.12 | **$2.15-2.80** |
-| 20 min | $1.00 | $0.12 | $1.60-2.40 | $0.10-0.15 | **$2.85-3.70** |
-| 30 min | $1.50 | $0.18 | $2.40-3.60 | $0.15-0.22 | **$4.30-5.55** |
+| Interview Length | Vapi All-In | Scoring | Stage 3 Total |
+|---|---|---|---|
+| 10 min | $1.20 | $0.05 | **$1.25** |
+| 15 min (default) | $1.80 | $0.05 | **$1.86** |
+| 20 min | $2.40 | $0.05 | **$2.46** |
+| 30 min | $3.60 | $0.05 | **$3.66** |
 
 ---
 
@@ -61,8 +60,8 @@ This is where the real money goes. Vapi bundles four services into one call:
 |---|---|
 | Stage 1: Profile + GitHub + Screening + File Extraction | $0.15 |
 | Stage 2: Loom (if enabled) | $0.02 |
-| Stage 3: Voice Interview (15 min, GPT-5) + Scoring | $2.15-2.80 |
-| **TOTAL** | **$2.32-2.97** |
+| Stage 3: Voice Interview (15 min, GPT-5) + Scoring | $1.86 |
+| **TOTAL** | **~$2.03** |
 
 ### Scenario B: Non-Tech Role (No GitHub, 15-min interview)
 
@@ -70,8 +69,8 @@ This is where the real money goes. Vapi bundles four services into one call:
 |---|---|
 | Stage 1: Resume + Project Files Screening | $0.04 |
 | Stage 2: Loom (if enabled) | $0.02 |
-| Stage 3: Voice Interview (15 min, GPT-5) + Scoring | $2.15-2.80 |
-| **TOTAL** | **$2.21-2.86** |
+| Stage 3: Voice Interview (15 min, GPT-5) + Scoring | $1.86 |
+| **TOTAL** | **~$1.92** |
 
 ### Scenario C: Screening Only (No Interview)
 
@@ -80,7 +79,7 @@ This is where the real money goes. Vapi bundles four services into one call:
 | Stage 1: Profile + Screening | $0.04-0.15 |
 | **TOTAL** | **$0.04-0.15** |
 
-**Bottom line: your cost per candidate is $2.20-3.00 for the full pipeline. ElevenLabs TTS is still 55-65% of the total cost. GPT-5 is cheaper than GPT-4o ($1.25 vs $2.50 per 1M input) while being significantly smarter — better at following mandatory interview phases, live problem solving, and anti-coaching detection.**
+**Bottom line: your cost per candidate is ~$2 for the full pipeline (verified from Vapi dashboard at $0.12/min). The Vapi call ($1.80 for 15 min) is 90% of total cost. Screening and scoring add ~$0.10-0.20.**
 
 ---
 
@@ -114,8 +113,8 @@ Best for: agencies testing the product, variable volume, easy to understand.
 | Tier | What's Included | Your Cost | Suggested Price | Your Margin |
 |---|---|---|---|---|
 | **Screen Only** | Resume analysis + ATS score + report | $0.04-0.15 | **$5** | 97-99% |
-| **Screen + Interview** | Full pipeline: verification + 15-min AI interview (GPT-5) + scored report | $2.32-2.97 | **$20-25** | 86-90% |
-| **Premium** | Full pipeline + 30-min interview + detailed assessment + follow-up Qs | $4.45-5.70 | **$35-45** | 86-87% |
+| **Screen + Interview** | Full pipeline: verification + 15-min AI interview (GPT-5) + scored report | ~$2.00 | **$20-25** | 90-92% |
+| **Premium** | Full pipeline + 30-min interview + detailed assessment + follow-up Qs | ~$3.80 | **$35-45** | 89-92% |
 
 **Why this works:** An agency currently spends $750-1,500 in recruiter time per candidate on phone screens. You're charging $20-25 for a deeper, more consistent assessment. It's a no-brainer ROI.
 
