@@ -114,6 +114,96 @@ export const marketingIndustry: IndustryDefinition = {
           expert: "Defines repeatable GTM frameworks for the organization, leads multi-product or multi-market launches, shapes company-wide market strategy and competitive positioning",
         },
       },
+      {
+        name: "Social Media Management",
+        category: "hard_skill",
+        description: "Developing platform-specific strategies, managing communities, running paid social campaigns, and building influencer partnerships to grow brand presence and engagement",
+        sample_questions: [
+          "Your brand's organic social reach has dropped 40% over six months despite consistent posting. Walk me through how you'd diagnose the issue and rebuild the strategy across platforms.",
+          "A mid-tier influencer with a highly engaged audience in your niche approaches you for a partnership. How do you evaluate the opportunity, structure the deal, and measure ROI?",
+        ],
+        level_descriptors: {
+          basic: "Creates and schedules social content using tools like Later or Hootsuite, monitors comments and messages, and reports on basic engagement metrics (likes, reach, followers)",
+          intermediate: "Develops platform-specific content strategies, manages community engagement and moderation, runs paid social campaigns with targeting and budget management, and identifies and briefs influencer partnerships",
+          advanced: "Leads social media strategy across all platforms, builds and manages influencer programs at scale, integrates social with broader marketing campaigns, manages social during crisis situations, and ties social performance to business KPIs",
+          expert: "Shapes the organisation's social media and community strategy at executive level, pioneers new platform adoption, builds social commerce capabilities, develops creator economy partnerships, and leads social listening and insights programs that inform product and brand decisions",
+        },
+      },
+      {
+        name: "Email Marketing",
+        category: "hard_skill",
+        description: "Designing segmented email campaigns, building automation flows, managing deliverability, running A/B tests, and orchestrating lifecycle campaigns to drive engagement and revenue",
+        sample_questions: [
+          "Your email open rates have dropped from 35% to 18% over the past quarter and unsubscribe rates are climbing. Walk me through your diagnostic process and recovery plan.",
+          "You're building a lifecycle email program for a SaaS product from scratch — onboarding through renewal. Describe your approach to segmentation, cadence, and measuring success.",
+        ],
+        level_descriptors: {
+          basic: "Creates and sends email campaigns using platforms like Mailchimp or HubSpot, maintains subscriber lists, and tracks open and click rates",
+          intermediate: "Builds segmented campaigns based on behaviour and demographics, designs multi-step automation flows (welcome series, re-engagement), runs A/B tests on subject lines and content, and manages list hygiene and deliverability",
+          advanced: "Architects lifecycle email programs across the full customer journey, implements advanced personalisation and dynamic content, manages sender reputation and deliverability infrastructure, and builds attribution models linking email to revenue",
+          expert: "Leads email and CRM strategy at the organisational level, designs cross-channel orchestration (email, SMS, push, in-app), builds predictive segmentation using machine learning, optimises for LTV-based outcomes, and mentors teams on email best practices",
+        },
+      },
+      {
+        name: "Event Marketing",
+        category: "hard_skill",
+        description: "Planning and executing conferences, trade shows, virtual events, and sponsorship programs with measurable ROI aligned to marketing and sales objectives",
+        sample_questions: [
+          "You're responsible for your company's presence at a major industry conference with a $150K budget. Walk me through your planning process from goal-setting to post-event ROI reporting.",
+          "Your annual customer conference needs to pivot to a hybrid format. How do you design the experience to deliver value for both in-person and virtual attendees without doubling the budget?",
+        ],
+        level_descriptors: {
+          basic: "Supports event logistics including venue coordination, registration management, collateral preparation, and on-the-day operations",
+          intermediate: "Plans and manages events end-to-end, develops event marketing campaigns to drive attendance, manages sponsor relationships, coordinates speakers, and reports on attendee engagement and lead generation",
+          advanced: "Designs the event marketing strategy across the annual calendar, manages large-budget conferences and trade show programs, builds sponsorship packages and revenue models, and measures event ROI against pipeline and revenue targets",
+          expert: "Leads the organisation's event and experiential marketing strategy, designs innovative event formats (hybrid, immersive, community-led), builds scalable event operations for global execution, and drives executive alignment on event investment and outcomes",
+        },
+      },
+      {
+        name: "Public Relations",
+        category: "hard_skill",
+        description: "Managing media relations, crafting press releases, handling crisis communications, and training spokespeople to shape brand narrative and reputation",
+        sample_questions: [
+          "A product defect has gone viral on social media and journalists are calling for comment. You have two hours before the story breaks on a major news site. Walk me through your crisis response.",
+          "Your CEO is about to do a live TV interview about a controversial company decision. How do you prepare them, and what guardrails do you put in place?",
+        ],
+        level_descriptors: {
+          basic: "Drafts press releases and media alerts, maintains media contact lists, monitors media coverage, and supports PR events and launches",
+          intermediate: "Manages media relationships and pitches stories proactively, coordinates press conferences and media briefings, handles inbound media enquiries, and measures PR impact through coverage analysis and AVE or equivalent metrics",
+          advanced: "Develops PR strategy aligned with brand and business objectives, manages crisis communication plans and incident response, trains executives and spokespeople for media appearances, and builds thought leadership programs through earned media",
+          expert: "Leads organisational reputation strategy at executive level, manages high-stakes crisis situations with board-level visibility, shapes public policy narratives, builds and manages agency relationships, and integrates PR with content, social, and brand strategy",
+        },
+      },
+      {
+        name: "Copywriting & Content Creation",
+        category: "hard_skill",
+        description: "Creating compelling copy across formats including brand voice development, UX writing, long-form content, video scripts, and multi-channel content production",
+        sample_questions: [
+          "You join a company with no documented brand voice or tone guidelines. How do you develop them, get buy-in across the organisation, and ensure consistent adoption?",
+          "A product team asks you to rewrite the onboarding flow copy — completion rates are 40% and drop-off is highest at step 3. Walk me through your UX writing process.",
+        ],
+        level_descriptors: {
+          basic: "Writes clear copy for standard formats (social posts, blog articles, email), follows existing brand guidelines, and adapts messaging for different audiences",
+          intermediate: "Develops content across multiple formats (web copy, video scripts, case studies, white papers), applies brand voice consistently, writes UX copy for product interfaces, and adapts tone for different channels and customer journey stages",
+          advanced: "Defines and evolves brand voice and messaging frameworks, produces high-impact content that drives measurable business outcomes, leads content production across teams and agencies, and mentors junior writers on craft and strategy",
+          expert: "Shapes organisational content and messaging strategy, builds and leads content teams, creates content systems and processes for scale, pioneers new content formats and channels, and sets the standard for copywriting quality across the business",
+        },
+      },
+      {
+        name: "Conversion Rate Optimisation",
+        category: "hard_skill",
+        description: "Improving conversion rates through landing page optimisation, A/B testing, funnel analysis, and user behaviour analytics to maximise marketing ROI",
+        sample_questions: [
+          "Your main landing page converts at 2.1% and the industry benchmark is 4.5%. Walk me through your systematic approach to diagnosing the problems and running an optimisation program.",
+          "You've been running A/B tests for three months but none have reached statistical significance despite decent traffic. What's going wrong and how do you fix your testing program?",
+        ],
+        level_descriptors: {
+          basic: "Builds landing pages using tools like Unbounce or Instapage, sets up basic A/B tests, uses Google Analytics to review page performance, and implements changes based on best-practice guidelines",
+          intermediate: "Conducts funnel analysis to identify drop-off points, designs hypothesis-driven A/B and multivariate tests, uses heatmaps and session recordings (Hotjar, FullStory) to diagnose UX issues, and calculates statistical significance before declaring winners",
+          advanced: "Leads a structured CRO program with a prioritised testing roadmap, builds experimentation frameworks (ICE, PIE scoring), integrates qualitative and quantitative research (surveys, user testing, analytics), and ties conversion improvements to revenue impact",
+          expert: "Builds and leads the organisation's experimentation culture, designs personalisation and dynamic content strategies, implements server-side testing for complex scenarios, mentors teams on experimentation methodology, and drives a data-informed approach to all customer-facing experiences",
+        },
+      },
     ],
     soft_skills: [
       {
