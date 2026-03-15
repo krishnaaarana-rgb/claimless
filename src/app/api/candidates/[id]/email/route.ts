@@ -78,6 +78,15 @@ export async function POST(
   const fromAddress =
     settings.email_from || `noreply@${process.env.RESEND_DOMAIN || "claimless.app"}`;
 
+  // Get reply-to from company_settings
+  const { data: companySettings } = await admin
+    .from("company_settings")
+    .select("email_reply_to, email_from_address")
+    .eq("company_id", membership.company_id)
+    .maybeSingle();
+
+  const replyTo = companySettings?.email_reply_to || companySettings?.email_from_address || fromAddress;
+
   try {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -88,6 +97,7 @@ export async function POST(
       body: JSON.stringify({
         from: `${company?.name || "Claimless"} <${fromAddress}>`,
         to: [candidate.email],
+        reply_to: replyTo,
         subject,
         text: message,
       }),

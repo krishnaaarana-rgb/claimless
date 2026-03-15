@@ -104,6 +104,7 @@ export async function sendATSNotification(
       html,
       from: settings.email_from_address || undefined,
       fromName: settings.email_from_name || companyName,
+      replyTo: settings.email_reply_to || settings.email_from_address || undefined,
     },
     settings.email_api_key
   );

@@ -25,6 +25,8 @@ interface CompanySettings {
   email_api_key: string | null;
   email_from_address: string | null;
   email_from_name: string | null;
+  email_reply_to: string | null;
+  email_reply_to_addresses: string[];
 }
 
 const TABS = [
@@ -724,6 +726,73 @@ function EmailProviderTab({ getValue, updateDraft }: TabProps) {
               placeholder="Your Company"
             />
           </div>
+          <div>
+            <label className="block text-[13px] font-medium text-[#37352F] mb-1.5">Reply-To Email</label>
+            <div className="flex gap-2">
+              <div className="flex-1 relative">
+                <input
+                  type="email"
+                  value={getValue("email_reply_to") || ""}
+                  onChange={(e) => updateDraft("email_reply_to", e.target.value || null)}
+                  className="w-full rounded-lg border border-[#E9E9E7] px-4 py-2.5 text-[14px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2]"
+                  placeholder="hiring@yourcompany.com"
+                  list="reply-to-addresses"
+                />
+                <datalist id="reply-to-addresses">
+                  {((getValue("email_reply_to_addresses") as unknown as string[]) || []).map((addr: string) => (
+                    <option key={addr} value={addr} />
+                  ))}
+                </datalist>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  const current = getValue("email_reply_to") as string;
+                  if (!current?.trim()) return;
+                  const existing = (getValue("email_reply_to_addresses") as unknown as string[]) || [];
+                  if (!existing.includes(current.trim())) {
+                    updateDraft("email_reply_to_addresses", [...existing, current.trim()]);
+                  }
+                }}
+                className="px-3 py-2.5 rounded-lg text-[12px] font-medium border border-[#E9E9E7] text-[#9B9A97] hover:text-[#2383E2] hover:border-[#2383E2] transition-colors whitespace-nowrap"
+              >
+                Save Address
+              </button>
+            </div>
+            <p className="text-[12px] text-[#9B9A97] mt-1.5">
+              When candidates reply to emails, responses go here. Save multiple addresses to quickly switch between them.
+            </p>
+            {((getValue("email_reply_to_addresses") as unknown as string[]) || []).length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {((getValue("email_reply_to_addresses") as unknown as string[]) || []).map((addr: string) => (
+                  <button
+                    key={addr}
+                    type="button"
+                    onClick={() => updateDraft("email_reply_to", addr)}
+                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors ${
+                      getValue("email_reply_to") === addr
+                        ? "bg-[#2383E2] text-white"
+                        : "bg-[#F7F6F3] text-[#37352F] hover:bg-[#EFEFEF]"
+                    }`}
+                  >
+                    {addr}
+                    <span
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const existing = (getValue("email_reply_to_addresses") as unknown as string[]) || [];
+                        updateDraft("email_reply_to_addresses", existing.filter((a: string) => a !== addr));
+                        if (getValue("email_reply_to") === addr) updateDraft("email_reply_to", null);
+                      }}
+                      className="ml-0.5 opacity-60 hover:opacity-100 cursor-pointer"
+                    >
+                      &times;
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           <div className="border-t border-[#E9E9E7] pt-4">
             <div className="flex items-center gap-3">
               <button

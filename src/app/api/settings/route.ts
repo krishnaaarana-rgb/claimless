@@ -175,6 +175,14 @@ export async function PATCH(request: NextRequest) {
   if (body.email_from_name !== undefined) {
     updates.email_from_name = body.email_from_name || null;
   }
+  if (body.email_reply_to !== undefined) {
+    updates.email_reply_to = body.email_reply_to || null;
+  }
+  if (body.email_reply_to_addresses !== undefined) {
+    updates.email_reply_to_addresses = Array.isArray(body.email_reply_to_addresses)
+      ? body.email_reply_to_addresses.filter((a: unknown) => typeof a === "string" && (a as string).includes("@"))
+      : [];
+  }
 
   if (Object.keys(updates).length === 0) {
     return NextResponse.json({ error: "No valid fields to update" }, { status: 400 });
