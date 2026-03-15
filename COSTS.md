@@ -29,9 +29,7 @@
 
 ### Stage 3: AI Voice Interview (The Big Cost)
 
-This is where the real money goes. Vapi bundles four services into one call:
-
-Vapi bundles hosting + LLM + STT + TTS into a single per-minute rate. Verified from Vapi dashboard:
+This is where the real money goes. Vapi bundles hosting + LLM + STT + TTS into a single per-minute rate. Verified from Vapi dashboard:
 
 | Service | What It Does | Rate | 15-min cost |
 |---|---|---|---|

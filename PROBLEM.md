@@ -81,7 +81,7 @@ This isn't a beauty contest. It's a communication assessment. For client-facing 
 
 This is where Claimless fundamentally changes what "screening" means.
 
-Every candidate has a live voice conversation with an AI interviewer (powered by GPT-4o via Vapi) that is:
+Every candidate has a live voice conversation with an AI interviewer (powered by GPT-5 via Vapi, ~$0.12/min all-in) that is:
 - **Fully briefed** on everything from Stage 1 and 2 — resume text, project file content, consistency flags, screening strengths/concerns, Loom video analysis, GitHub data (for tech roles)
 - **Armed with consistency flags** — if the screening detected a timeline gap, inflated numbers, or title mismatch, the AI knows and will probe naturally without revealing it detected the issue
 - **Trained on the specific industry and role** — it knows healthcare regulations if it's interviewing a nurse, it knows APRA standards if it's interviewing a compliance analyst, it knows sales methodologies if it's interviewing a BDM
