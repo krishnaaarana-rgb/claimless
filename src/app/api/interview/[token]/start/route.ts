@@ -88,7 +88,7 @@ export async function POST(
         public_key: process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY,
         candidate_name: (application.application_form_data?.preferred_name as string) || candidate.full_name || "the candidate",
         job_title: job.title,
-        duration_minutes: settings?.interview_duration_minutes || 15,
+        duration_minutes: settings?.interview_duration_minutes || 20,
         company_name: companyBrand?.name || "Claimless",
         company_color: companyBrand?.primary_color || "#2383E2",
       });
@@ -148,7 +148,27 @@ export async function POST(
     if (profile?.github_analysis) {
       githubContext = `\n\nGITHUB PROFILE:\n${JSON.stringify(profile.github_analysis, null, 2)}`;
     } else {
-      githubContext = `\n\nThe candidate's GitHub profile is github.com/${ghUser}. Ask about their open source contributions or notable repos.`;
+      // Try on-demand GitHub scraping if profile doesn't exist yet
+      try {
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+        const scrapeRes = await fetch(`${baseUrl}/api/scrape/github`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ github_username: ghUser, candidate_id: candidate.id }),
+        });
+        if (scrapeRes.ok) {
+          const scrapeData = await scrapeRes.json();
+          if (scrapeData.analysis) {
+            githubContext = `\n\nGITHUB PROFILE (just scraped):\n${JSON.stringify(scrapeData.analysis, null, 2)}`;
+          }
+        }
+      } catch {
+        // If scraping fails, fall back to a note
+      }
+
+      if (!githubContext) {
+        githubContext = `\n\nThe candidate's GitHub profile is github.com/${ghUser}. Ask about their open source contributions or notable repos.`;
+      }
     }
 
     // Inject pre-generated interview context if available
@@ -182,7 +202,7 @@ export async function POST(
     .eq("company_id", job.company_id)
     .maybeSingle();
 
-  const duration = settings?.interview_duration_minutes || 15;
+  const duration = settings?.interview_duration_minutes || 20;
   const style = settings?.interview_style || "conversational";
   const focus = settings?.interview_focus || "technical_and_behavioral";
 
@@ -369,7 +389,7 @@ ${auBlock}`;
       endpointing: 500,
     },
     endCallFunctionEnabled: true,
-    maxDurationSeconds: (duration + 2) * 60,
+    maxDurationSeconds: Math.min((duration + 2) * 60, 35 * 60), // Cap at 35 min absolute max
     silenceTimeoutSeconds: 30,
     responseDelaySeconds: 1.2,
     backchannelingEnabled: false,

@@ -88,7 +88,7 @@ export async function GET(
     company_logo_url: company?.logo_url || null,
     company_color: company?.primary_color || "#2383E2",
     github_required: job?.github_required || false,
-    interview_duration: settings?.interview_duration_minutes || 15,
+    interview_duration: settings?.interview_duration_minutes || 20,
   });
 }
 

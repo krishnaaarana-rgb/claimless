@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
           concerns: concerns.length > 0 ? concerns : undefined,
         },
         settings: {
-          duration_minutes: 15,
+          duration_minutes: 20,
           style: "conversational",
           focus: "technical_and_behavioral",
         },

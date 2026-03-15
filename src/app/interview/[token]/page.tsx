@@ -362,7 +362,7 @@ export default function InterviewPrepPage() {
                 What to expect
               </h3>
               <ul className="space-y-2">
-                <ExpectItem text={`${data?.interview_duration || 15}-minute conversation`} />
+                <ExpectItem text={`${data?.interview_duration || 20}-minute conversation`} />
                 <ExpectItem text="Questions about your experience and the role" />
                 <ExpectItem text="Be yourself — no trick questions" />
               </ul>
