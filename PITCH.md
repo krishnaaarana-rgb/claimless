@@ -5,62 +5,93 @@
 
 ## Slide 1: Title
 **Claimless** — Stop Hiring Based on Claims. Start Hiring Based on Proof.
-The AI-powered platform that verifies what candidates can actually do — across every industry, every role.
+The AI-powered platform that verifies what candidates can actually do — through conversation, not keyword matching.
 
 ---
 
 ## Slide 2: The Problem
-Recruitment is broken at the screening layer.
+Recruitment screening is broken — and traditional AI makes it worse.
 
 - 75% of resumes contain exaggerations or lies (HireRight)
+- Traditional ATS tools auto-reject great candidates because they used the wrong keywords
+- AI coaching tools (ChatGPT, interview prep apps) have made it easy for underqualified candidates to sound perfect
 - Recruiters spend 23 hours screening per hire — most wasted on unqualified candidates
 - Top candidates are off the market in 10 days. Your process takes 30-45 days.
-- AI coaching tools (ChatGPT, interview prep apps) have made it easy for underqualified candidates to sound perfect
 - A single bad placement costs 30% of annual salary in rehiring, lost productivity, and damaged client trust
 
-The entire pipeline relies on what candidates CLAIM, with no mechanism to verify it.
+The industry is caught between two failures: keyword-matching AI that rejects good people, and manual screening that can't keep up with volume.
 
 ---
 
 ## Slide 3: The Insight
-You can't assess a nurse by reading her resume.
-You can't assess an accountant from a 5-minute phone screen.
-You can't assess a sales manager from a rehearsed STAR answer.
+The best candidates don't always have the best resumes.
 
-You assess them by **putting them in the situation and watching what they do.**
+Their value becomes clear through **conversation** — not keyword scanning.
 
-That's what Claimless does — at scale, for every candidate, every time.
+But a recruiter can only have 8 conversations a day. What if you could have 500?
+
+That's what Claimless does. Every candidate gets a real conversation. Not a form. Not a chatbot. A live voice interview that tests what they actually know.
 
 ---
 
 ## Slide 4: How It Works — Three Stages
 
 **Stage 1: Intelligent Profile Verification**
-AI analyses the candidate's full digital footprint — resume, portfolio, published work, code (for technical roles), career progression, timeline consistency. Outputs a verified profile with evidence-backed skill scores and flags.
+AI analyses the full resume for consistency — timeline logic, career progression, title vs responsibility match, numbers sanity. Candidates can also upload project files, portfolios, and supporting documents as proof of work. No keyword matching. The question isn't "do they have the right buzzwords?" — it's "does their story add up?"
 
 **Stage 2: Video Analysis (Optional)**
-Short candidate video analysed for communication clarity, confidence, and technical depth. Critical for client-facing roles.
+Candidates submit a short Loom video. AI analyses communication clarity, confidence, technical depth, and relevance. Key quotes extracted. For client-facing roles, this is a critical signal.
 
-**Stage 3: AI Voice Interview (The Core Product)**
-Live voice conversation with an AI interviewer that's fully briefed on the candidate's background, trained on the specific industry, and designed to TEST — not just ask.
+**Stage 3: AI Voice Interview (The Core)**
+Live 20-minute voice conversation with an AI interviewer powered by GPT-5. Fully briefed on everything from Stage 1 and 2. Trained on the specific industry. Structured in mandatory phases — live problem solving, depth pursuit, failure mode testing. Every candidate gets the same rigorous conversation.
 
 ---
 
-## Slide 5: The AI Interview — What Makes It Different
+## Slide 5: We Don't Reject on Keywords
 
-**Live Problem Solving** — Doesn't ask "tell me about a time." Instead: "You're the charge nurse, three patients crash at once — walk me through your first 60 seconds." Creates industry-specific scenarios in real-time and watches candidates think.
+Traditional ATS: Scans for "5 years React" → rejects someone who wrote "6 years building frontend applications."
 
-**3-Level Depth Pursuit** — Goes deeper on every claim. Level 1: "How did you measure that?" Level 2: "What was the biggest obstacle?" Level 3: "After you fixed that, what broke next?" If they get vague at Level 2, they watched — didn't do.
+**Claimless:** Reads the full resume, checks if the story is consistent, analyses uploaded proof of work, then has a real conversation.
+
+The screening threshold is fully adjustable (default 40/100). Companies can lower it to 0 — meaning every single candidate gets the interview conversation. The screening score still gets calculated, but nobody gets auto-rejected. The conversation becomes the filter, not the resume.
+
+**This means the great candidates with unconventional resumes? They get heard.**
+
+---
+
+## Slide 6: The AI Interview — What Makes It Different
+
+**Mandatory Live Problem Solving** — Doesn't ask "tell me about a time." Instead: "You're the charge nurse, three patients crash at once — walk me through your first 60 seconds." The AI MUST create at least 2 real scenarios per interview.
+
+**3-Level Depth Pursuit** — Goes deeper on every claim. "How did you measure that?" → "What was the biggest obstacle?" → "After you fixed that, what broke next?" If they get vague at Level 2, they watched — didn't do.
 
 **Anti-Coaching Detection** — Breaks rehearsed STAR answers: "Great example — now tell me when the OPPOSITE happened." "What was the dumbest mistake you made?" Coached candidates crumble on unexpected follow-ups.
 
-**Inconsistency Detection** — Perfect memory across the entire conversation + verified profile data. Catches contradictions humans miss.
+**Failure Mode Testing** — "What could go wrong with that approach?" People who've shipped real things know the answer. People who only know theory say "it should work fine."
 
-**Adaptive Difficulty** — Calibrates in real-time. Pushes strong candidates to find their ceiling. Drops for struggling candidates to find their floor. Maps their actual range.
+**Adaptive Difficulty** — Pushes strong candidates to find their ceiling. Drops for struggling candidates to find their floor. Maps their actual range, not just pass/fail.
 
 ---
 
-## Slide 6: Works Across Every Industry
+## Slide 7: Humans Stay in the Loop
+
+Claimless doesn't make hiring decisions. It gives recruiters the evidence to make better ones.
+
+| What Claimless Does | What Recruiters Decide |
+|---|---|
+| Analyses resume for consistency | Whether to progress a borderline candidate |
+| Interviews every candidate with the same rigor | Who to present to the client |
+| Scores skills with evidence from the conversation | Who gets the offer |
+| Flags inconsistencies and red flags | Whether a flag is a dealbreaker or context |
+| Generates follow-up questions for next round | What to explore in the human interview |
+
+Every score has evidence. Every recommendation can be overridden. The recruiter sees the full transcript, the reasoning, and makes the call.
+
+**AI supports the decision. Humans make it.**
+
+---
+
+## Slide 8: Works Across Every Industry
 
 | Industry | Example AI Scenario |
 |---|---|
@@ -71,24 +102,11 @@ Live voice conversation with an AI interviewer that's fully briefed on the candi
 | Construction | "Worker refuses PPE on a high-rise, claims medical exemption, no docs. What's your process?" |
 | Marketing | "Campaign went viral, but 40% negative sentiment. What do you do in the next 2 hours?" |
 
-Not a tech-only tool. The AI has encyclopaedic domain knowledge across all industries and generates role-specific scenarios in real-time.
+13 industries with specific skills, terminology, and AU regulatory knowledge. Not a tech-only tool.
 
 ---
 
-## Slide 7: What It Catches That Humans Miss
-
-| Signal | Traditional Screening | Claimless |
-|---|---|---|
-| "We did X" (hiding individual contribution) | Rarely caught | AI probes: "What was YOUR role?" |
-| Perfect rehearsed answers | Sounds great, gets through | Anti-coaching breaks the pattern |
-| Confident but vague | Mistaken for competence | Depth pursuit forces specifics |
-| Timeline inconsistencies | Too busy to cross-reference | Perfect recall + verified profile |
-| Can describe WHAT but not WHY | Often missed in 30-min screens | "Teach me" technique + failure mode testing |
-| Coached candidates | Undetectable in traditional screens | Unexpected follow-ups expose gaps |
-
----
-
-## Slide 8: The Numbers — Cost & Speed Impact
+## Slide 9: The Numbers — Cost & Speed Impact
 
 | Metric | Before Claimless | With Claimless |
 |---|---|---|
@@ -98,27 +116,27 @@ Not a tech-only tool. The AI has encyclopaedic domain knowledge across all indus
 | Client interview-to-offer rate | 15-20% | 40-60% |
 | Bad hire / replacement rate | 8-12% | Target <3% |
 | Roles per recruiter | 12-18 | 25-35 |
-| Cost-per-hire | $5,750 - $11,500 | 40-60% reduction |
+| Cost per candidate | $750-1,500 (recruiter time) | ~$2 (AI pipeline) |
 
 ---
 
-## Slide 9: What Recruiters Do Instead
+## Slide 10: What Recruiters Do Instead
 
 Claimless replaces the worst parts of a recruiter's day — not the recruiter.
 
 | Claimless Handles | Recruiters Focus On |
 |---|---|
-| Resume verification & screening | Client relationship building |
-| Technical & domain skill assessment | Understanding what hiring managers really need |
-| Initial candidate interviews | Career coaching & candidate management |
+| Resume verification & consistency checking | Client relationship building |
+| Candidate conversations at scale | Understanding what hiring managers really need |
+| Skills testing with live scenarios | Career coaching & candidate management |
 | Compliance checks & audit trails | Offer negotiation & closing |
-| Scored candidate reports with evidence | Market intelligence & business development |
+| Scored reports with evidence | Market intelligence & business development |
 
 Recruiters are relationship people. Claimless gives them back 15-20 hours per hire to do the work that actually generates revenue.
 
 ---
 
-## Slide 10: Built for Australian Compliance
+## Slide 11: Built for Australian Compliance
 
 - Fair Work Act, anti-discrimination law baked into every AI interview
 - Never asks about protected attributes (age, marital status, disability, race, religion)
@@ -129,7 +147,7 @@ Recruiters are relationship people. Claimless gives them back 15-20 hours per hi
 
 ---
 
-## Slide 11: ATS Integration — Plugs Into Your Stack
+## Slide 12: ATS Integration — Plugs Into Your Stack
 
 Native integrations with **JobAdder**, **Bullhorn**, and **Vincere**.
 Open API for any other ATS or internal system.
@@ -141,12 +159,12 @@ Open API for any other ATS or internal system.
 
 ---
 
-## Slide 12: White-Label Opportunity
+## Slide 13: White-Label Opportunity
 
 Deploy Claimless under YOUR brand.
 
-- Your logo, your colours, your domain
-- Candidates and clients see YOUR platform
+- Your logo, your colours on every candidate-facing page
+- Candidates see YOUR company, not ours
 - Competitive moat — clients using your tech don't switch agencies
 - From the outside, it looks like you built the most advanced screening platform in the market
 
@@ -154,17 +172,17 @@ This isn't just a tool. It's a product you can sell.
 
 ---
 
-## Slide 13: Why Now
+## Slide 14: Why Now
 
+- Traditional AI screening is getting backlash — hiring managers are openly criticising keyword-matching tools that reject great candidates. Claimless is the answer to that criticism.
 - AI coaching tools have made traditional screening unreliable — coached candidates are everywhere
 - Speed-to-hire is now a competitive advantage, not a nice-to-have
 - Clients are demanding more from agencies — verified talent, not resume stacks
-- First movers in AI-verified recruitment will set the standard. Fast followers will be playing catch-up.
-- Voice AI technology has reached the quality threshold where candidates can't tell they're talking to an AI
+- First movers in conversation-based AI screening will set the standard
 
 ---
 
-## Slide 14: Early Partner Benefits
+## Slide 15: Early Partner Benefits
 
 We're onboarding a select group of Australian recruitment agencies:
 
@@ -176,11 +194,11 @@ We're onboarding a select group of Australian recruitment agencies:
 
 ---
 
-## Slide 15: The Ask
+## Slide 16: The Ask
 
 **Partner with us.**
 
-Agencies that adopt AI-verified screening now will own the competitive advantage for the next 5 years. The ones that wait will be explaining to clients why their candidates aren't verified when competitors' candidates are.
+The industry is moving from keyword matching to conversation-based verification. Agencies that lead this shift will own the competitive advantage. The ones that wait will be explaining to clients why their candidates aren't verified when competitors' candidates are.
 
 Contact: hello@claimless.com
 
@@ -188,17 +206,26 @@ Contact: hello@claimless.com
 
 ## Key Talking Points (for presenter notes)
 
+**If they bring up the LinkedIn post about AI rejecting great candidates:**
+"That post is about keyword-matching ATS — and they're right, it's a problem. We built the opposite. We don't reject on keywords. We check if the resume story makes sense, then we have a real conversation with the candidate. Anyone who clears a basic threshold gets a 20-minute voice interview. Companies can even set the threshold to zero — interview everyone. The conversation is the filter, not the resume."
+
 **If they ask "does this replace our recruiters?"**
-No. It replaces the 15-20 hours per hire they spend on phone screens and resume review. They keep doing what makes money — client relationships, negotiation, closing, candidate coaching. Think of it as giving every recruiter a research assistant that never sleeps.
+No. It replaces the 15-20 hours per hire they spend on phone screens and resume review. They keep doing what makes money — client relationships, negotiation, closing, candidate coaching. The AI does the screening and evidence gathering. The recruiter makes the decision.
+
+**If they ask "how do you prevent rejecting good candidates?"**
+Three ways: 1) We don't match keywords — we check resume consistency and proof of work. 2) The screening threshold is adjustable — companies can lower it or turn off auto-reject entirely. 3) Every candidate who passes screening gets a real conversation, not just a form. The interview is where value shows up.
 
 **If they ask "how is this better than our experienced industry recruiters?"**
-Your recruiters have instinct and relationships. Claimless has evidence and consistency. Your best recruiter at 9am Monday is not the same at 4pm Friday after 15 calls. Claimless applies 8 assessment techniques to every candidate equally. They work together — verification layer + human relationship layer = better placements.
+Your recruiters have instinct and relationships. Claimless has evidence and consistency. Your best recruiter at 9am Monday is not the same at 4pm Friday after 15 calls. Claimless applies the same assessment techniques to every candidate equally. They work together — AI evidence layer + human relationship layer = better placements.
 
 **If they ask "does this only work for tech roles?"**
-No. The AI interview is the core product, and it works for every role — nurses, accountants, sales managers, project managers, lawyers. It generates industry-specific scenarios in real-time. Code analysis is an add-on for technical roles, not the main product.
+No. The AI interview is the core product, and it works for every role — nurses, accountants, sales managers, project managers, construction site managers. It generates industry-specific scenarios in real-time. Code analysis is an add-on for technical roles, not the main product.
 
 **If they ask "what about candidate experience?"**
-Better than traditional screening. No scheduling ping-pong. Candidates interview when it suits them, 24/7. The AI is warm and conversational. Most candidates can't tell it's AI. And they get progressed faster because there's no 5-day wait for a callback.
+Better than traditional screening. No scheduling ping-pong. Candidates interview when it suits them, 24/7. The AI is warm and conversational. And they get progressed faster because there's no 5-day wait for a callback.
 
-**If they ask about data/privacy?"**
-Full Privacy Act compliance. Candidate data deletion on request. All interview data stored in Australia. Complete audit trail. GDPR-ready for international expansion.
+**If they ask about data/privacy?**
+Full Privacy Act compliance. Candidate data deletion on request. Complete audit trail. GDPR-ready for international expansion.
+
+**If they ask "what if a candidate is great in conversation but has a weak resume?"**
+That's exactly who this system is designed to catch. Set the screening threshold low (or to zero), and they get the interview. Their value shows up in the conversation — the live problem solving, the depth of their answers, the specifics they can give. The resume score becomes a data point, not a gate. The recruiter sees both scores and decides.
