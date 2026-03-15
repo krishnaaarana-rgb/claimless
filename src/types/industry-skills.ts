@@ -6,6 +6,7 @@
 // ============================================================
 
 import type { SkillCategory, SkillLevel } from "@/lib/industry-skills";
+export type { SkillCategory, SkillLevel, IndustryDefinition, IndustrySkill, IndustrySubNiche } from "@/lib/industry-skills";
 
 /** Enhanced skill requirement with category and assessment context */
 export interface SkillRequirement {
