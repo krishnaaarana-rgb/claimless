@@ -10,7 +10,8 @@ interface NotifyInput {
   jobTitle: string;
   companyId: string;
   passed: boolean;
-  interviewLink?: string; // Pass pre-built link to avoid creating duplicate tokens
+  interviewLink?: string;
+  immediate?: boolean; // Skip delay — used by cron job to send scheduled emails
 }
 
 export async function sendATSNotification(
@@ -33,6 +34,33 @@ export async function sendATSNotification(
   // Check if email provider is configured
   if (settings.email_provider === "none" || !settings.email_api_key) {
     console.log("[notify] Email provider not configured, skipping email");
+    return;
+  }
+
+  // Check if email should be delayed (skip if called with immediate flag from cron)
+  const delayMinutes = settings.email_delay_minutes ?? 0;
+  if (delayMinutes > 0 && !input.immediate) {
+    const sendAt = new Date(Date.now() + delayMinutes * 60 * 1000);
+    console.log(`[notify] Scheduling email for ${sendAt.toISOString()} (${delayMinutes}min delay)`);
+
+    // Store scheduled email in email_logs for cron processing
+    await supabase.from("email_logs").insert({
+      application_id: input.applicationId,
+      candidate_email: input.candidateEmail,
+      email_type: input.passed ? "acceptance" : "rejection",
+      subject: `Scheduled: ${input.passed ? "acceptance" : "rejection"} for ${input.jobTitle}`,
+      body: JSON.stringify({
+        candidateName: input.candidateName,
+        candidateEmail: input.candidateEmail,
+        jobTitle: input.jobTitle,
+        companyId: input.companyId,
+        passed: input.passed,
+        interviewLink: input.interviewLink,
+      }),
+      status: "pending",
+      send_at: sendAt.toISOString(),
+      scheduled: true,
+    });
     return;
   }
 

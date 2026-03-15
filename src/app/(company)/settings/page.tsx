@@ -27,6 +27,7 @@ interface CompanySettings {
   email_from_name: string | null;
   email_reply_to: string | null;
   email_reply_to_addresses: string[];
+  email_delay_minutes: number;
 }
 
 const TABS = [
@@ -321,6 +322,30 @@ function GeneralTab({ getValue, updateDraft }: TabProps) {
               checked={autoInvite}
               onChange={(v) => updateDraft("auto_invite_interview", v)}
             />
+          </div>
+
+          {/* Email delay */}
+          <div>
+            <label className="block text-[13px] font-medium text-[#37352F]">
+              Email delay after screening
+            </label>
+            <HelperText>
+              Wait before sending screening result emails. Prevents candidates from
+              receiving instant rejections — makes the process feel more considered.
+            </HelperText>
+            <select
+              value={getValue("email_delay_minutes") ?? 60}
+              onChange={(e) => updateDraft("email_delay_minutes", Number(e.target.value))}
+              className="mt-1.5 rounded-lg border border-[#E9E9E7] px-3 py-2 text-[13px] text-[#37352F] bg-white focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20"
+            >
+              <option value={0}>Send immediately</option>
+              <option value={15}>15 minutes</option>
+              <option value={30}>30 minutes</option>
+              <option value={60}>1 hour</option>
+              <option value={120}>2 hours</option>
+              <option value={240}>4 hours</option>
+              <option value={480}>8 hours</option>
+            </select>
           </div>
         </div>
       </div>
