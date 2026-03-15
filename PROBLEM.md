@@ -277,7 +277,7 @@ Cost savings are good. Revenue growth is better.
 
 ## Why This Works Across Every Industry
 
-Claimless is not a "tech hiring tool." The AI interviewer is loaded with domain knowledge, terminology, red flags, and skill rubrics for 13 industries. It generates role-specific scenarios on the fly based on this knowledge — not from a static question bank.
+Claimless is not a "tech hiring tool." The platform covers 14 industries with 227 specific skills (from Python and React to AHPRA registration and SWMS compliance), each with scenario-based interview questions and 4-level assessment rubrics. The AI generates role-specific scenarios on the fly from this knowledge — not from a static question bank.
 
 | Industry | Domain Knowledge Loaded | The Kind of Scenario It Generates |
 |---|---|---|
