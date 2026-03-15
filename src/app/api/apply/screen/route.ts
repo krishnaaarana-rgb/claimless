@@ -126,6 +126,33 @@ export async function POST(request: NextRequest) {
       console.log("[apply/screen] Scraped", supportingLinksContent.length, "supporting links");
     }
 
+    // 3c. Extract text from uploaded project files (PDFs only, server-side)
+    const projectFiles = (formData.project_files as { name: string; path: string; type: string }[]) || [];
+    const projectFileTexts: string[] = [];
+    for (const pf of projectFiles.slice(0, 5)) {
+      if (pf.type === "application/pdf" && pf.path) {
+        try {
+          const { data: fileData } = await supabase.storage
+            .from("candidate-files")
+            .download(pf.path);
+          if (fileData) {
+            // Basic text extraction from PDF buffer using regex on raw bytes
+            const text = await fileData.text();
+            const cleaned = text
+              .replace(/[^\x20-\x7E\n]/g, " ")
+              .replace(/\s{3,}/g, " ")
+              .trim()
+              .slice(0, 2000);
+            if (cleaned.length > 50) {
+              projectFileTexts.push(`[File: ${pf.name}]\n${cleaned}`);
+            }
+          }
+        } catch {
+          console.warn("[apply/screen] Failed to extract project file:", pf.name);
+        }
+      }
+    }
+
     // 4. Run ATS screening
     const customAnswers =
       (formData.custom_answers as { question: string; answer: string }[]) || [];
@@ -146,7 +173,13 @@ export async function POST(request: NextRequest) {
         null,
       portfolioUrl,
       websiteContent,
-      supportingLinksContent: supportingLinksContent.length > 0 ? supportingLinksContent : undefined,
+      supportingLinksContent: [
+        ...(supportingLinksContent.length > 0 ? supportingLinksContent : []),
+        ...projectFileTexts.map((t) => ({ url: "uploaded-file", content: t })),
+      ].length > 0 ? [
+        ...supportingLinksContent,
+        ...projectFileTexts.map((t) => ({ url: "uploaded-file", content: t })),
+      ] : undefined,
       customAnswers: customAnswers.filter((a) => a.answer?.trim()),
       threshold: atsThreshold,
     });

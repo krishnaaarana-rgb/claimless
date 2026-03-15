@@ -162,6 +162,7 @@ export async function POST(request: NextRequest) {
       industry_niche: body.industry_niche || null,
       skill_requirements: body.skill_requirements || [],
       industry_interview_context: industryInterviewContext,
+      attachments: body.attachments || [],
       created_by: user.id,
       status: isDraft ? "draft" : "active",
       published_at: isDraft ? null : new Date().toISOString(),

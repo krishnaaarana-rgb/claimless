@@ -152,6 +152,7 @@ export async function PATCH(
     "industry",
     "industry_niche",
     "skill_requirements",
+    "attachments",
   ];
   for (const key of allowed) {
     if (body[key] !== undefined) updates[key] = body[key];

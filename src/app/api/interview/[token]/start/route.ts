@@ -110,11 +110,18 @@ export async function POST(
   // 3b. Get interview brief generated from screening (works for ALL candidates)
   const screeningBrief = (screeningData.interview_brief as string) || "";
 
+  // 3c. Get project file names for interview context
+  const projectFiles = (application.application_form_data?.project_files as { name: string }[]) || [];
+  const projectFileContext = projectFiles.length > 0
+    ? `\nPROJECT FILES SUBMITTED: ${projectFiles.map((f) => f.name).join(", ")}. Ask the candidate about these specific files and what they demonstrate.`
+    : "";
+
   // 4. Get GitHub profile + pre-generated interview context if available
   let githubContext = "";
   let preGeneratedContext = screeningBrief
     ? `\nSCREENING BRIEF:\n${screeningBrief}`
     : "";
+  preGeneratedContext += projectFileContext;
   const ghUser = candidate.github_username;
   const hasValidGithub = ghUser && /^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,37}[a-zA-Z0-9])?$/.test(ghUser) && !ghUser.includes("http") && !ghUser.includes("localhost");
   if (hasValidGithub) {

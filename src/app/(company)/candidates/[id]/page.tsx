@@ -6,6 +6,7 @@ import { ScreenButton } from "./screen-button";
 import { ActionButtons } from "./action-buttons";
 import { NotesSection } from "./notes-section";
 import { ShareButton } from "./share-button";
+import { FileDownloadRow } from "./file-download";
 
 interface ATSScreeningResult {
   match_score: number;
@@ -817,6 +818,23 @@ export default async function CandidateDetailPage({
 
       <div className="space-y-0">
         <DetailRow label="Resume" value={(formData?.resume_filename as string) || null} />
+        {typeof formData?.resume_storage_path === "string" && (
+          <FileDownloadRow label="Download Resume" bucket="candidate-files" path={formData.resume_storage_path} />
+        )}
+        {(() => {
+          const pfs = formData?.project_files as { name: string; path: string; size: number }[] | undefined;
+          if (!pfs || !Array.isArray(pfs) || pfs.length === 0) return null;
+          return (
+            <div className="flex items-start gap-3 px-0 py-2.5 border-b border-[#F7F6F3]">
+              <span className="text-[13px] text-[#9B9A97] w-28 shrink-0">Project Files</span>
+              <div className="space-y-1">
+                {pfs.map((pf, i) => (
+                  <FileDownloadRow key={i} label={pf.name} bucket="candidate-files" path={pf.path} size={pf.size} inline />
+                ))}
+              </div>
+            </div>
+          );
+        })()}
         <DetailRow label="LinkedIn" value={candidate.linkedin_url || (formData?.linkedin_url as string) || null} isLink />
         <DetailRow label="GitHub" value={candidate.github_username || (formData?.github_username as string) || null} prefix="github.com/" />
         <DetailRow label="Portfolio" value={candidate.personal_website_url || (formData?.portfolio_url as string) || null} isLink />
