@@ -1,5 +1,5 @@
 const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
-const MODEL = "anthropic/claude-sonnet-4.5";
+const MODEL = "anthropic/claude-sonnet-4-6";
 
 interface OpenRouterMessage {
   role: "system" | "user" | "assistant";
