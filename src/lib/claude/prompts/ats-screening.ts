@@ -41,10 +41,17 @@ export interface ATSScreenInput {
   skillRequirements?: { skill: string; category: string; level: string; required: boolean; weight: number }[];
 }
 
-const SYSTEM_PROMPT = `You are an ATS screening system. Evaluate this candidate's application against the job description. Base your assessment ONLY on the information provided — do not make assumptions about information not given. If a resume is provided, weight it heavily. If portfolio/website content is provided, consider it as additional evidence of the candidate's work and expertise. If no resume is provided, evaluate based on whatever information IS available but note the limitation. Be fair and look for potential, not just keyword matches.
+function getSystemPrompt(): string {
+  const currentDate = new Date().toLocaleDateString("en-AU", { year: "numeric", month: "long", day: "numeric" });
+
+  return `You are an ATS screening system. Today's date is ${currentDate}. Use this to evaluate timeline claims accurately — dates in the past relative to today are valid, not future dates.
+
+Evaluate this candidate's application against the job description. Base your assessment ONLY on the information provided — do not make assumptions about information not given. If a resume is provided, weight it heavily. If portfolio/website content is provided, consider it as additional evidence of the candidate's work and expertise. If no resume is provided, evaluate based on whatever information IS available but note the limitation. Be fair and look for potential, not just keyword matches.
+
+IMPORTANT: If a portfolio/website URL was provided but the content shows only a page title or minimal text, it likely means the site is a JavaScript app that couldn't be fully rendered. Do NOT count this as a negative — just ignore the website content and focus on the resume and other evidence.
 
 RESUME CONSISTENCY ANALYSIS (apply these checks to every resume):
-- TIMELINE LOGIC: Do the dates make sense? Are there overlapping roles that seem impossible? Unexplained gaps longer than 6 months? Check if career progression is logical (e.g. "Senior Manager" after only 1 year in the industry is a flag).
+- TIMELINE LOGIC: Do the dates make sense relative to today (${currentDate})? Are there overlapping roles that seem impossible? Unexplained gaps longer than 6 months? Check if career progression is logical (e.g. "Senior Manager" after only 1 year in the industry is a flag).
 - TITLE vs RESPONSIBILITY: Does the claimed title match the described responsibilities? A "VP of Engineering" who only describes individual coding work is a concern.
 - NUMBERS SANITY: Do any claimed metrics seem implausible? "Grew team from 2 to 200" in one year at a startup with no funding rounds mentioned? "Saved $10M" as a junior analyst?
 - CONSISTENCY: Do different parts of the resume tell the same story? If skills section says "Python expert" but experience section never mentions Python, note it.
@@ -72,6 +79,7 @@ Scoring guide:
 - 0-19: Very poor match, fundamentally misaligned (strong_fail)
 
 Output ONLY the JSON object, no other text.`;
+}
 
 function buildUserPrompt(input: ATSScreenInput): string {
   const lines: string[] = [];
@@ -179,7 +187,7 @@ export async function screenApplication(
   console.log("[ats-screening] Prompt length:", userPrompt.length, "chars");
 
   const result = await analyzeWithClaude<ATSScreeningResult>(
-    SYSTEM_PROMPT,
+    getSystemPrompt(),
     userPrompt,
     { maxTokens: 2048, temperature: 0 }
   );

@@ -97,7 +97,8 @@ export function buildIndustryInterviewPrompt(
     ? buildAustralianComplianceBlock(industryId, job.employment_type)
     : "";
 
-  const prompt = `You are an elite AI interviewer for the role of "${job.title}". You are conducting a ${settings.duration_minutes}-minute ${settings.style} interview.
+  const currentDate = new Date().toLocaleDateString("en-AU", { year: "numeric", month: "long", day: "numeric" });
+  const prompt = `You are an elite AI interviewer for the role of "${job.title}". You are conducting a ${settings.duration_minutes}-minute ${settings.style} interview. Today's date is ${currentDate}.
 
 ${industryContext}
 

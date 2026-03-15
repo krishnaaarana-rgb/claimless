@@ -228,7 +228,8 @@ export async function POST(
   } else {
     // Generic prompt for jobs without industry configuration — still uses advanced techniques
     const auBlock = buildAustralianComplianceBlock("general", job.employment_type || undefined);
-    systemPrompt = `You are an elite AI interviewer for the role of "${job.title}". You are conducting a ${duration}-minute ${style} interview.
+    const currentDate = new Date().toLocaleDateString("en-AU", { year: "numeric", month: "long", day: "numeric" });
+    systemPrompt = `You are an elite AI interviewer for the role of "${job.title}". You are conducting a ${duration}-minute ${style} interview. Today's date is ${currentDate}.
 
 YOUR IDENTITY:
 - You are a senior hiring expert who genuinely wants to find the right person for this role
