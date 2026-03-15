@@ -56,6 +56,7 @@ export default function NewJobPage() {
   const [skillRequirements, setSkillRequirements] = useState<SkillRequirement[]>([]);
   const [jobFiles, setJobFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
+  const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<{ id: string; title: string } | null>(null);
   const [copied, setCopied] = useState(false);
@@ -257,17 +258,49 @@ export default function NewJobPage() {
             <Label htmlFor="description">
               Job description <span className="text-destructive">*</span>
             </Label>
-            <TemplatePicker
-              category="job_description"
-              industry={industry || undefined}
-              buttonLabel="Start from template"
-              onSelect={(t) => {
-                const c = t.content as { title?: string; description?: string; department?: string };
-                if (c.description) setDescription(c.description);
-                if (c.title && !title) setTitle(c.title);
-                if (c.department && !department) setDepartment(c.department);
-              }}
-            />
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                disabled={!title.trim() || generating}
+                onClick={async () => {
+                  setGenerating(true);
+                  try {
+                    const res = await fetch("/api/jobs/generate-jd", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        title,
+                        industry: industry || undefined,
+                        skills: skillRequirements.length > 0 ? skillRequirements : undefined,
+                        notes: description.trim() || undefined,
+                      }),
+                    });
+                    if (res.ok) {
+                      const data = await res.json();
+                      setDescription(data.description);
+                    }
+                  } catch {
+                    // silent
+                  } finally {
+                    setGenerating(false);
+                  }
+                }}
+                className="text-[12px] font-medium text-[#2383E2] hover:text-[#1a6bc4] transition-colors disabled:opacity-40"
+              >
+                {generating ? "Generating..." : "Generate with AI"}
+              </button>
+              <TemplatePicker
+                category="job_description"
+                industry={industry || undefined}
+                buttonLabel="Use template"
+                onSelect={(t) => {
+                  const c = t.content as { title?: string; description?: string; department?: string };
+                  if (c.description) setDescription(c.description);
+                  if (c.title && !title) setTitle(c.title);
+                  if (c.department && !department) setDepartment(c.department);
+                }}
+              />
+            </div>
           </div>
           <Textarea
             id="description"

@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
         company_id,
         application_form_data,
         candidates (full_name, email, github_username, linkedin_url, personal_website_url),
-        jobs (title, description, employment_type)
+        jobs (title, description, employment_type, industry, skill_requirements)
       `
       )
       .eq("id", application_id)
@@ -58,6 +58,8 @@ export async function POST(request: NextRequest) {
       title: string;
       description: string | null;
       employment_type: string | null;
+      industry: string | null;
+      skill_requirements: { skill: string; category: string; level: string; required: boolean; weight: number }[] | null;
     } | null;
 
     if (!candidate || !job) {
@@ -182,6 +184,8 @@ export async function POST(request: NextRequest) {
       ] : undefined,
       customAnswers: customAnswers.filter((a) => a.answer?.trim()),
       threshold: atsThreshold,
+      industry: job.industry,
+      skillRequirements: job.skill_requirements || undefined,
     });
 
     console.log(
