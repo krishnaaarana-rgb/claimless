@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -59,6 +59,15 @@ export default function NewJobPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<{ id: string; title: string } | null>(null);
   const [copied, setCopied] = useState(false);
+
+  // Warn on unsaved changes
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      if ((title || description) && !success) e.preventDefault();
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [title, description, success]);
 
   const toggleField = (key: string, prop: "enabled" | "required") => {
     setFormFields((prev) =>

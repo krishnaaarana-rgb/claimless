@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Settings, Mail, FileText, Mic, Send } from "lucide-react";
 import { TemplatePicker } from "@/components/template-picker";
 
@@ -70,6 +70,17 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [draft, setDraft] = useState<Partial<CompanySettings>>({});
+
+  // Warn on unsaved changes (browser navigation)
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      if (Object.keys(draft).length > 0) {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [draft]);
 
   const fetchSettings = useCallback(async () => {
     try {

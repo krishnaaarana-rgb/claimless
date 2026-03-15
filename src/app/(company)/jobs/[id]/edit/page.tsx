@@ -77,6 +77,16 @@ export default function EditJobPage({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [dirty, setDirty] = useState(false);
+
+  // Warn on unsaved changes
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      if (dirty) e.preventDefault();
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [dirty]);
 
   useEffect(() => {
     (async () => {
@@ -187,6 +197,7 @@ export default function EditJobPage({
         return;
       }
       setSaved(true);
+      setDirty(false);
       setTimeout(() => setSaved(false), 2000);
     } catch {
       setError("An unexpected error occurred");
@@ -241,7 +252,7 @@ export default function EditJobPage({
           <Input
             id="title"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => { setTitle(e.target.value); setDirty(true); }}
             className="bg-background border-border"
           />
         </div>
@@ -253,7 +264,7 @@ export default function EditJobPage({
           <Textarea
             id="description"
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(e) => { setDescription(e.target.value); setDirty(true); }}
             rows={8}
             className="bg-background border-border resize-none"
           />
