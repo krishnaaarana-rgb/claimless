@@ -272,7 +272,7 @@ function GeneralTab({ getValue, updateDraft }: TabProps) {
             <div className="flex items-center gap-3">
               <input
                 type="range"
-                min={1}
+                min={0}
                 max={100}
                 value={threshold}
                 onChange={(e) =>
@@ -290,6 +290,7 @@ function GeneralTab({ getValue, updateDraft }: TabProps) {
             <HelperText>
               Candidates scoring below {threshold} are{" "}
               {autoReject ? "auto-rejected" : "set to pending review"}.
+              {threshold <= 10 && " Set to 0 to interview every candidate regardless of screening score."}
             </HelperText>
           </div>
           <div className="flex items-center justify-between">
