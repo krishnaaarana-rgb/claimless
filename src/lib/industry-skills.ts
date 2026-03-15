@@ -1225,6 +1225,21 @@ export const INDUSTRIES: Record<string, IndustryDefinition> = {
           expert: "Architects marketing technology stack and operations",
         },
       },
+      {
+        name: "Go-to-Market Strategy",
+        category: "hard_skill",
+        description: "Planning and executing product launches, market entry strategies, and coordinated GTM motions across marketing, sales, and product",
+        sample_questions: [
+          "You're launching a new product in a crowded market. Walk me through your GTM plan.",
+          "Tell me about a launch that didn't go as planned. What went wrong, what did you learn, and what would you do differently?",
+        ],
+        level_descriptors: {
+          basic: "Supports GTM activities like creating launch assets and updating sales collateral",
+          intermediate: "Develops launch plans with timelines, channel strategy, and messaging, coordinates across marketing sub-teams",
+          advanced: "Leads cross-functional GTM strategy involving sales enablement, product positioning, pricing input, and channel selection, measures launch impact against business KPIs",
+          expert: "Defines repeatable GTM frameworks for the organization, leads multi-product or multi-market launches, shapes company-wide market strategy and competitive positioning",
+        },
+      },
     ],
     soft_skills: [
       {
@@ -1382,6 +1397,36 @@ export const INDUSTRIES: Record<string, IndustryDefinition> = {
           expert: "Builds people analytics functions, influences strategy with data",
         },
       },
+      {
+        name: "Performance Management",
+        category: "hard_skill",
+        description: "Designing and running performance cycles, managing underperformance, and coaching managers on feedback",
+        sample_questions: [
+          "Walk me through how you managed a chronic underperformer from first conversation to resolution.",
+          "A manager wants to fire someone on the spot for poor performance but there's no documented history. How do you handle it?",
+        ],
+        level_descriptors: {
+          basic: "Administers existing review cycles, collects feedback forms",
+          intermediate: "Coaches managers on delivering feedback, manages PIPs, calibrates ratings across teams",
+          advanced: "Designs performance frameworks, builds calibration processes, handles complex termination cases with legal awareness",
+          expert: "Transforms performance culture from annual reviews to continuous feedback, ties performance systems to compensation and succession planning",
+        },
+      },
+      {
+        name: "Organisational Development",
+        category: "hard_skill",
+        description: "Diagnosing organizational effectiveness issues, designing team structures, and leading restructures",
+        sample_questions: [
+          "How do you assess whether a team restructure is needed vs a leadership issue?",
+          "A department has doubled in size in 12 months and everything is breaking. Walk me through your diagnostic process.",
+        ],
+        level_descriptors: {
+          basic: "Understands basic org design concepts like span of control and reporting lines",
+          intermediate: "Conducts role mapping and skills gap analyses, supports restructures led by others",
+          advanced: "Leads org design projects end-to-end, facilitates leadership alignment on structure changes, manages change communication",
+          expert: "Shapes company-wide operating model, designs org structures that scale, integrates OD with workforce planning and succession",
+        },
+      },
     ],
     soft_skills: [
       {
@@ -1427,6 +1472,21 @@ export const INDUSTRIES: Record<string, IndustryDefinition> = {
           intermediate: "Manages communication and rollout for changes",
           advanced: "Leads complex change initiatives, influences adoption",
           expert: "Designs change management frameworks, leads transformations",
+        },
+      },
+      {
+        name: "Strategic Business Partnering",
+        category: "soft_skill",
+        description: "Acting as a trusted advisor to business leaders, aligning HR strategy with business objectives",
+        sample_questions: [
+          "Tell me about a time a business leader came to you with a 'people problem' that was actually a strategy problem. How did you reframe it?",
+          "How do you earn a seat at the table with a leadership team that sees HR as purely administrative?",
+        ],
+        level_descriptors: {
+          basic: "Responds to business leader requests, provides HR guidance when asked",
+          intermediate: "Proactively identifies people implications of business decisions, attends leadership meetings with relevant data",
+          advanced: "Co-creates workforce strategy with business leaders, influences headcount planning and org design decisions",
+          expert: "Operates as a true strategic partner to the CEO/executive team, shapes business strategy through people insights and workforce analytics",
         },
       },
     ],
@@ -1696,6 +1756,21 @@ export const INDUSTRIES: Record<string, IndustryDefinition> = {
           expert: "Builds analytics-driven operations functions",
         },
       },
+      {
+        name: "Quality Management & Compliance",
+        category: "hard_skill",
+        description: "Implementing and maintaining quality management systems (ISO 9001, etc.), ensuring regulatory compliance, and driving continuous quality improvement",
+        sample_questions: [
+          "Walk me through how you'd implement a quality management system from scratch.",
+          "You discover a recurring quality issue that's been slipping past inspection for months. What's your approach to fixing the root cause and preventing recurrence?",
+        ],
+        level_descriptors: {
+          basic: "Follows established quality procedures, completes checklists, reports non-conformances",
+          intermediate: "Conducts internal audits, manages corrective actions, maintains documentation for regulatory compliance",
+          advanced: "Designs QMS frameworks, leads certification efforts (ISO 9001, etc.), implements statistical process control, manages external audit relationships",
+          expert: "Builds quality culture across the organization, establishes multi-site quality systems, drives strategic quality initiatives that reduce costs while improving outcomes",
+        },
+      },
     ],
     soft_skills: [
       {
@@ -1726,6 +1801,36 @@ export const INDUSTRIES: Record<string, IndustryDefinition> = {
           intermediate: "Resolves common issues quickly and effectively",
           advanced: "Leads incident response, makes high-stakes decisions",
           expert: "Develops crisis response frameworks, trains teams",
+        },
+      },
+      {
+        name: "Vendor Management",
+        category: "soft_skill",
+        description: "Selecting, managing, and holding vendors and service providers accountable for performance, cost, and quality",
+        sample_questions: [
+          "Your most critical vendor just informed you they're raising prices 20% and there's no alternative supplier. How do you handle the negotiation?",
+          "How do you evaluate a new vendor beyond just price? Walk me through your assessment process.",
+        ],
+        level_descriptors: {
+          basic: "Communicates requirements to vendors, escalates issues to procurement",
+          intermediate: "Manages vendor relationships independently, conducts performance reviews, negotiates standard contracts",
+          advanced: "Develops vendor scorecards and SLAs, manages strategic vendor partnerships, leads RFP processes, builds contingency plans for vendor failure",
+          expert: "Builds vendor management programs for the organization, develops strategic sourcing strategies, manages executive-level vendor relationships across multiple categories",
+        },
+      },
+      {
+        name: "Change Management",
+        category: "soft_skill",
+        description: "Leading operational changes — new processes, systems, or structures — while maintaining team buy-in and minimizing disruption",
+        sample_questions: [
+          "You need to roll out a new warehouse management system but the floor team is resistant because they've been doing things the same way for years. How do you approach it?",
+          "Tell me about an operational change that failed. What went wrong and what would you do differently?",
+        ],
+        level_descriptors: {
+          basic: "Adapts to changes in processes and tools, helps communicate changes to peers",
+          intermediate: "Plans and communicates operational changes, trains teams on new processes, manages transition timelines",
+          advanced: "Leads complex change initiatives across multiple teams, builds change champions, measures adoption and addresses resistance systematically",
+          expert: "Develops change management frameworks for the organization, leads large-scale transformations (new ERP, facility moves, operating model changes), builds organizational capability for continuous change",
         },
       },
     ],
@@ -1980,6 +2085,36 @@ export const INDUSTRIES: Record<string, IndustryDefinition> = {
           expert: "Leads technical support strategy, builds knowledge systems",
         },
       },
+      {
+        name: "Revenue Expansion",
+        category: "hard_skill",
+        description: "Identifying and executing upsell and cross-sell opportunities within existing accounts",
+        sample_questions: [
+          "Tell me about a time you identified an upsell opportunity. How did you approach the conversation?",
+          "How do you balance being a trusted advisor with driving expansion revenue? Walk me through a real example.",
+        ],
+        level_descriptors: {
+          basic: "Recognises when a customer might benefit from additional products, passes leads to sales",
+          intermediate: "Identifies expansion opportunities through usage data and QBRs, co-leads commercial conversations with sales",
+          advanced: "Owns expansion targets for their book of business, builds business cases for customers, consistently exceeds NRR targets through strategic account growth",
+          expert: "Designs expansion playbooks and frameworks for the CS org, builds commercial skills across the team, shapes pricing and packaging strategy based on customer insights",
+        },
+      },
+      {
+        name: "Metrics & Analytics",
+        category: "hard_skill",
+        description: "Tracking, analysing, and acting on customer health metrics and portfolio data",
+        sample_questions: [
+          "What health metrics do you track? How do you prioritise which accounts need attention?",
+          "You notice a segment of customers has a 40% drop in product usage over 30 days. Walk me through your investigation and response.",
+        ],
+        level_descriptors: {
+          basic: "Monitors dashboards for red flags, reports on basic metrics like CSAT and NPS",
+          intermediate: "Builds health score models, analyses churn patterns, uses data to prioritise daily actions across their portfolio",
+          advanced: "Designs CS metrics frameworks, connects leading indicators to churn prediction, presents portfolio analytics to leadership with actionable recommendations",
+          expert: "Builds the CS analytics function, defines company-wide customer health methodology, uses predictive models to drive proactive intervention at scale",
+        },
+      },
     ],
     soft_skills: [
       {
@@ -2010,6 +2145,21 @@ export const INDUSTRIES: Record<string, IndustryDefinition> = {
           intermediate: "Reaches out proactively based on health signals",
           advanced: "Designs proactive engagement programs",
           expert: "Builds proactive customer engagement culture and systems",
+        },
+      },
+      {
+        name: "Executive Relationship Building",
+        category: "soft_skill",
+        description: "Building and maintaining relationships with customer executives and senior stakeholders",
+        sample_questions: [
+          "Your main champion leaves the company. How do you protect the account and rebuild relationships with the new leadership?",
+          "How do you get access to a customer's C-suite when your day-to-day contact is mid-level and protective of the relationship?",
+        ],
+        level_descriptors: {
+          basic: "Communicates professionally with senior contacts when introduced by others",
+          intermediate: "Builds rapport with directors and VPs, prepares executive-ready QBR materials, earns trust through reliability",
+          advanced: "Develops multi-threaded executive relationships, engages C-suite in strategic conversations about value and roadmap, navigates political dynamics within customer organizations",
+          expert: "Serves as a strategic advisor to customer executives, facilitates exec-to-exec relationships between companies, influences customer strategy through deep partnership",
         },
       },
     ],
@@ -2095,10 +2245,10 @@ export const INDUSTRIES: Record<string, IndustryDefinition> = {
           "How do you decide if a problem needs ML or a simpler approach?",
         ],
         level_descriptors: {
-          basic: "Applies standard ML algorithms to clean datasets",
-          intermediate: "Builds and evaluates models independently, handles feature engineering",
-          advanced: "Deploys production models, handles complex pipelines",
-          expert: "Leads ML strategy, develops novel approaches, manages ML systems",
+          basic: "Runs standard algorithms (logistic regression, random forest) on clean datasets using scikit-learn or similar, evaluates with basic metrics like accuracy",
+          intermediate: "Selects appropriate algorithms for the problem, performs feature engineering, handles class imbalance and missing data, evaluates with proper train/test splits and cross-validation",
+          advanced: "Deploys models to production with monitoring and retraining pipelines, builds end-to-end ML systems with CI/CD, handles model drift detection, A/B tests model performance against business KPIs",
+          expert: "Designs ML platform architecture for multiple teams, leads model governance and fairness auditing, develops novel approaches for business-critical systems, manages trade-offs between model complexity and operational cost at scale",
         },
       },
       {
@@ -2114,6 +2264,36 @@ export const INDUSTRIES: Record<string, IndustryDefinition> = {
           intermediate: "Builds insightful dashboards, chooses appropriate visualizations",
           advanced: "Designs visualization systems, tells compelling data stories",
           expert: "Sets data visualization standards, builds self-service analytics",
+        },
+      },
+      {
+        name: "Data Quality & Governance",
+        category: "hard_skill",
+        description: "Ensuring data accuracy, consistency, lineage tracking, and establishing data standards across the organization",
+        sample_questions: [
+          "You discover a critical dashboard is showing incorrect numbers that leadership has been using for 3 months. What do you do?",
+          "How do you build trust in data across an organization where people have been burned by bad data before?",
+        ],
+        level_descriptors: {
+          basic: "Validates own query results, checks for nulls and duplicates before analysis",
+          intermediate: "Writes data quality tests, documents data definitions, maintains a data dictionary for their domain",
+          advanced: "Designs data quality frameworks with automated monitoring and alerting, establishes data contracts between producers and consumers, leads root cause analysis on data incidents",
+          expert: "Builds organization-wide data governance programs, defines data ownership and stewardship models, establishes lineage tracking and impact analysis across the data platform",
+        },
+      },
+      {
+        name: "Product Analytics",
+        category: "hard_skill",
+        description: "Measuring product usage, user behavior, and feature impact to guide product decisions",
+        sample_questions: [
+          "Walk me through how you'd measure the success of a new feature launch.",
+          "Your PM says a feature is underperforming. How do you go from that statement to a concrete recommendation?",
+        ],
+        level_descriptors: {
+          basic: "Tracks basic product metrics (DAU, MAU, retention) using existing dashboards",
+          intermediate: "Designs event taxonomies, builds funnel analyses, runs cohort comparisons to evaluate feature performance",
+          advanced: "Defines product health metrics frameworks, partners with PMs to design experiments, quantifies feature impact on business KPIs like revenue and retention",
+          expert: "Builds product analytics practice for the organization, establishes experimentation platforms, shapes product strategy through data-driven insights at the leadership level",
         },
       },
     ],
@@ -2146,6 +2326,21 @@ export const INDUSTRIES: Record<string, IndustryDefinition> = {
           intermediate: "Creates clear narratives with appropriate context",
           advanced: "Delivers compelling data stories that drive action",
           expert: "Builds data-driven decision culture through storytelling",
+        },
+      },
+      {
+        name: "Stakeholder Communication",
+        category: "soft_skill",
+        description: "Managing relationships with business stakeholders, understanding their needs, and delivering insights they can act on",
+        sample_questions: [
+          "A VP asks you for a 'quick number' but you know the answer requires nuance. How do you handle it?",
+          "Tell me about a time a stakeholder disagreed with your analysis. How did you navigate the conversation?",
+        ],
+        level_descriptors: {
+          basic: "Responds to data requests clearly, delivers results on time",
+          intermediate: "Proactively clarifies ambiguous requests, tailors depth and format to the audience, flags caveats without burying the insight",
+          advanced: "Builds trusted relationships with senior leaders, influences decision-making by framing analysis around business context, manages competing priorities across multiple stakeholders",
+          expert: "Operates as a strategic advisor to executives, shapes how the organization uses data in decision-making, builds feedback loops between data teams and business units",
         },
       },
     ],
@@ -2260,6 +2455,36 @@ export const INDUSTRIES: Record<string, IndustryDefinition> = {
           expert: "Manages BIM coordination, reviews complex structural/services drawings",
         },
       },
+      {
+        name: "Budget & Cost Control",
+        category: "hard_skill" as SkillCategory,
+        description: "Managing project budgets, tracking costs against estimates, and controlling expenditure across the project lifecycle",
+        sample_questions: [
+          "Your project is trending 15% over budget at the halfway point. Walk me through your recovery plan.",
+          "How do you handle a subcontractor who submits a variation claim you believe is inflated? Walk me through the conversation and process.",
+        ],
+        level_descriptors: {
+          basic: "Tracks costs against a budget provided by others, flags overruns to supervisor",
+          intermediate: "Prepares cost reports, manages variations and claims, forecasts costs to completion with reasonable accuracy",
+          advanced: "Develops project budgets from first principles, negotiates subcontractor packages, implements cost-saving initiatives without compromising quality or safety",
+          expert: "Manages cost control across a portfolio of projects, establishes estimating benchmarks, leads value engineering exercises, shapes commercial strategy for the business",
+        },
+      },
+      {
+        name: "Quality Management",
+        category: "hard_skill" as SkillCategory,
+        description: "Ensuring construction work meets specifications, standards, and client expectations through inspection, testing, and documentation",
+        sample_questions: [
+          "You discover a major defect that will need rework. How do you handle it with the client?",
+          "Walk me through your quality assurance process for a critical structural element — from ITP to sign-off.",
+        ],
+        level_descriptors: {
+          basic: "Follows ITPs and checklists, reports defects to supervisor, understands basic hold and witness points",
+          intermediate: "Manages quality documentation independently, conducts inspections, coordinates testing, issues non-conformance reports",
+          advanced: "Develops project-specific quality management plans, manages defects registers, negotiates with clients on acceptable tolerances, drives quality culture on site",
+          expert: "Establishes company-wide quality systems (ISO 9001), leads quality audits, mentors teams on quality practices, manages complex defects liability periods across multiple projects",
+        },
+      },
     ],
     soft_skills: [
       {
@@ -2290,6 +2515,36 @@ export const INDUSTRIES: Record<string, IndustryDefinition> = {
           intermediate: "Develops workarounds, communicates impacts, keeps work progressing",
           advanced: "Finds creative solutions under pressure, manages stakeholder expectations during crises",
           expert: "Anticipates problems before they occur, builds contingency into plans, mentors others in crisis management",
+        },
+      },
+      {
+        name: "Subcontractor Management",
+        category: "soft_skill" as SkillCategory,
+        description: "Selecting, coordinating, and holding subcontractors accountable for performance, quality, and schedule",
+        sample_questions: [
+          "A subcontractor is consistently delivering poor quality work but they're the only one available for the next 3 months. How do you manage this?",
+          "You have three trades that all need access to the same area next week. Walk me through how you coordinate the sequencing.",
+        ],
+        level_descriptors: {
+          basic: "Communicates tasks to subcontractors clearly, reports issues to supervisor",
+          intermediate: "Coordinates daily work across multiple subs, manages quality expectations, handles routine disputes",
+          advanced: "Negotiates subcontractor packages, manages complex trade interfaces, holds subs accountable through contractual mechanisms while maintaining working relationships",
+          expert: "Builds preferred subcontractor panels, develops subcontractor performance management systems, manages strategic trade partner relationships across multiple projects",
+        },
+      },
+      {
+        name: "Safety Culture Leadership",
+        category: "soft_skill" as SkillCategory,
+        description: "Going beyond compliance to build a genuine safety-first culture where workers feel empowered to stop unsafe work",
+        sample_questions: [
+          "How do you get a crew of experienced tradies who think safety is 'just paperwork' to genuinely buy into safety culture?",
+          "A worker reports a near-miss but the foreman wants to brush it off to avoid paperwork. What do you do?",
+        ],
+        level_descriptors: {
+          basic: "Follows safety rules personally, speaks up about obvious hazards",
+          intermediate: "Leads toolbox talks, encourages others to report hazards, models safe behaviour consistently",
+          advanced: "Builds safety engagement on site through positive reinforcement, investigates incidents for root causes not blame, creates an environment where workers stop unsafe work without fear",
+          expert: "Transforms safety culture across projects and organisations, develops safety leadership programs, drives industry-leading safety performance metrics",
         },
       },
     ],
