@@ -116,6 +116,126 @@ export const constructionIndustry: IndustryDefinition = {
           expert: "Establishes company-wide quality systems (ISO 9001), leads quality audits, mentors teams on quality practices, manages complex defects liability periods across multiple projects",
         },
       },
+      {
+        name: "Estimating & Tendering",
+        category: "hard_skill",
+        description: "Quantity takeoffs, cost estimation, tender preparation, and margin analysis for construction projects",
+        sample_questions: [
+          "You're preparing a tender for a $15M commercial fit-out and the submission deadline is in two weeks. Walk me through your estimating process from receiving the documents to submitting the price.",
+          "Your tender came in 20% above the client's budget. They ask you to value-engineer. How do you identify savings without compromising quality or transferring risk to subcontractors?",
+        ],
+        level_descriptors: {
+          basic: "Performs basic quantity takeoffs from drawings, obtains subcontractor and supplier quotes, assembles estimates under supervision",
+          intermediate: "Prepares complete tenders independently, applies appropriate margins, analyses subcontractor pricing for gaps, presents tenders to clients",
+          advanced: "Estimates complex multi-trade projects accurately, leads value engineering, develops estimating databases with historical benchmarks, manages tender risk registers",
+          expert: "Sets estimating strategy for the business, mentors estimators, analyses win/loss trends to refine pricing, leads design-and-construct pricing with integrated risk modelling",
+        },
+      },
+      {
+        name: "Contract Administration",
+        category: "hard_skill",
+        description: "Managing progress claims, variations, extensions of time (EOT), and dispute resolution under standard-form contracts (AS 4000, AS 2124, NEC, etc.)",
+        sample_questions: [
+          "A subcontractor submits a variation claim for $250K citing differing site conditions. Walk me through how you assess the entitlement under the contract and manage the commercial outcome.",
+          "The client rejects your EOT claim despite documented wet weather delays. What steps do you take under an AS 4000 contract to protect your position?",
+        ],
+        level_descriptors: {
+          basic: "Understands basic contract structure (AS 2124 / AS 4000), prepares progress claims with supporting documentation, tracks variations in a register",
+          intermediate: "Administers contracts independently, assesses variation entitlements, prepares and responds to EOT claims, manages payment schedules under the Building and Construction Industry Security of Payment Act",
+          advanced: "Manages commercial strategy across a project portfolio, negotiates complex disputes, drafts and assesses delay claims with detailed programme analysis, understands interplay between head contract and subcontract terms",
+          expert: "Leads contractual disputes at adjudication or expert determination level, advises on contract selection and amendment strategy, trains project teams on contractual rights and obligations",
+        },
+      },
+      {
+        name: "Environmental Management",
+        category: "hard_skill",
+        description: "Environmental management plans, erosion and sediment control, waste management, and regulatory compliance on construction sites",
+        sample_questions: [
+          "A significant rain event is forecast for tonight and your sediment controls are borderline. Walk me through your response plan and the regulatory obligations you're managing.",
+          "You discover unexpected contaminated soil during excavation. What are your immediate actions and notification obligations under the relevant EPA guidelines?",
+        ],
+        level_descriptors: {
+          basic: "Installs and maintains basic erosion and sediment controls (silt fences, sediment basins), follows waste segregation requirements, understands site environmental rules",
+          intermediate: "Prepares Construction Environmental Management Plans (CEMPs), conducts environmental inspections, manages waste tracking registers, maintains compliance with EPA licence conditions",
+          advanced: "Manages complex environmental approvals (REFs, EIS conditions), designs erosion and sediment control plans per the Blue Book (NSW) or equivalent state guidelines, leads environmental incident response and regulatory notifications",
+          expert: "Develops company-wide environmental management systems (ISO 14001), interfaces with regulators and community stakeholders, leads environmental audits, drives sustainability initiatives across projects",
+        },
+      },
+      {
+        name: "Building Services Coordination",
+        category: "hard_skill",
+        description: "Coordinating electrical, plumbing, HVAC, fire services, and Building Management Systems (BMS) across a construction project",
+        sample_questions: [
+          "You're coordinating ceiling space for mechanical ductwork, electrical cable trays, fire sprinklers, and hydraulic pipes — and they all clash. Walk me through your resolution process.",
+          "The BMS contractor says they can't commission until all other services are complete, but your programme has them running in parallel. How do you resolve this?",
+        ],
+        level_descriptors: {
+          basic: "Understands the major building services disciplines, reads services drawings, coordinates basic access and sequencing on site",
+          intermediate: "Manages services coordination meetings, reviews shop drawings for clashes, coordinates commissioning schedules, understands AS/NZS standards for electrical (AS/NZS 3000) and plumbing (AS/NZS 3500)",
+          advanced: "Leads BIM-based clash detection across all services disciplines, manages complex commissioning programmes, resolves multi-trade interface issues, coordinates integrated systems testing (IST)",
+          expert: "Oversees building services strategy from design through to defects liability, drives adoption of digital coordination tools, manages services across multiple concurrent projects, advises on smart building and BMS integration strategies",
+        },
+      },
+      {
+        name: "Demolition & Remediation",
+        category: "hard_skill",
+        description: "Asbestos management, contamination assessment, safe demolition practices, and site remediation in accordance with SafeWork and EPA requirements",
+        sample_questions: [
+          "You're demolishing a 1970s commercial building and suspect asbestos-containing materials in the ceiling tiles and pipe lagging. Walk me through your management plan from assessment to clearance.",
+          "During remediation works, monitoring detects contamination levels above the site audit criteria. What are your obligations and how do you manage the programme impact?",
+        ],
+        level_descriptors: {
+          basic: "Understands asbestos awareness obligations (non-licensed work), recognises potential hazardous materials, follows safe demolition procedures under supervision",
+          intermediate: "Prepares demolition work plans per AS 2601, manages licensed asbestos removal subcontractors, coordinates hazardous materials surveys, maintains waste tracking and disposal records",
+          advanced: "Leads complex demolition projects involving structural engineering input, manages site contamination assessments and Remedial Action Plans (RAPs), coordinates with occupational hygienists and environmental consultants, ensures SafeWork NSW (or equivalent state regulator) compliance",
+          expert: "Designs remediation strategies for complex contaminated sites, manages EPA site audit processes, leads Class A asbestos removal oversight, advises on brownfield redevelopment feasibility",
+        },
+      },
+      {
+        name: "Formwork & Concrete",
+        category: "hard_skill",
+        description: "Formwork design and erection, concrete placement, curing regimes, and strength testing for structural elements",
+        sample_questions: [
+          "You're pouring a large suspended slab in 38-degree heat. Walk me through your concrete placement plan, including how you manage workability, curing, and crack control.",
+          "The 7-day concrete test results come back below the specified characteristic strength. What do you do before the 28-day results are available, and what are your options if they also fail?",
+        ],
+        level_descriptors: {
+          basic: "Assists with formwork erection under supervision, understands basic concrete placement procedures, can read a concrete docket and check slump",
+          intermediate: "Erects standard formwork systems (e.g., Peri, Doka), manages concrete pours including pump coordination, understands curing requirements per AS 3600, coordinates NATA-accredited testing",
+          advanced: "Designs complex formwork solutions (jump forms, slip forms), manages large-scale concrete pours with detailed methodology, interprets test results and manages non-conformances, optimises pour sequences for programme efficiency",
+          expert: "Leads formwork engineering and concrete technology strategy for major projects, specifies advanced concrete mixes (SCC, high-strength, geopolymer), drives innovation in formwork systems, manages post-tensioning and precast coordination",
+        },
+      },
+      {
+        name: "Surveying & Set-out",
+        category: "hard_skill",
+        description: "Site surveys, set-out procedures, use of laser levels, total stations, and GPS/GNSS equipment for construction control",
+        sample_questions: [
+          "You arrive on site to set out footings and discover the survey control points have been disturbed by earthworks. What's your process to re-establish control before the concreters arrive tomorrow?",
+          "The as-built survey shows a column is 40mm off the grid line. Walk me through how you assess the impact and what options you have before it becomes a bigger problem.",
+        ],
+        level_descriptors: {
+          basic: "Uses laser levels and tape measures for basic set-out, reads survey plans, understands benchmarks and grid references",
+          intermediate: "Operates total stations and GPS/GNSS equipment, performs set-out for standard structural elements, checks levels and alignments, maintains survey records",
+          advanced: "Manages survey control networks across large sites, performs complex set-out (curved structures, multi-level transfers), coordinates with registered surveyors, interprets as-built data for compliance checks",
+          expert: "Leads survey strategy for major infrastructure projects, specifies and implements machine-control systems, integrates survey data with BIM models, manages cadastral and engineering survey interfaces",
+        },
+      },
+      {
+        name: "Scaffolding & Working at Heights",
+        category: "hard_skill",
+        description: "Scaffolding inspection, safe working at heights, edge protection, and rescue planning in compliance with SafeWork regulations and AS/NZS 1576",
+        sample_questions: [
+          "You're inspecting a scaffold that was erected over the weekend and notice the scaffold tag is missing and several standards appear to be on uneven ground. Walk me through your actions.",
+          "A worker needs to access a location where scaffold isn't feasible and an EWP can't reach. How do you develop a safe system of work for this task?",
+        ],
+        level_descriptors: {
+          basic: "Holds working at heights ticket, inspects scaffold before use (visual check and tag), uses harness and lanyard correctly, understands exclusion zones",
+          intermediate: "Conducts formal scaffold inspections per AS/NZS 1576, prepares SWMS for working at heights tasks, selects appropriate fall prevention systems (scaffold, EWP, edge protection, harness), manages rescue plans",
+          advanced: "Designs complex scaffold solutions with engineering input, manages multiple height access systems across a project, leads incident investigations for falls or near-misses, conducts height safety training for site teams",
+          expert: "Develops company-wide working at heights procedures and standards, interfaces with SafeWork inspectors on height-related matters, evaluates and implements advanced access solutions (mast climbers, suspended platforms), drives fall prevention innovation across the business",
+        },
+      },
     ],
     soft_skills: [
       {
