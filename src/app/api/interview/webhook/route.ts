@@ -8,14 +8,16 @@ interface VapiMessage {
 }
 
 export async function POST(request: NextRequest) {
-  // Verify webhook is from Vapi using the server URL secret
+  // Verify webhook is from Vapi — ALWAYS validate, never skip
   const vapiSecret = process.env.VAPI_API_KEY;
-  if (vapiSecret) {
-    const authHeader = request.headers.get("x-vapi-secret") || request.headers.get("authorization");
-    if (authHeader !== vapiSecret && authHeader !== `Bearer ${vapiSecret}`) {
-      console.warn("[vapi-webhook] Invalid or missing auth header");
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  if (!vapiSecret) {
+    console.error("[vapi-webhook] VAPI_API_KEY not set — rejecting all webhooks");
+    return NextResponse.json({ error: "Server misconfigured" }, { status: 500 });
+  }
+  const authHeader = request.headers.get("x-vapi-secret") || request.headers.get("authorization");
+  if (authHeader !== vapiSecret && authHeader !== `Bearer ${vapiSecret}`) {
+    console.warn("[vapi-webhook] Invalid or missing auth header");
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const body = await request.json();

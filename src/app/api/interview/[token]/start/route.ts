@@ -14,30 +14,45 @@ export async function POST(
   const body = await request.json().catch(() => ({}));
   const preferredName = body.preferred_name;
 
-  // 1. Validate token
-  const { data: tokenData } = await supabase
+  // 1. Validate token — atomic claim to prevent race condition
+  // First, try to atomically update pending→active (only one request can succeed)
+  const { data: claimedTokens } = await supabase
     .from("interview_tokens")
-    .select("*, applications(*, candidates(*), jobs(id, title, description, company_id, industry, industry_niche, skill_requirements, industry_interview_context, employment_type))")
+    .update({ status: "active", used_at: new Date().toISOString() })
     .eq("token", token)
-    .single();
+    .eq("status", "pending")
+    .gt("expires_at", new Date().toISOString())
+    .select("id, application_id, status, expires_at");
 
-  if (!tokenData) {
-    return NextResponse.json(
-      { error: "Invalid interview token" },
-      { status: 404 }
-    );
-  }
-  if (tokenData.status === "completed" || tokenData.status === "used") {
-    return NextResponse.json(
-      { error: "Interview already completed" },
-      { status: 400 }
-    );
-  }
-  if (tokenData.status === "expired" || new Date(tokenData.expires_at) < new Date()) {
-    return NextResponse.json(
-      { error: "Interview link expired" },
-      { status: 400 }
-    );
+  // If no rows updated, either token doesn't exist, is already claimed, or expired
+  let tokenData;
+  if (claimedTokens && claimedTokens.length > 0) {
+    // Successfully claimed — fetch full data
+    const { data: fullToken } = await supabase
+      .from("interview_tokens")
+      .select("*, applications(*, candidates(*), jobs(id, title, description, company_id, industry, industry_niche, skill_requirements, industry_interview_context, employment_type))")
+      .eq("id", claimedTokens[0].id)
+      .single();
+    tokenData = fullToken;
+  } else {
+    // Claim failed — check why (already active for reconnection, or invalid)
+    const { data: existingToken } = await supabase
+      .from("interview_tokens")
+      .select("*, applications(*, candidates(*), jobs(id, title, description, company_id, industry, industry_niche, skill_requirements, industry_interview_context, employment_type))")
+      .eq("token", token)
+      .maybeSingle();
+
+    if (!existingToken) {
+      return NextResponse.json({ error: "Invalid interview token" }, { status: 404 });
+    }
+    if (existingToken.status === "completed" || existingToken.status === "used") {
+      return NextResponse.json({ error: "Interview already completed" }, { status: 400 });
+    }
+    if (new Date(existingToken.expires_at) < new Date()) {
+      return NextResponse.json({ error: "Interview link expired" }, { status: 400 });
+    }
+    // Token is "active" — reconnection case
+    tokenData = existingToken;
   }
 
   const application = tokenData.applications as unknown as {

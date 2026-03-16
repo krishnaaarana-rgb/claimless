@@ -36,7 +36,7 @@ export async function GET(
     .from("company_settings")
     .select("brand_accent_color, brand_logo_url")
     .eq("company_id", job.company_id)
-    .single();
+    .maybeSingle();
 
   return NextResponse.json({
     job: {
