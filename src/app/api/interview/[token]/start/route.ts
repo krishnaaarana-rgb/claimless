@@ -212,7 +212,7 @@ export async function POST(
   const { data: settings } = await supabase
     .from("company_settings")
     .select(
-      "interview_duration_minutes, interview_style, interview_focus, interview_custom_instructions"
+      "interview_duration_minutes, interview_style, interview_focus, interview_custom_instructions, interviewer_name"
     )
     .eq("company_id", job.company_id)
     .maybeSingle();
@@ -387,6 +387,7 @@ ${auBlock}`;
   const name = `IV: ${candidateName} - ${job.title}`.slice(0, 40);
 
   // Build a contextual first message that references something specific
+  const interviewerName = settings?.interviewer_name || null;
   const firstMessageContext = strengths.length > 0
     ? ` I had a chance to look over your background and it's really interesting`
     : ``;
@@ -406,7 +407,9 @@ ${auBlock}`;
       similarityBoost: 0.6,  // Lower = more expressive, less locked to one delivery
       style: 0.2,            // Slight style exaggeration for warmth
     },
-    firstMessage: `Hey ${candidateName}! Thanks for jumping on, really appreciate you taking the time. So I've had a look at your background for the ${job.title} role${firstMessageContext} — looks like you've been busy! I'd love to just have a chat, keep it really casual. So yeah, to start us off, tell me a bit about yourself and what caught your eye about this one?`,
+    firstMessage: interviewerName
+      ? `Hey ${candidateName}! I'm ${interviewerName}. Thanks for jumping on, really appreciate you taking the time. So I've had a look at your background for the ${job.title} role${firstMessageContext} — looks like you've been busy! I'd love to just have a chat, keep it really casual. So yeah, to start us off, tell me a bit about yourself and what caught your eye about this one?`
+      : `Hey ${candidateName}! Thanks for jumping on, really appreciate you taking the time. So I've had a look at your background for the ${job.title} role${firstMessageContext} — looks like you've been busy! I'd love to just have a chat, keep it really casual. So yeah, to start us off, tell me a bit about yourself and what caught your eye about this one?`,
     transcriber: {
       provider: "deepgram",
       model: "nova-2",
@@ -504,5 +507,6 @@ ${auBlock}`;
     duration_minutes: duration,
     company_name: companyBrand?.name || "Claimless",
     company_color: companyBrand?.primary_color || "#2383E2",
+    interviewer_name: interviewerName,
   });
 }

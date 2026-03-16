@@ -161,6 +161,9 @@ export async function PATCH(request: NextRequest) {
     updates.interview_custom_instructions =
       body.interview_custom_instructions || null;
   }
+  if (body.interviewer_name !== undefined) {
+    updates.interviewer_name = body.interviewer_name || null;
+  }
 
   // Email provider
   if (body.email_provider !== undefined) {

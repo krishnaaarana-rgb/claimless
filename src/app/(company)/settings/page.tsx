@@ -21,6 +21,7 @@ interface CompanySettings {
   interview_style: string;
   interview_focus: string;
   interview_custom_instructions: string | null;
+  interviewer_name: string | null;
   email_provider: string;
   email_api_key: string | null;
   email_from_address: string | null;
@@ -671,6 +672,17 @@ function AIInterviewTab({ getValue, updateDraft }: TabProps) {
           ]}
           onChange={(v) => updateDraft("interview_focus", v)}
         />
+      </div>
+      <div>
+        <label className="block text-[13px] font-medium text-[#37352F] mb-1.5">Interviewer Name</label>
+        <input
+          type="text"
+          value={getValue("interviewer_name") || ""}
+          onChange={(e) => updateDraft("interviewer_name", e.target.value || null)}
+          className="w-full rounded-lg border border-[#E9E9E7] px-4 py-2.5 text-[14px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2]"
+          placeholder="e.g., Sarah, Alex — leave blank for default"
+        />
+        <HelperText>The AI introduces itself with this name. Candidates see it in the interview and transcript.</HelperText>
       </div>
       <div>
         <div className="flex items-center justify-between mb-1.5">

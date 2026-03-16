@@ -52,6 +52,7 @@ export default function InterviewSession() {
   const [candidateName, setCandidateName] = useState("");
   const [companyName, setCompanyName] = useState("Claimless");
   const [companyColor, setCompanyColor] = useState("#2383E2");
+  const [interviewerName, setInterviewerName] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [cameraActive, setCameraActive] = useState(false);
 
@@ -181,12 +182,13 @@ export default function InterviewSession() {
         return;
       }
 
-      const { assistant_id, public_key, job_title, candidate_name, company_name: cName, company_color: cColor } =
+      const { assistant_id, public_key, job_title, candidate_name, company_name: cName, company_color: cColor, interviewer_name: iName } =
         await res.json();
       setJobTitle(job_title);
       setCandidateName(candidate_name || preferredName || "You");
       if (cName) setCompanyName(cName);
       if (cColor) setCompanyColor(cColor);
+      if (iName) setInterviewerName(iName);
       setStatus("connecting");
 
       const vapi = new Vapi(public_key);
@@ -510,7 +512,7 @@ export default function InterviewSession() {
               </div>
               <div>
                 <p className="text-[12px] font-semibold text-[#37352F] leading-tight">
-                  AI Interviewer
+                  {interviewerName || "AI Interviewer"}
                 </p>
                 <p className="text-[11px] text-[#9B9A97] leading-tight">
                   {aiSpeaking ? "Speaking..." : "Listening"}
@@ -551,7 +553,7 @@ export default function InterviewSession() {
                       style={{ color: entry.role === "assistant" ? companyColor : "#37352F" }}
                     >
                       {entry.role === "assistant"
-                        ? "Interviewer"
+                        ? (interviewerName || "Interviewer")
                         : candidateName}
                     </span>
                     <span className="text-[10px] text-[#D3D1CB] opacity-0 group-hover:opacity-100 transition-opacity">

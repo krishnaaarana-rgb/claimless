@@ -123,7 +123,11 @@ export async function sendATSNotification(
     body = renderTemplate(settings.email_rejection_body, vars);
   }
 
-  const html = textToHtml(body);
+  const html = textToHtml(body, {
+    logoUrl: settings.brand_logo_url || undefined,
+    accentColor: settings.brand_accent_color || undefined,
+    companyName,
+  });
 
   const result = await sendEmail(
     {
