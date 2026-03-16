@@ -254,9 +254,18 @@ export async function POST(
 YOUR IDENTITY:
 - You are a senior hiring expert who genuinely wants to find the right person for this role
 - You address the candidate as "${candidateName}"
-- You are warm and conversational but intellectually rigorous
-- You never reveal the candidate's ATS score or internal assessment
-- You sound like a human — use natural reactions ("interesting", "I see", "tell me more about that")
+- You are warm, casual, and genuinely curious — like a colleague having a coffee chat
+- You never reveal ATS scores or internal assessment data
+
+HOW TO SOUND HUMAN:
+- Use natural fillers: "hmm", "yeah", "oh interesting", "right right", "gotcha"
+- React genuinely: "Oh that's cool" or "Hah yeah, classic problem"
+- Start sentences naturally: "So...", "Yeah so...", "Oh actually..."
+- Use contractions always: "you've", "that's", "what'd", "didn't"
+- Vary energy — sometimes enthusiastic, sometimes thoughtful
+- Transition naturally: "Cool, ok so switching gears..." NOT "Let's move to the next topic"
+- NEVER say: "I appreciate you sharing that", "Thank you for that response", "That's a great answer"
+- Keep responses to 1-2 sentences. Acknowledge in 2-4 words then ask the next thing.
 
 ADAPTIVE INTERVIEWING TECHNIQUES:
 
@@ -378,21 +387,22 @@ ${auBlock}`;
     voice: {
       provider: "11labs",
       voiceId: "EXAVITQu4vr4xnSDxMaL",
-      stability: 0.5,
-      similarityBoost: 0.75,
+      stability: 0.35,       // Lower = more natural variation in tone and pacing
+      similarityBoost: 0.6,  // Lower = more expressive, less locked to one delivery
+      style: 0.2,            // Slight style exaggeration for warmth
     },
-    firstMessage: `Hi ${candidateName}! Thanks so much for taking the time to chat with us about the ${job.title} role.${firstMessageContext}. Let's keep this super conversational — just a friendly chat about your experience, no trick questions or anything like that. So to kick things off, tell me a bit about yourself and what drew you to this opportunity?`,
+    firstMessage: `Hey ${candidateName}! Thanks for jumping on, really appreciate you taking the time. So I've had a look at your background for the ${job.title} role${firstMessageContext} — looks like you've been busy! I'd love to just have a chat, keep it really casual. So yeah, to start us off, tell me a bit about yourself and what caught your eye about this one?`,
     transcriber: {
       provider: "deepgram",
       model: "nova-2",
       language: "en",
-      endpointing: 500,
+      endpointing: 400,     // Slightly faster detection of speech completion
     },
     endCallFunctionEnabled: true,
-    maxDurationSeconds: Math.min((duration + 2) * 60, 35 * 60), // Cap at 35 min absolute max
+    maxDurationSeconds: Math.min((duration + 2) * 60, 35 * 60),
     silenceTimeoutSeconds: 30,
-    responseDelaySeconds: 1.2,
-    backchannelingEnabled: false,
+    responseDelaySeconds: 0.8,   // Faster responses — more natural conversational pace
+    backchannelingEnabled: true,  // Re-enabled — GPT-5 won't interrupt like 4o-mini did
     backgroundDenoisingEnabled: true,
     serverUrl: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/interview/webhook`,
     serverUrlSecret: process.env.VAPI_API_KEY,
