@@ -56,7 +56,7 @@ export default function Home() {
             <span className="text-[13px] text-[#D3D1CB]">|</span>
             <span className="text-[14px] text-[#9B9A97]">14 industries</span>
             <span className="text-[13px] text-[#D3D1CB]">|</span>
-            <span className="text-[14px] text-[#9B9A97]">227 skills assessed</span>
+            <span className="text-[14px] text-[#9B9A97]">Assesses 200+ skills</span>
             <span className="text-[13px] text-[#D3D1CB]">|</span>
             <span className="text-[14px] text-[#9B9A97]">AU compliance built-in</span>
           </div>
@@ -245,7 +245,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <span className="text-[12px] font-semibold text-[#2383E2] uppercase tracking-widest">Industries</span>
           <h2 className="text-[36px] md:text-[44px] font-bold text-[#37352F] mt-4 leading-tight">
-            14 industries. 227 skills.
+            14 industries. 200+ skills assessed.
           </h2>
           <p className="text-[16px] text-[#9B9A97] mt-4">
             Each with domain-specific scenarios, AU regulatory knowledge, and 4-level assessment rubrics.
