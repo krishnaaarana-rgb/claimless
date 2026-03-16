@@ -510,73 +510,137 @@ export default function NewJobPage() {
         </div>
 
         <div className="pt-2">
-          <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+          <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
             Custom Questions
           </div>
-          {customQuestions.map((q, idx) => (
-            <div key={idx} className="border border-border rounded-lg p-3 mb-3 space-y-2">
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Question text"
-                  value={q.question}
-                  onChange={(e) => updateCustomQuestion(idx, { question: e.target.value })}
-                  className="bg-background border-border text-sm h-8 flex-1"
-                />
-                <button
-                  type="button"
-                  onClick={() => removeCustomQuestion(idx)}
-                  className="text-muted-foreground hover:text-destructive text-sm px-2"
-                >
-                  {"\u2715"}
-                </button>
-              </div>
-              <div className="flex items-center gap-3">
-                <select
-                  value={q.type}
-                  onChange={(e) => updateCustomQuestion(idx, { type: e.target.value as QuestionType })}
-                  className="text-[12px] border border-border rounded-md px-2 py-1.5 bg-background text-foreground"
-                >
-                  {QUESTION_TYPES.map((t) => (
-                    <option key={t.value} value={t.value}>{t.label}</option>
-                  ))}
-                </select>
-                <button
-                  type="button"
-                  onClick={() => updateCustomQuestion(idx, { required: !q.required })}
-                  className={`text-[10px] px-2 py-0.5 rounded border transition-colors ${q.required ? "border-primary/30 bg-primary/10 text-primary" : "border-border text-muted-foreground hover:border-primary/30"}`}
-                >
-                  {q.required ? "Required" : "Optional"}
-                </button>
-              </div>
-              {(q.type === "dropdown" || q.type === "multiple_choice" || q.type === "checkbox") && (
-                <div className="space-y-1">
-                  <p className="text-[11px] text-muted-foreground">Options (one per line)</p>
-                  <textarea
-                    value={(q.options || []).join("\n")}
-                    onChange={(e) => updateCustomQuestion(idx, { options: e.target.value.split("\n").filter(Boolean) })}
-                    rows={3}
-                    placeholder={"Option 1\nOption 2\nOption 3"}
-                    className="w-full text-[12px] border border-border rounded-md px-2 py-1.5 bg-background resize-none"
-                  />
+          <div className="space-y-4">
+            {customQuestions.map((q, idx) => {
+              const hasOptions = q.type === "dropdown" || q.type === "multiple_choice" || q.type === "checkbox";
+              const optionIcon = q.type === "multiple_choice" ? "○" : q.type === "checkbox" ? "☐" : "";
+              const opts = q.options || [];
+
+              return (
+                <div key={idx} className="border border-border rounded-lg bg-white overflow-hidden" style={{ borderLeft: "3px solid #2383E2" }}>
+                  {/* Header: question text + type selector */}
+                  <div className="flex items-start gap-3 p-4 pb-3">
+                    <input
+                      type="text"
+                      placeholder="Question"
+                      value={q.question}
+                      onChange={(e) => updateCustomQuestion(idx, { question: e.target.value })}
+                      className="flex-1 text-[15px] font-medium text-foreground bg-[#F7F6F3] rounded-md px-3 py-2.5 border-0 focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 placeholder:text-muted-foreground"
+                    />
+                    <select
+                      value={q.type}
+                      onChange={(e) => updateCustomQuestion(idx, { type: e.target.value as QuestionType, options: [] })}
+                      className="text-[13px] border border-border rounded-lg px-3 py-2.5 bg-white text-foreground shrink-0"
+                    >
+                      {QUESTION_TYPES.map((t) => (
+                        <option key={t.value} value={t.value}>{t.label}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Placeholder for text/number types */}
+                  {(q.type === "short_text" || q.type === "number") && (
+                    <div className="px-4 pb-3">
+                      <input
+                        type="text"
+                        placeholder="Placeholder text (optional)"
+                        value={q.placeholder || ""}
+                        onChange={(e) => updateCustomQuestion(idx, { placeholder: e.target.value })}
+                        className="w-full text-[13px] text-muted-foreground border-b border-border/50 pb-2 bg-transparent focus:outline-none focus:border-[#2383E2]"
+                      />
+                    </div>
+                  )}
+
+                  {/* Options list for dropdown/choice/checkbox */}
+                  {hasOptions && (
+                    <div className="px-4 pb-2">
+                      {opts.map((opt, oi) => (
+                        <div key={oi} className="flex items-center gap-3 py-2 border-b border-border/30 last:border-0">
+                          {optionIcon && (
+                            <span className="text-[16px] text-muted-foreground/50 shrink-0 w-5 text-center">{optionIcon}</span>
+                          )}
+                          {!optionIcon && (
+                            <span className="text-[12px] text-muted-foreground/50 shrink-0 w-5 text-center">{oi + 1}.</span>
+                          )}
+                          <input
+                            type="text"
+                            value={opt}
+                            onChange={(e) => {
+                              const next = [...opts];
+                              next[oi] = e.target.value;
+                              updateCustomQuestion(idx, { options: next });
+                            }}
+                            className="flex-1 text-[14px] text-foreground bg-transparent border-0 focus:outline-none"
+                            placeholder={`Option ${oi + 1}`}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => updateCustomQuestion(idx, { options: opts.filter((_, j) => j !== oi) })}
+                            className="text-muted-foreground/40 hover:text-destructive transition-colors text-[16px] shrink-0"
+                          >
+                            &times;
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => updateCustomQuestion(idx, { options: [...opts, ""] })}
+                        className="flex items-center gap-3 py-2 text-[13px] text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        {optionIcon && <span className="text-[16px] text-muted-foreground/30 w-5 text-center">{optionIcon}</span>}
+                        {!optionIcon && <span className="text-[12px] text-muted-foreground/30 w-5 text-center">{opts.length + 1}.</span>}
+                        Add option
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Footer: duplicate + delete + required toggle */}
+                  <div className="flex items-center justify-end gap-2 px-4 py-2.5 border-t border-border/50 bg-[#FAFAFA]">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const copy = { ...q, question: q.question + " (copy)" };
+                        setCustomQuestions((prev) => [...prev.slice(0, idx + 1), copy, ...prev.slice(idx + 1)]);
+                      }}
+                      className="p-1.5 text-muted-foreground hover:text-foreground transition-colors"
+                      title="Duplicate"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeCustomQuestion(idx)}
+                      className="p-1.5 text-muted-foreground hover:text-destructive transition-colors"
+                      title="Delete"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    </button>
+                    <div className="w-px h-5 bg-border mx-1" />
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <span className="text-[12px] text-muted-foreground">Required</span>
+                      <button
+                        type="button"
+                        onClick={() => updateCustomQuestion(idx, { required: !q.required })}
+                        className={`relative w-9 h-5 rounded-full transition-colors ${q.required ? "bg-[#2383E2]" : "bg-border"}`}
+                      >
+                        <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${q.required ? "left-[18px]" : "left-0.5"}`} />
+                      </button>
+                    </label>
+                  </div>
                 </div>
-              )}
-              {(q.type === "short_text" || q.type === "number") && (
-                <Input
-                  placeholder="Placeholder text (optional)"
-                  value={q.placeholder || ""}
-                  onChange={(e) => updateCustomQuestion(idx, { placeholder: e.target.value })}
-                  className="bg-background border-border text-[11px] h-7"
-                />
-              )}
-            </div>
-          ))}
+              );
+            })}
+          </div>
           {customQuestions.length < 10 && (
             <button
               type="button"
               onClick={addCustomQuestion}
-              className="text-xs text-primary hover:underline"
+              className="mt-3 text-[13px] text-primary hover:text-primary/80 font-medium transition-colors"
             >
-              + Add custom question
+              + Add question
             </button>
           )}
         </div>
