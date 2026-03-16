@@ -32,7 +32,7 @@ interface JobData {
   employment_type: string;
   application_form_config: {
     fields: Record<string, { enabled: boolean; required: boolean }>;
-    custom_questions: { question: string; required: boolean }[];
+    custom_questions: { question: string; type?: string; required: boolean; options?: string[]; placeholder?: string }[];
   } | null;
 }
 
@@ -602,29 +602,109 @@ export default function ApplyPage({
               )}
             </div>
 
-            {/* Custom Questions */}
-            {customQuestions.map((q, i) => (
-              <div key={i} className="space-y-1.5">
-                <label className="block text-[13px] font-semibold text-[#37352F]">
-                  {q.question}
-                  {q.required && (
-                    <span className="text-amber-600 ml-0.5">*</span>
+            {/* Custom Questions — dynamic types */}
+            {customQuestions.map((q, i) => {
+              const inputCls = "w-full rounded-lg border border-[#E9E9E7] bg-white px-4 py-2.5 text-[14px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2] transition-colors";
+              const val = customAnswers[i] || "";
+              const set = (v: string) => setCustomAnswers((prev) => ({ ...prev, [i]: v }));
+              const qType = q.type || "long_text";
+
+              return (
+                <div key={i} className="space-y-1.5">
+                  <label className="block text-[13px] font-semibold text-[#37352F]">
+                    {q.question}
+                    {q.required && <span className="text-amber-600 ml-0.5">*</span>}
+                  </label>
+
+                  {qType === "short_text" && (
+                    <input type="text" placeholder={q.placeholder || "Your answer..."} value={val} onChange={(e) => set(e.target.value)} className={inputCls} />
                   )}
-                </label>
-                <textarea
-                  placeholder="Your answer..."
-                  value={customAnswers[i] || ""}
-                  onChange={(e) =>
-                    setCustomAnswers((prev) => ({
-                      ...prev,
-                      [i]: e.target.value,
-                    }))
-                  }
-                  rows={3}
-                  className="w-full rounded-lg border border-[#E9E9E7] bg-white px-4 py-3 text-[14px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2] resize-none transition-colors"
-                />
-              </div>
-            ))}
+
+                  {qType === "long_text" && (
+                    <textarea placeholder={q.placeholder || "Your answer..."} value={val} onChange={(e) => set(e.target.value)} rows={3} className={`${inputCls} resize-none`} />
+                  )}
+
+                  {qType === "number" && (
+                    <input type="number" placeholder={q.placeholder || "0"} value={val} onChange={(e) => set(e.target.value)} className={inputCls} />
+                  )}
+
+                  {qType === "date" && (
+                    <input type="date" value={val} onChange={(e) => set(e.target.value)} className={inputCls} />
+                  )}
+
+                  {qType === "dropdown" && (
+                    <select value={val} onChange={(e) => set(e.target.value)} className={inputCls}>
+                      <option value="">Select...</option>
+                      {(q.options || []).map((opt) => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  )}
+
+                  {qType === "multiple_choice" && (
+                    <div className="space-y-2">
+                      {(q.options || []).map((opt) => (
+                        <label key={opt} className="flex items-center gap-2 text-[14px] text-[#37352F] cursor-pointer">
+                          <input
+                            type="radio"
+                            name={`q_${i}`}
+                            value={opt}
+                            checked={val === opt}
+                            onChange={() => set(opt)}
+                            className="accent-[#2383E2]"
+                          />
+                          {opt}
+                        </label>
+                      ))}
+                    </div>
+                  )}
+
+                  {qType === "checkbox" && (
+                    <div className="space-y-2">
+                      {(q.options || []).map((opt) => {
+                        const selected = val ? val.split("|||") : [];
+                        const checked = selected.includes(opt);
+                        return (
+                          <label key={opt} className="flex items-center gap-2 text-[14px] text-[#37352F] cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              onChange={() => {
+                                const next = checked
+                                  ? selected.filter((s) => s !== opt)
+                                  : [...selected, opt];
+                                set(next.join("|||"));
+                              }}
+                              className="accent-[#2383E2]"
+                            />
+                            {opt}
+                          </label>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {qType === "yes_no" && (
+                    <div className="flex gap-3">
+                      {["Yes", "No"].map((opt) => (
+                        <button
+                          key={opt}
+                          type="button"
+                          onClick={() => set(opt)}
+                          className={`px-5 py-2 rounded-lg text-[13px] font-medium border transition-colors ${
+                            val === opt
+                              ? "border-[#2383E2] bg-[#2383E2]/10 text-[#2383E2]"
+                              : "border-[#E9E9E7] text-[#37352F] hover:bg-[#F7F6F3]"
+                          }`}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
 
             {submitError && (
               <div className="text-[13px] text-red-700 bg-red-50 border border-red-200 rounded-lg px-4 py-2.5">

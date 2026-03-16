@@ -24,10 +24,26 @@ interface FormField {
   locked: boolean;
 }
 
+type QuestionType = "short_text" | "long_text" | "number" | "dropdown" | "multiple_choice" | "checkbox" | "date" | "yes_no";
+
 interface CustomQuestion {
   question: string;
+  type: QuestionType;
   required: boolean;
+  options?: string[];
+  placeholder?: string;
 }
+
+const QUESTION_TYPES: { value: QuestionType; label: string }[] = [
+  { value: "short_text", label: "Short answer" },
+  { value: "long_text", label: "Paragraph" },
+  { value: "number", label: "Number" },
+  { value: "dropdown", label: "Dropdown" },
+  { value: "multiple_choice", label: "Multiple choice" },
+  { value: "checkbox", label: "Checkboxes" },
+  { value: "date", label: "Date" },
+  { value: "yes_no", label: "Yes / No" },
+];
 
 const DEFAULT_FIELDS: FormField[] = [
   { key: "full_name", label: "Full name", enabled: true, required: true, locked: true },
@@ -84,13 +100,13 @@ export default function NewJobPage() {
   };
 
   const addCustomQuestion = () => {
-    if (customQuestions.length >= 3) return;
-    setCustomQuestions((prev) => [...prev, { question: "", required: false }]);
+    if (customQuestions.length >= 10) return;
+    setCustomQuestions((prev) => [...prev, { question: "", type: "short_text", required: false }]);
   };
 
-  const updateCustomQuestion = (idx: number, question: string) => {
+  const updateCustomQuestion = (idx: number, updates: Partial<CustomQuestion>) => {
     setCustomQuestions((prev) =>
-      prev.map((q, i) => (i === idx ? { ...q, question } : q))
+      prev.map((q, i) => (i === idx ? { ...q, ...updates } : q))
     );
   };
 
@@ -498,23 +514,63 @@ export default function NewJobPage() {
             Custom Questions
           </div>
           {customQuestions.map((q, idx) => (
-            <div key={idx} className="flex gap-2 mb-2">
-              <Input
-                placeholder={`Custom question ${idx + 1}`}
-                value={q.question}
-                onChange={(e) => updateCustomQuestion(idx, e.target.value)}
-                className="bg-background border-border text-sm h-8"
-              />
-              <button
-                type="button"
-                onClick={() => removeCustomQuestion(idx)}
-                className="text-muted-foreground hover:text-destructive text-sm px-2"
-              >
-                {"\u2715"}
-              </button>
+            <div key={idx} className="border border-border rounded-lg p-3 mb-3 space-y-2">
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Question text"
+                  value={q.question}
+                  onChange={(e) => updateCustomQuestion(idx, { question: e.target.value })}
+                  className="bg-background border-border text-sm h-8 flex-1"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeCustomQuestion(idx)}
+                  className="text-muted-foreground hover:text-destructive text-sm px-2"
+                >
+                  {"\u2715"}
+                </button>
+              </div>
+              <div className="flex items-center gap-3">
+                <select
+                  value={q.type}
+                  onChange={(e) => updateCustomQuestion(idx, { type: e.target.value as QuestionType })}
+                  className="text-[12px] border border-border rounded-md px-2 py-1.5 bg-background text-foreground"
+                >
+                  {QUESTION_TYPES.map((t) => (
+                    <option key={t.value} value={t.value}>{t.label}</option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => updateCustomQuestion(idx, { required: !q.required })}
+                  className={`text-[10px] px-2 py-0.5 rounded border transition-colors ${q.required ? "border-primary/30 bg-primary/10 text-primary" : "border-border text-muted-foreground hover:border-primary/30"}`}
+                >
+                  {q.required ? "Required" : "Optional"}
+                </button>
+              </div>
+              {(q.type === "dropdown" || q.type === "multiple_choice" || q.type === "checkbox") && (
+                <div className="space-y-1">
+                  <p className="text-[11px] text-muted-foreground">Options (one per line)</p>
+                  <textarea
+                    value={(q.options || []).join("\n")}
+                    onChange={(e) => updateCustomQuestion(idx, { options: e.target.value.split("\n").filter(Boolean) })}
+                    rows={3}
+                    placeholder={"Option 1\nOption 2\nOption 3"}
+                    className="w-full text-[12px] border border-border rounded-md px-2 py-1.5 bg-background resize-none"
+                  />
+                </div>
+              )}
+              {(q.type === "short_text" || q.type === "number") && (
+                <Input
+                  placeholder="Placeholder text (optional)"
+                  value={q.placeholder || ""}
+                  onChange={(e) => updateCustomQuestion(idx, { placeholder: e.target.value })}
+                  className="bg-background border-border text-[11px] h-7"
+                />
+              )}
             </div>
           ))}
-          {customQuestions.length < 3 && (
+          {customQuestions.length < 10 && (
             <button
               type="button"
               onClick={addCustomQuestion}
