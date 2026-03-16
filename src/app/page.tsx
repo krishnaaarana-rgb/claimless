@@ -37,7 +37,7 @@ export default function Home() {
           <h1 className="text-[48px] md:text-[64px] font-bold text-[#37352F] leading-[1.05] tracking-tight max-w-4xl">
             The best candidates don&apos;t always have the best resumes.
           </h1>
-          <p className="text-[18px] text-[#9B9A97] mt-6 max-w-2xl leading-relaxed">
+          <p className="text-[18px] text-[#9B9A97] mt-6 max-w-4xl leading-relaxed">
             Claimless verifies what candidates can actually do, then has a real conversation with them. Not keyword matching. Not chatbot screening. A 20-minute voice interview that tests with live scenarios.
           </p>
           <div className="flex flex-wrap items-center gap-4 mt-10">
@@ -69,7 +69,7 @@ export default function Home() {
       <section className="bg-[#1C1917] py-24 px-6">
         <div className="max-w-6xl mx-auto">
           <span className="text-[12px] font-semibold text-emerald-400 uppercase tracking-widest">The Problem</span>
-          <h2 className="text-[36px] md:text-[44px] font-bold text-white mt-4 leading-tight max-w-3xl">
+          <h2 className="text-[36px] md:text-[44px] font-bold text-white mt-4 leading-tight max-w-5xl">
             Traditional AI screening rejects great candidates. Manual screening can&apos;t keep up.
           </h2>
           <div className="grid md:grid-cols-3 gap-8 mt-14">
@@ -97,7 +97,7 @@ export default function Home() {
           <h2 className="text-[36px] md:text-[44px] font-bold text-[#37352F] mt-4 leading-tight">
             Three stages. Zero guesswork.
           </h2>
-          <p className="text-[16px] text-[#9B9A97] mt-4 max-w-2xl">
+          <p className="text-[16px] text-[#9B9A97] mt-4 max-w-4xl">
             Every candidate goes through the same rigorous pipeline. The entire process can run without anyone touching it.
           </p>
 
@@ -174,7 +174,7 @@ export default function Home() {
       <section className="bg-[#F7F6F3] py-24 px-6">
         <div className="max-w-6xl mx-auto">
           <span className="text-[12px] font-semibold text-[#2383E2] uppercase tracking-widest">Why it&apos;s different</span>
-          <h2 className="text-[36px] md:text-[44px] font-bold text-[#37352F] mt-4 leading-tight max-w-3xl">
+          <h2 className="text-[36px] md:text-[44px] font-bold text-[#37352F] mt-4 leading-tight max-w-5xl">
             We don&apos;t match keywords. We have conversations.
           </h2>
 
@@ -203,10 +203,10 @@ export default function Home() {
       <section className="py-24 px-6">
         <div className="max-w-6xl mx-auto">
           <span className="text-[12px] font-semibold text-[#2383E2] uppercase tracking-widest">Real conversations</span>
-          <h2 className="text-[36px] md:text-[44px] font-bold text-[#37352F] mt-4 leading-tight max-w-3xl">
+          <h2 className="text-[36px] md:text-[44px] font-bold text-[#37352F] mt-4 leading-tight max-w-5xl">
             This is what the interview actually sounds like.
           </h2>
-          <p className="text-[16px] text-[#9B9A97] mt-4 max-w-2xl">
+          <p className="text-[16px] text-[#9B9A97] mt-4 max-w-4xl">
             Not a chatbot. Not a form. A real voice conversation that adapts to what the candidate says.
           </p>
 
@@ -247,7 +247,7 @@ export default function Home() {
           <h2 className="text-[36px] md:text-[44px] font-bold text-[#37352F] mt-4 leading-tight">
             14 industries. 227 skills.
           </h2>
-          <p className="text-[16px] text-[#9B9A97] mt-4 max-w-2xl">
+          <p className="text-[16px] text-[#9B9A97] mt-4 max-w-4xl">
             Each with domain-specific scenarios, AU regulatory knowledge, and 4-level assessment rubrics.
           </p>
 
@@ -284,7 +284,7 @@ export default function Home() {
       <section className="bg-[#F7F6F3] py-24 px-6">
         <div className="max-w-6xl mx-auto">
           <span className="text-[12px] font-semibold text-[#2383E2] uppercase tracking-widest">Speed matters</span>
-          <h2 className="text-[36px] md:text-[44px] font-bold text-[#37352F] mt-4 leading-tight max-w-3xl">
+          <h2 className="text-[36px] md:text-[44px] font-bold text-[#37352F] mt-4 leading-tight max-w-5xl">
             Your best candidates are gone in 10 days. Here&apos;s how fast Claimless moves.
           </h2>
 
@@ -345,7 +345,7 @@ export default function Home() {
           <h2 className="text-[36px] md:text-[44px] font-bold text-[#37352F] mt-4 leading-tight">
             Plugs into your existing stack.
           </h2>
-          <p className="text-[16px] text-[#9B9A97] mt-4 max-w-2xl mx-auto">
+          <p className="text-[16px] text-[#9B9A97] mt-4 max-w-4xl mx-auto">
             Candidates flow in from your ATS. Verified results flow back. No rip and replace.
           </p>
 
@@ -383,7 +383,7 @@ export default function Home() {
           <h2 className="text-[36px] md:text-[44px] font-bold text-white mt-4 leading-tight">
             Simple pricing. No surprises.
           </h2>
-          <p className="text-[16px] text-white/50 mt-4 max-w-2xl">
+          <p className="text-[16px] text-white/50 mt-4 max-w-4xl">
             Pay per candidate or lock in a monthly subscription. Start small, scale as you grow.
           </p>
 
@@ -488,7 +488,7 @@ export default function Home() {
           CTA.Final push
           ═══════════════════════════════════════════ */}
       <section className="py-24 px-6">
-        <div className="max-w-3xl mx-auto text-center">
+        <div className="max-w-5xl mx-auto text-center">
           <h2 className="text-[36px] md:text-[48px] font-bold text-[#37352F] leading-tight">
             Ready to hire based on proof, not claims?
           </h2>
