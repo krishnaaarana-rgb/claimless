@@ -58,7 +58,7 @@ export default function Home() {
             <span className="text-[13px] text-[#D3D1CB]">|</span>
             <span className="text-[14px] text-[#9B9A97]">227 skills assessed</span>
             <span className="text-[13px] text-[#D3D1CB]">|</span>
-            <span className="text-[14px] text-[#9B9A97]">~$2 per candidate</span>
+            <span className="text-[14px] text-[#9B9A97]">AU compliance built-in</span>
           </div>
         </div>
       </section>
@@ -117,9 +117,9 @@ export default function Home() {
                 </div>
               </div>
               <div className="bg-[#F7F6F3] rounded-2xl p-8 text-center">
-                <div className="text-[48px] font-bold text-[#37352F]">~$0.03</div>
-                <div className="text-[14px] text-[#9B9A97]">per candidate screened</div>
-                <div className="text-[12px] text-[#D3D1CB] mt-2">AI reads what a recruiter skims in 30 seconds</div>
+                <div className="text-[48px] font-bold text-[#37352F]">&lt;2 min</div>
+                <div className="text-[14px] text-[#9B9A97]">full screening completed</div>
+                <div className="text-[12px] text-[#D3D1CB] mt-2">What a recruiter does in 45 minutes, done instantly</div>
               </div>
             </div>
 
@@ -159,9 +159,9 @@ export default function Home() {
                 </div>
               </div>
               <div className="bg-[#37352F] rounded-2xl p-8 text-center">
-                <div className="text-[48px] font-bold text-white">$0.12</div>
-                <div className="text-[14px] text-white/60">/min all-in (Vapi verified)</div>
-                <div className="text-[12px] text-white/30 mt-2">~$2.40 for a 20-minute interview</div>
+                <div className="text-[48px] font-bold text-white">20 min</div>
+                <div className="text-[14px] text-white/60">live voice interview per candidate</div>
+                <div className="text-[12px] text-white/30 mt-2">Deeper than any phone screen. Available 24/7.</div>
               </div>
             </div>
           </div>
@@ -244,10 +244,10 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <span className="text-[12px] font-semibold text-emerald-400 uppercase tracking-widest">Pricing</span>
           <h2 className="text-[36px] md:text-[44px] font-bold text-white mt-4 leading-tight">
-            ~$2 per candidate. 90% margin at $22.
+            Simple pricing. No surprises.
           </h2>
           <p className="text-[16px] text-white/50 mt-4 max-w-2xl">
-            Pay per candidate or lock in a subscription. Your cost is verified — $0.12/min Vapi + $0.03 screening.
+            Pay per candidate or lock in a monthly subscription. Start small, scale as you grow.
           </p>
 
           <div className="grid md:grid-cols-3 gap-6 mt-14">
