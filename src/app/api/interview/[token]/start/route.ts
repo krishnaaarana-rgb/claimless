@@ -138,7 +138,19 @@ export async function POST(
     }
   }
 
-  // 3d. Get consistency flags from screening (timeline issues, inflated claims)
+  // 3d. Get custom question answers from application form
+  const customAnswers = (application.application_form_data?.custom_answers as { question: string; answer: string }[]) || [];
+  let customAnswersContext = "";
+  if (customAnswers.length > 0) {
+    customAnswersContext = `\n\nAPPLICATION FORM RESPONSES (the candidate answered these when applying — use to ask follow-up questions):`;
+    for (const qa of customAnswers) {
+      if (qa.answer?.trim()) {
+        customAnswersContext += `\nQ: ${qa.question}\nA: ${qa.answer}`;
+      }
+    }
+  }
+
+  // 3e. Get consistency flags from screening (timeline issues, inflated claims)
   const consistencyFlags = (screeningData.consistency_flags as string[]) || [];
   const flagsContext = consistencyFlags.length > 0
     ? `\n\nRESUME CONSISTENCY FLAGS (probe these naturally during the interview — don't reveal you know):\n${consistencyFlags.map((f) => `- ${f}`).join("\n")}`
@@ -151,6 +163,7 @@ export async function POST(
     : "";
   preGeneratedContext += projectFileContext;
   preGeneratedContext += flagsContext;
+  preGeneratedContext += customAnswersContext;
   const ghUser = candidate.github_username;
   const hasValidGithub = ghUser && /^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,37}[a-zA-Z0-9])?$/.test(ghUser) && !ghUser.includes("http") && !ghUser.includes("localhost");
   if (hasValidGithub) {
