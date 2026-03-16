@@ -26,7 +26,7 @@ export default function Home() {
       </nav>
 
       {/* ═══════════════════════════════════════════
-          HERO — Split layout, big statement
+          HERO.Split layout, big statement
           ═══════════════════════════════════════════ */}
       <section className="pt-32 pb-20 px-6">
         <div className="max-w-6xl mx-auto">
@@ -38,7 +38,7 @@ export default function Home() {
             The best candidates don&apos;t always have the best resumes.
           </h1>
           <p className="text-[18px] text-[#9B9A97] mt-6 max-w-2xl leading-relaxed">
-            Claimless verifies what candidates can actually do — then has a real conversation with them. Not keyword matching. Not chatbot screening. A 20-minute voice interview that tests with live scenarios.
+            Claimless verifies what candidates can actually do, then has a real conversation with them. Not keyword matching. Not chatbot screening. A 20-minute voice interview that tests with live scenarios.
           </p>
           <div className="flex flex-wrap items-center gap-4 mt-10">
             <Link href="/signup" className="px-7 py-3.5 bg-[#37352F] text-white rounded-xl text-[15px] font-semibold hover:bg-[#2C2B28] transition-colors">
@@ -64,7 +64,7 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          THE PROBLEM — Dark section, bold contrast
+          THE PROBLEM.Dark section, bold contrast
           ═══════════════════════════════════════════ */}
       <section className="bg-[#1C1917] py-24 px-6">
         <div className="max-w-6xl mx-auto">
@@ -89,7 +89,7 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          HOW IT WORKS — 3-stage pipeline
+          HOW IT WORKS.3-stage pipeline
           ═══════════════════════════════════════════ */}
       <section id="how-it-works" className="py-24 px-6">
         <div className="max-w-6xl mx-auto">
@@ -108,7 +108,7 @@ export default function Home() {
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F7F6F3] text-[12px] font-semibold text-[#9B9A97]">Stage 1</div>
                 <h3 className="text-[24px] font-bold text-[#37352F] mt-4">Intelligent Screening</h3>
                 <p className="text-[14px] text-[#9B9A97] mt-3 leading-relaxed">
-                  AI reads the full resume and checks for consistency — timeline logic, career progression, title vs responsibility. Candidates upload project files as proof of work. We scrape portfolio links. No keyword matching.
+                  AI reads the full resume and checks for consistency: timeline logic, career progression, title vs responsibility. Candidates upload project files as proof of work. We scrape portfolio links. No keyword matching.
                 </p>
                 <div className="flex flex-wrap gap-2 mt-4">
                   {["Resume analysis", "Project file extraction", "Portfolio scraping", "Consistency flags", "Skill matching"].map((t) => (
@@ -147,10 +147,10 @@ export default function Home() {
             {/* Stage 3 */}
             <div className="grid md:grid-cols-2 gap-12 items-center py-12">
               <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-[12px] font-semibold text-emerald-600">Stage 3 — The Core</div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-[12px] font-semibold text-emerald-600">Stage 3. The Core</div>
                 <h3 className="text-[24px] font-bold text-[#37352F] mt-4">AI Voice Interview</h3>
                 <p className="text-[14px] text-[#9B9A97] mt-3 leading-relaxed">
-                  A 20-minute live voice conversation with an AI that already knows their resume, project files, screening results, and Loom analysis. Mandatory live problem solving, depth pursuit, anti-coaching detection. Not a chatbot — a sharp interviewer.
+                  A 20-minute live voice conversation with an AI that already knows their resume, project files, screening results, and Loom analysis. Mandatory live problem solving, depth pursuit, anti-coaching detection. Not a chatbot, a sharp interviewer.
                 </p>
                 <div className="flex flex-wrap gap-2 mt-4">
                   {["GPT-5 powered", "8 assessment techniques", "Mandatory phases", "Full transcript", "Scored report"].map((t) => (
@@ -169,7 +169,7 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          WHAT MAKES IT DIFFERENT — Horizontal cards
+          WHAT MAKES IT DIFFERENT.Horizontal cards
           ═══════════════════════════════════════════ */}
       <section className="bg-[#F7F6F3] py-24 px-6">
         <div className="max-w-6xl mx-auto">
@@ -180,11 +180,11 @@ export default function Home() {
 
           <div className="grid md:grid-cols-2 gap-6 mt-14">
             {[
-              { title: "Live Problem Solving", desc: "\"You're the charge nurse, three patients crash at once — walk me through your first 60 seconds.\" The AI creates real scenarios, not generic questions.", icon: "🎯" },
+              { title: "Live Problem Solving", desc: "\"You're the charge nurse, three patients crash at once, walk me through your first 60 seconds.\" The AI creates real scenarios, not generic questions.", icon: "🎯" },
               { title: "Depth Pursuit", desc: "Goes 3 levels deep on every claim. \"How did you measure that?\" → \"What was the bottleneck?\" → \"After you fixed that, what broke next?\"", icon: "🔍" },
-              { title: "Anti-Coaching Detection", desc: "\"Great example — now tell me when the OPPOSITE happened.\" Coached candidates crumble. Real practitioners handle it naturally.", icon: "🛡️" },
+              { title: "Anti-Coaching Detection", desc: "\"Great example, now tell me when the OPPOSITE happened.\" Coached candidates crumble. Real practitioners handle it naturally.", icon: "🛡️" },
               { title: "Failure Mode Testing", desc: "\"What could go wrong with that approach?\" People who've shipped things know the answer. People who only know theory don't.", icon: "⚡" },
-              { title: "Consistency Flags", desc: "If screening found a timeline gap or inflated number, the AI probes it naturally during the interview — without revealing it knows.", icon: "🔗" },
+              { title: "Consistency Flags", desc: "If screening found a timeline gap or inflated number, the AI probes it naturally during the interview, without revealing it knows.", icon: "🔗" },
               { title: "Humans Stay in the Loop", desc: "Every score has evidence. Every recommendation can be overridden. The recruiter sees the full transcript and makes the call.", icon: "🤝" },
             ].map((item) => (
               <div key={item.title} className="bg-white rounded-2xl p-6 border border-[#E9E9E7]">
@@ -198,7 +198,48 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          INDUSTRIES — Grid
+          REAL CONVERSATION.Transcript comparison
+          ═══════════════════════════════════════════ */}
+      <section className="py-24 px-6">
+        <div className="max-w-6xl mx-auto">
+          <span className="text-[12px] font-semibold text-[#2383E2] uppercase tracking-widest">Real conversations</span>
+          <h2 className="text-[36px] md:text-[44px] font-bold text-[#37352F] mt-4 leading-tight max-w-3xl">
+            This is what the interview actually sounds like.
+          </h2>
+          <p className="text-[16px] text-[#9B9A97] mt-4 max-w-2xl">
+            Not a chatbot. Not a form. A real voice conversation that adapts to what the candidate says.
+          </p>
+
+          <div className="grid md:grid-cols-2 gap-8 mt-14">
+            {/* Traditional */}
+            <div className="rounded-2xl border border-red-200 bg-red-50/50 p-6">
+              <div className="text-[12px] font-semibold text-red-400 uppercase tracking-wider mb-4">Traditional Phone Screen</div>
+              <div className="space-y-4 text-[13px]">
+                <div><span className="font-semibold text-red-400">Recruiter:</span> <span className="text-[#37352F]">Tell me about a time you showed leadership.</span></div>
+                <div><span className="font-semibold text-[#9B9A97]">Candidate:</span> <span className="text-[#9B9A97]">At my last role I led a team of 12 on a major migration project. We delivered on time and under budget.</span></div>
+                <div><span className="font-semibold text-red-400">Recruiter:</span> <span className="text-[#37352F]">That&apos;s great. And what about your experience with...</span></div>
+                <div className="text-[11px] text-red-400 italic pt-2 border-t border-red-200">Moves on. No follow-up. No verification. The claim stands unchallenged.</div>
+              </div>
+            </div>
+
+            {/* Claimless */}
+            <div className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-6">
+              <div className="text-[12px] font-semibold text-emerald-600 uppercase tracking-wider mb-4">Claimless AI Interview</div>
+              <div className="space-y-4 text-[13px]">
+                <div><span className="font-semibold text-emerald-600">AI:</span> <span className="text-[#37352F]">Oh nice, you led 12 people through a migration. How did you measure &quot;on time&quot;?</span></div>
+                <div><span className="font-semibold text-[#9B9A97]">Candidate:</span> <span className="text-[#9B9A97]">We had milestones set at the start...</span></div>
+                <div><span className="font-semibold text-emerald-600">AI:</span> <span className="text-[#37352F]">Gotcha. What was the first thing that went wrong?</span></div>
+                <div><span className="font-semibold text-[#9B9A97]">Candidate:</span> <span className="text-[#9B9A97]">Honestly, our lead dev quit halfway through...</span></div>
+                <div><span className="font-semibold text-emerald-600">AI:</span> <span className="text-[#37352F]">Ooh, that&apos;s tough. How did you handle the handover with 12 people depending on you?</span></div>
+                <div className="text-[11px] text-emerald-600 italic pt-2 border-t border-emerald-200">Three levels deep. Real scenarios. The truth comes out in the follow-ups.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+          INDUSTRIES.Grid
           ═══════════════════════════════════════════ */}
       <section id="industries" className="py-24 px-6">
         <div className="max-w-6xl mx-auto">
@@ -238,7 +279,103 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          PRICING — Clean cards
+          TIMELINE.Your process vs ours
+          ═══════════════════════════════════════════ */}
+      <section className="bg-[#F7F6F3] py-24 px-6">
+        <div className="max-w-6xl mx-auto">
+          <span className="text-[12px] font-semibold text-[#2383E2] uppercase tracking-widest">Speed matters</span>
+          <h2 className="text-[36px] md:text-[44px] font-bold text-[#37352F] mt-4 leading-tight max-w-3xl">
+            Your best candidates are gone in 10 days. Here&apos;s how fast Claimless moves.
+          </h2>
+
+          <div className="grid md:grid-cols-2 gap-12 mt-14">
+            {/* Old way */}
+            <div>
+              <div className="text-[14px] font-semibold text-red-500 mb-6">Without Claimless</div>
+              <div className="space-y-0">
+                {[
+                  { day: "Day 1", task: "Resume arrives in ATS" },
+                  { day: "Day 2-3", task: "Recruiter reads resume, decides to call" },
+                  { day: "Day 4-7", task: "Schedule phone screen (back and forth emails)" },
+                  { day: "Day 8", task: "30 min phone screen" },
+                  { day: "Day 9", task: "Recruiter writes up notes, shares with team" },
+                  { day: "Day 10-14", task: "Internal discussion, shortlist decision" },
+                  { day: "Day 15+", task: "Present to client" },
+                ].map((step, i) => (
+                  <div key={i} className="flex gap-4 py-3 border-b border-red-100 last:border-0">
+                    <span className="text-[12px] font-mono text-red-400 w-16 shrink-0">{step.day}</span>
+                    <span className="text-[13px] text-[#37352F]">{step.task}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 text-[13px] font-semibold text-red-500">Total: 2-3 weeks per candidate</div>
+            </div>
+
+            {/* New way */}
+            <div>
+              <div className="text-[14px] font-semibold text-emerald-600 mb-6">With Claimless</div>
+              <div className="space-y-0">
+                {[
+                  { time: "0 sec", task: "Candidate applies" },
+                  { time: "30 sec", task: "AI screening complete, consistency flags raised" },
+                  { time: "1 min", task: "Interview invite sent automatically" },
+                  { time: "Same day", task: "Candidate completes 20 min voice interview" },
+                  { time: "+30 sec", task: "Scored report with evidence lands in dashboard" },
+                  { time: "Same day", task: "Recruiter reviews verified, scored candidate" },
+                  { time: "Day 1", task: "Present to client with full assessment" },
+                ].map((step, i) => (
+                  <div key={i} className="flex gap-4 py-3 border-b border-emerald-100 last:border-0">
+                    <span className="text-[12px] font-mono text-emerald-600 w-16 shrink-0">{step.time}</span>
+                    <span className="text-[13px] text-[#37352F]">{step.task}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 text-[13px] font-semibold text-emerald-600">Total: same day, fully automated</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+          INTEGRATIONS.ATS + API
+          ═══════════════════════════════════════════ */}
+      <section className="py-24 px-6">
+        <div className="max-w-6xl mx-auto text-center">
+          <span className="text-[12px] font-semibold text-[#2383E2] uppercase tracking-widest">Integrations</span>
+          <h2 className="text-[36px] md:text-[44px] font-bold text-[#37352F] mt-4 leading-tight">
+            Plugs into your existing stack.
+          </h2>
+          <p className="text-[16px] text-[#9B9A97] mt-4 max-w-2xl mx-auto">
+            Candidates flow in from your ATS. Verified results flow back. No rip and replace.
+          </p>
+
+          <div className="flex flex-wrap justify-center gap-6 mt-14">
+            {[
+              { name: "JobAdder", desc: "Native integration" },
+              { name: "Bullhorn", desc: "Native integration" },
+              { name: "Vincere", desc: "Native integration" },
+              { name: "REST API", desc: "Any system" },
+              { name: "Webhooks", desc: "Real-time events" },
+            ].map((item) => (
+              <div key={item.name} className="w-40 rounded-xl border border-[#E9E9E7] p-5 text-center hover:border-[#2383E2] hover:shadow-sm transition-all">
+                <div className="text-[15px] font-semibold text-[#37352F]">{item.name}</div>
+                <div className="text-[11px] text-[#9B9A97] mt-1">{item.desc}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-10 inline-flex items-center gap-6 text-[13px] text-[#9B9A97]">
+            <span>Inbound API for candidate submission</span>
+            <span className="text-[#D3D1CB]">|</span>
+            <span>Outbound push with HMAC signing</span>
+            <span className="text-[#D3D1CB]">|</span>
+            <span>Results polling endpoint</span>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+          PRICING.Clean cards
           ═══════════════════════════════════════════ */}
       <section id="pricing" className="bg-[#1C1917] py-24 px-6">
         <div className="max-w-6xl mx-auto">
@@ -292,7 +429,7 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          FOR AGENCIES — Split with testimonial
+          FOR AGENCIES.Split with testimonial
           ═══════════════════════════════════════════ */}
       <section id="for-agencies" className="py-24 px-6">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
@@ -318,7 +455,7 @@ export default function Home() {
           </div>
           <div className="bg-[#F7F6F3] rounded-2xl p-8">
             <div className="text-[14px] text-[#37352F] leading-relaxed">
-              &ldquo;The industry is caught between two failures: keyword-matching AI that rejects good people, and manual screening that can&apos;t keep up with volume. Claimless is the conversation-based alternative — every candidate gets heard.&rdquo;
+              &ldquo;The industry is caught between two failures: keyword-matching AI that rejects good people, and manual screening that can&apos;t keep up with volume. Claimless is the conversation-based alternative where every candidate gets heard.&rdquo;
             </div>
             <div className="mt-6 flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-[#2383E2] flex items-center justify-center text-white text-[12px] font-semibold">CL</div>
@@ -332,7 +469,7 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          COMPLIANCE — Clean badges
+          COMPLIANCE.Clean badges
           ═══════════════════════════════════════════ */}
       <section className="bg-[#F7F6F3] py-16 px-6">
         <div className="max-w-6xl mx-auto text-center">
@@ -348,7 +485,7 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          CTA — Final push
+          CTA.Final push
           ═══════════════════════════════════════════ */}
       <section className="py-24 px-6">
         <div className="max-w-3xl mx-auto text-center">
