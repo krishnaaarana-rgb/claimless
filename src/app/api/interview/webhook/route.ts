@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       messages,
     } = body.message || body;
 
-    void transcript; // included in messages
+    // transcript is Vapi's pre-built string, messages is the array we parse
 
     // Find the application by assistant ID
     const supabase = createAdminClient();
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
     );
 
     // Build full transcript text — filter out empty/null messages
-    const transcriptText = (messages || [])
+    let transcriptText = (messages || [])
       .filter(
         (m: VapiMessage) =>
           (m.role === "assistant" || m.role === "user") &&
@@ -98,6 +98,13 @@ export async function POST(request: NextRequest) {
           `${m.role === "assistant" ? "Interviewer" : "Candidate"}: ${(m.content || m.message || "").trim()}`
       )
       .join("\n\n");
+
+    // Fallback: if built transcript is missing interviewer lines, use Vapi's pre-built transcript
+    const hasInterviewerLines = transcriptText.includes("Interviewer:");
+    if (!hasInterviewerLines && transcript && typeof transcript === "string" && transcript.length > 0) {
+      console.log("[vapi-webhook] Built transcript missing interviewer lines, using Vapi transcript fallback");
+      transcriptText = transcript;
+    }
 
     // Store transcript and recording URL
     // Trim injected_prompt to keep JSONB size manageable (full prompt can be 5-10KB)
