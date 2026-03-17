@@ -757,7 +757,7 @@ function AIInterviewTab({ getValue, updateDraft }: TabProps) {
                       document.body.appendChild(audio);
                       audio.play();
                       // Stop after 5 seconds
-                      setTimeout(() => { try { audio.pause(); audio.remove(); } catch {} }, 5000);
+                      setTimeout(() => { try { audio.pause(); audio.remove(); } catch {} }, 15000);
                       audio.onended = () => { try { audio.remove(); } catch {} };
                     }}
                     className="ml-auto text-[10px] px-2 py-0.5 rounded border border-[#E9E9E7] text-[#9B9A97] hover:text-[#2383E2] hover:border-[#2383E2] transition-colors"
