@@ -91,6 +91,7 @@ export default function IndustrySkillPicker({
   const [skillSearch, setSkillSearch] = useState("");
   const [showSkillPanel, setShowSkillPanel] = useState(false);
   const [customSkillInput, setCustomSkillInput] = useState("");
+  const [customSkillLevel, setCustomSkillLevel] = useState<SkillRequirement["level"]>("intermediate");
   const [activeCategory, setActiveCategory] = useState<"all" | "hard_skill" | "soft_skill">("all");
 
   // Drag state
@@ -187,10 +188,20 @@ export default function IndustrySkillPicker({
   const handleAddCustom = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key !== "Enter" || !customSkillInput.trim()) return;
-      addSkill(customSkillInput.trim(), "custom");
+      const name = customSkillInput.trim();
+      if (isSkillAdded(name)) return;
+      onChange({
+        industry,
+        industryNiche,
+        skills: [
+          ...skills,
+          { skill: name, category: "custom", level: customSkillLevel, required: true, weight: 3 },
+        ],
+      });
       setCustomSkillInput("");
+      setCustomSkillLevel("intermediate");
     },
-    [customSkillInput, addSkill]
+    [customSkillInput, customSkillLevel, isSkillAdded, skills, industry, industryNiche, onChange]
   );
 
   // ── Filtered suggestions ──
@@ -558,6 +569,18 @@ export default function IndustrySkillPicker({
                   placeholder="Type a custom skill and press Enter"
                   className="flex-1 text-[12px] text-[#37352F] bg-transparent outline-none placeholder:text-[#D3D1CB]"
                 />
+                {customSkillInput.trim() && (
+                  <select
+                    value={customSkillLevel}
+                    onChange={(e) => setCustomSkillLevel(e.target.value as SkillRequirement["level"])}
+                    className="text-[10px] border border-[#E9E9E7] rounded px-1 py-0.5 bg-white text-[#37352F]"
+                  >
+                    <option value="basic">Basic</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                    <option value="expert">Expert</option>
+                  </select>
+                )}
                 {customSkillInput.trim() && (
                   <span className="text-[10px] text-[#D3D1CB]">
                     ⏎ Enter
