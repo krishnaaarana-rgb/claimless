@@ -189,7 +189,7 @@ export async function screenApplication(
   const result = await analyzeWithClaude<ATSScreeningResult>(
     getSystemPrompt(),
     userPrompt,
-    { maxTokens: 2048, temperature: 0 }
+    { maxTokens: 2048, temperature: 0, model: "openai/gpt-4o-mini" }
   );
 
   // Ensure pass field matches threshold

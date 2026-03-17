@@ -17,7 +17,7 @@ interface OpenRouterResponse {
 async function callOpenRouter(
   systemPrompt: string,
   userPrompt: string,
-  options?: { maxTokens?: number; temperature?: number }
+  options?: { maxTokens?: number; temperature?: number; model?: string }
 ): Promise<string> {
   const messages: OpenRouterMessage[] = [
     { role: "system", content: systemPrompt },
@@ -33,7 +33,7 @@ async function callOpenRouter(
       "X-Title": "Claimless",
     },
     body: JSON.stringify({
-      model: MODEL,
+      model: options?.model || MODEL,
       messages,
       max_tokens: options?.maxTokens ?? 4096,
       temperature: options?.temperature ?? 0,
@@ -57,7 +57,7 @@ async function callOpenRouter(
 export async function analyzeWithClaude<T>(
   systemPrompt: string,
   userPrompt: string,
-  options?: { maxTokens?: number; temperature?: number }
+  options?: { maxTokens?: number; temperature?: number; model?: string }
 ): Promise<T> {
   const text = await callOpenRouter(systemPrompt, userPrompt, options);
 
