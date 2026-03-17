@@ -719,20 +719,19 @@ function AIInterviewTab({ getValue, updateDraft }: TabProps) {
         <label className="block text-[13px] font-medium text-[#37352F] mb-2">Voice</label>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
           {[
-            { id: "EXAVITQu4vr4xnSDxMaL", name: "Sarah", desc: "Professional, confident", gender: "F" },
-            { id: "hpp4J3VqNfWAUOO0d1Us", name: "Bella", desc: "Bright, warm", gender: "F" },
-            { id: "cgSgspJ2msm6clMCkdW9", name: "Jessica", desc: "Playful, friendly", gender: "F" },
-            { id: "cjVigY5qzO86Huf0OWal", name: "Eric", desc: "Smooth, trustworthy", gender: "M" },
-            { id: "CwhRBWXzGAHq8TQ4Fs17", name: "Roger", desc: "Laid-back, casual", gender: "M" },
-            { id: "iP95p4xoKVk53GoZ742B", name: "Chris", desc: "Charming, down-to-earth", gender: "M" },
+            { id: "EXAVITQu4vr4xnSDxMaL", name: "Sarah", desc: "Professional, confident", gender: "F", preview: "https://storage.googleapis.com/eleven-public-prod/premade/voices/EXAVITQu4vr4xnSDxMaL/01a3e33c-6e99-4ee7-8543-ff2216a32186.mp3" },
+            { id: "hpp4J3VqNfWAUOO0d1Us", name: "Bella", desc: "Bright, warm", gender: "F", preview: "https://storage.googleapis.com/eleven-public-prod/premade/voices/hpp4J3VqNfWAUOO0d1Us/dab0f5ba-3aa4-48a8-9fad-f138fea1126d.mp3" },
+            { id: "cgSgspJ2msm6clMCkdW9", name: "Jessica", desc: "Playful, friendly", gender: "F", preview: "https://storage.googleapis.com/eleven-public-prod/premade/voices/cgSgspJ2msm6clMCkdW9/56a97bf8-b69b-448f-846c-c3a11683d45a.mp3" },
+            { id: "cjVigY5qzO86Huf0OWal", name: "Eric", desc: "Smooth, trustworthy", gender: "M", preview: "https://storage.googleapis.com/eleven-public-prod/premade/voices/cjVigY5qzO86Huf0OWal/d098fda0-6456-4030-b3d8-63aa048c9070.mp3" },
+            { id: "CwhRBWXzGAHq8TQ4Fs17", name: "Roger", desc: "Laid-back, casual", gender: "M", preview: "https://storage.googleapis.com/eleven-public-prod/premade/voices/CwhRBWXzGAHq8TQ4Fs17/58ee3ff5-f6f2-4628-93b8-e38eb31806b0.mp3" },
+            { id: "iP95p4xoKVk53GoZ742B", name: "Chris", desc: "Charming, down-to-earth", gender: "M", preview: "https://storage.googleapis.com/eleven-public-prod/premade/voices/iP95p4xoKVk53GoZ742B/3f4bde72-cc48-40dd-829f-57fbf906f4d7.mp3" },
           ].map((v) => {
             const selected = (getValue("voice_agent_id") || "EXAVITQu4vr4xnSDxMaL") === v.id;
             return (
-              <button
+              <div
                 key={v.id}
-                type="button"
                 onClick={() => updateDraft("voice_agent_id", v.id)}
-                className={`text-left p-3 rounded-lg border transition-all ${
+                className={`text-left p-3 rounded-lg border transition-all cursor-pointer ${
                   selected
                     ? "border-[#2383E2] bg-[#2383E2]/5"
                     : "border-[#E9E9E7] hover:border-[#2383E2]/30"
@@ -743,9 +742,25 @@ function AIInterviewTab({ getValue, updateDraft }: TabProps) {
                     {v.gender}
                   </span>
                   <span className="text-[13px] font-medium text-[#37352F]">{v.name}</span>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const existing = document.getElementById("voice-preview") as HTMLAudioElement;
+                      if (existing) { existing.pause(); existing.remove(); }
+                      const audio = document.createElement("audio");
+                      audio.id = "voice-preview";
+                      audio.src = v.preview;
+                      audio.play();
+                      audio.onended = () => audio.remove();
+                    }}
+                    className="ml-auto text-[10px] px-2 py-0.5 rounded border border-[#E9E9E7] text-[#9B9A97] hover:text-[#2383E2] hover:border-[#2383E2] transition-colors"
+                  >
+                    &#9654; Preview
+                  </button>
                 </div>
                 <p className="text-[11px] text-[#9B9A97] mt-1">{v.desc}</p>
-              </button>
+              </div>
             );
           })}
         </div>
