@@ -374,11 +374,13 @@ function buildSkillAssessmentBlock(
   }
 
   if (customSkills.length > 0) {
-    block += "--- Additional Skills ---\n";
+    block += "--- Additional Skills (Custom) ---\n";
+    block += "These are company-specific skills. Assess them by asking for specific examples, creating relevant scenarios, and testing depth the same way you would for hard skills.\n\n";
     for (const skill of customSkills) {
-      block += `• ${skill.skill} (expected: ${skill.level}${skill.required ? ", REQUIRED" : ""}) — find a natural moment to assess this\n`;
+      block += `• ${skill.skill} (expected: ${skill.level}${skill.required ? ", REQUIRED" : ""}, weight: ${skill.weight || 3}/5)`;
+      block += `\n  At ${skill.level} level: ask them to describe a real project where they used ${skill.skill}, then go 2-3 levels deep. If they claim expertise, create a scenario that tests it.`;
+      block += "\n\n";
     }
-    block += "\n";
   }
 
   return block;

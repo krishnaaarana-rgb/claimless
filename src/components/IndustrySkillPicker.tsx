@@ -102,13 +102,21 @@ export default function IndustrySkillPicker({
   const skillSearchRef = useRef<HTMLInputElement>(null);
   const customInputRef = useRef<HTMLInputElement>(null);
 
-  // ── Fetch industry list ──
+  const [companyCustomSkills, setCompanyCustomSkills] = useState<string[]>([]);
+
+  // ── Fetch industry list + company's saved custom skills ──
   useEffect(() => {
     fetch("/api/industries")
       .then((r) => r.json())
       .then((d) => setIndustries(d.industries || []))
       .catch(() => {})
       .finally(() => setLoadingIndustries(false));
+
+    // Fetch custom skills used in previous jobs
+    fetch("/api/jobs/custom-skills")
+      .then((r) => r.json())
+      .then((d) => setCompanyCustomSkills(d.skills || []))
+      .catch(() => {});
   }, []);
 
   // ── Fetch skills when industry changes ──
@@ -206,8 +214,7 @@ export default function IndustrySkillPicker({
 
   // ── Filtered suggestions ──
   const filteredSuggestions = useMemo(() => {
-    if (!industryData) return [];
-    const all = [
+    const industrySkills = industryData ? [
       ...industryData.hard_skills.map((s) => ({ ...s, category: "hard_skill" as const })),
       ...industryData.soft_skills.map((s) => ({ ...s, category: "soft_skill" as const })),
       ...industryData.niche_skills.map((name) => ({
@@ -215,7 +222,15 @@ export default function IndustrySkillPicker({
         description: "",
         category: "hard_skill" as const,
       })),
-    ];
+    ] : [];
+
+    // Add company's previously used custom skills
+    const industryNames = new Set(industrySkills.map((s) => s.name.toLowerCase()));
+    const customSuggestions = companyCustomSkills
+      .filter((name) => !industryNames.has(name.toLowerCase()))
+      .map((name) => ({ name, description: "Previously used", category: "custom" as const }));
+
+    const all = [...industrySkills, ...customSuggestions];
     return all
       .filter((s) => {
         if (activeCategory !== "all" && s.category !== activeCategory) return false;
