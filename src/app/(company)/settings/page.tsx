@@ -125,12 +125,14 @@ export default function SettingsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(draft),
       });
+      const data = await res.json();
       if (res.ok) {
-        const data = await res.json();
         setSettings(data.settings);
         setDraft({});
         setSaved(true);
         setTimeout(() => setSaved(false), 3000);
+      } else {
+        alert(`Failed to save: ${data.error || res.status}`);
       }
     } catch {
       // silent
