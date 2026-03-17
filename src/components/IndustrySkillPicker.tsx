@@ -424,7 +424,8 @@ export default function IndustrySkillPicker({
                   {/* Required toggle */}
                   <button
                     type="button"
-                    onClick={() => updateSkill(idx, { required: !skill.required })}
+                    onClick={(e) => { e.stopPropagation(); updateSkill(idx, { required: !skill.required }); }}
+                    onMouseDown={(e) => e.stopPropagation()}
                     className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider transition-all duration-150 ${
                       skill.required
                         ? "bg-red-50 text-red-600 border border-red-200"
@@ -437,7 +438,8 @@ export default function IndustrySkillPicker({
                   {/* Remove */}
                   <button
                     type="button"
-                    onClick={() => removeSkill(idx)}
+                    onClick={(e) => { e.stopPropagation(); removeSkill(idx); }}
+                    onMouseDown={(e) => e.stopPropagation()}
                     className="p-1 rounded text-[#D3D1CB] hover:text-red-500 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
                   >
                     <X size={13} />
@@ -686,6 +688,7 @@ function LevelPicker({
     <div ref={ref} className="relative">
       <button
         type="button"
+        onMouseDown={(e) => e.stopPropagation()}
         onClick={(e) => {
           e.stopPropagation();
           setOpen(!open);
