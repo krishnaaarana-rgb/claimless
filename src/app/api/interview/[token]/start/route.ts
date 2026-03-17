@@ -225,7 +225,7 @@ export async function POST(
   const { data: settings } = await supabase
     .from("company_settings")
     .select(
-      "interview_duration_minutes, interview_style, interview_focus, interview_custom_instructions, interviewer_name"
+      "interview_duration_minutes, interview_style, interview_focus, interview_custom_instructions, interviewer_name, voice_agent_id"
     )
     .eq("company_id", job.company_id)
     .maybeSingle();
@@ -415,7 +415,7 @@ ${auBlock}`;
     },
     voice: {
       provider: "11labs",
-      voiceId: "EXAVITQu4vr4xnSDxMaL",
+      voiceId: settings?.voice_agent_id || "EXAVITQu4vr4xnSDxMaL",
       stability: 0.35,       // Lower = more natural variation in tone and pacing
       similarityBoost: 0.6,  // Lower = more expressive, less locked to one delivery
       style: 0.2,            // Slight style exaggeration for warmth

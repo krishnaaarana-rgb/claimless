@@ -164,6 +164,9 @@ export async function PATCH(request: NextRequest) {
   if (body.interviewer_name !== undefined) {
     updates.interviewer_name = body.interviewer_name || null;
   }
+  if (body.voice_agent_id !== undefined) {
+    updates.voice_agent_id = body.voice_agent_id || "EXAVITQu4vr4xnSDxMaL";
+  }
 
   // Email provider
   if (body.email_provider !== undefined) {

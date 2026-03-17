@@ -22,6 +22,7 @@ interface CompanySettings {
   interview_focus: string;
   interview_custom_instructions: string | null;
   interviewer_name: string | null;
+  voice_agent_id: string;
   email_provider: string;
   email_api_key: string | null;
   email_from_address: string | null;
@@ -713,6 +714,42 @@ function AIInterviewTab({ getValue, updateDraft }: TabProps) {
           placeholder="e.g., Sarah, Alex — leave blank for default"
         />
         <HelperText>The AI introduces itself with this name. Candidates see it in the interview and transcript.</HelperText>
+      </div>
+      <div>
+        <label className="block text-[13px] font-medium text-[#37352F] mb-2">Voice</label>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+          {[
+            { id: "EXAVITQu4vr4xnSDxMaL", name: "Sarah", desc: "Professional, confident", gender: "F" },
+            { id: "hpp4J3VqNfWAUOO0d1Us", name: "Bella", desc: "Bright, warm", gender: "F" },
+            { id: "cgSgspJ2msm6clMCkdW9", name: "Jessica", desc: "Playful, friendly", gender: "F" },
+            { id: "cjVigY5qzO86Huf0OWal", name: "Eric", desc: "Smooth, trustworthy", gender: "M" },
+            { id: "CwhRBWXzGAHq8TQ4Fs17", name: "Roger", desc: "Laid-back, casual", gender: "M" },
+            { id: "iP95p4xoKVk53GoZ742B", name: "Chris", desc: "Charming, down-to-earth", gender: "M" },
+          ].map((v) => {
+            const selected = (getValue("voice_agent_id") || "EXAVITQu4vr4xnSDxMaL") === v.id;
+            return (
+              <button
+                key={v.id}
+                type="button"
+                onClick={() => updateDraft("voice_agent_id", v.id)}
+                className={`text-left p-3 rounded-lg border transition-all ${
+                  selected
+                    ? "border-[#2383E2] bg-[#2383E2]/5"
+                    : "border-[#E9E9E7] hover:border-[#2383E2]/30"
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${v.gender === "F" ? "bg-pink-50 text-pink-600" : "bg-blue-50 text-blue-600"}`}>
+                    {v.gender}
+                  </span>
+                  <span className="text-[13px] font-medium text-[#37352F]">{v.name}</span>
+                </div>
+                <p className="text-[11px] text-[#9B9A97] mt-1">{v.desc}</p>
+              </button>
+            );
+          })}
+        </div>
+        <HelperText>The voice used for the AI interviewer. Changes apply to new interviews only.</HelperText>
       </div>
       <div>
         <div className="flex items-center justify-between mb-1.5">
