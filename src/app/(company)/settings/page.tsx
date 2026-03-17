@@ -746,13 +746,19 @@ function AIInterviewTab({ getValue, updateDraft }: TabProps) {
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      const existing = document.getElementById("voice-preview") as HTMLAudioElement;
-                      if (existing) { existing.pause(); existing.remove(); }
+                      // Stop any existing preview
+                      document.querySelectorAll(".voice-preview-audio").forEach((el) => {
+                        (el as HTMLAudioElement).pause();
+                        el.remove();
+                      });
                       const audio = document.createElement("audio");
-                      audio.id = "voice-preview";
+                      audio.className = "voice-preview-audio";
                       audio.src = v.preview;
+                      document.body.appendChild(audio);
                       audio.play();
-                      audio.onended = () => audio.remove();
+                      // Stop after 5 seconds
+                      setTimeout(() => { try { audio.pause(); audio.remove(); } catch {} }, 5000);
+                      audio.onended = () => { try { audio.remove(); } catch {} };
                     }}
                     className="ml-auto text-[10px] px-2 py-0.5 rounded border border-[#E9E9E7] text-[#9B9A97] hover:text-[#2383E2] hover:border-[#2383E2] transition-colors"
                   >
