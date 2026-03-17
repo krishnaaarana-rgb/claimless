@@ -259,6 +259,9 @@ function GeneralTab({ getValue, updateDraft }: TabProps) {
   const threshold = getValue("ats_pass_threshold") ?? 40;
   const autoReject = getValue("ats_auto_reject") ?? true;
   const autoInvite = getValue("auto_invite_interview") ?? false;
+  const [delayEnabled, setDelayEnabled] = useState(
+    () => (getValue("email_delay_minutes") ?? 0) > 0
+  );
   const accentColor = getValue("brand_accent_color") ?? "#2383E2";
   const logoUrl = getValue("brand_logo_url") ?? "";
   const tagline = getValue("brand_tagline") ?? "";
@@ -342,11 +345,14 @@ function GeneralTab({ getValue, updateDraft }: TabProps) {
                 </HelperText>
               </div>
               <Toggle
-                checked={(getValue("email_delay_minutes") ?? 0) > 0}
-                onChange={(on) => updateDraft("email_delay_minutes", on ? 60 : 0)}
+                checked={delayEnabled}
+                onChange={(on) => {
+                  setDelayEnabled(on);
+                  updateDraft("email_delay_minutes", on ? 60 : 0);
+                }}
               />
             </div>
-            {(getValue("email_delay_minutes") ?? 0) > 0 && (
+            {delayEnabled && (
               <div className="flex items-center gap-3 mt-3">
                 <div className="flex items-center gap-1.5">
                   <input
@@ -357,7 +363,7 @@ function GeneralTab({ getValue, updateDraft }: TabProps) {
                     onChange={(e) => {
                       const days = Math.max(0, Math.min(30, Number(e.target.value) || 0));
                       const currentHours = Math.floor(((getValue("email_delay_minutes") as number) % 1440) / 60);
-                      updateDraft("email_delay_minutes", days * 1440 + currentHours * 60);
+                      updateDraft("email_delay_minutes", Math.max(1, days * 1440 + currentHours * 60));
                     }}
                     className="w-14 rounded-lg border border-[#E9E9E7] px-2 py-1.5 text-[13px] text-[#37352F] text-center focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20"
                   />
@@ -372,7 +378,7 @@ function GeneralTab({ getValue, updateDraft }: TabProps) {
                     onChange={(e) => {
                       const hours = Math.max(0, Math.min(23, Number(e.target.value) || 0));
                       const currentDays = Math.floor((getValue("email_delay_minutes") as number) / 1440);
-                      updateDraft("email_delay_minutes", currentDays * 1440 + hours * 60);
+                      updateDraft("email_delay_minutes", Math.max(1, currentDays * 1440 + hours * 60));
                     }}
                     className="w-14 rounded-lg border border-[#E9E9E7] px-2 py-1.5 text-[13px] text-[#37352F] text-center focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20"
                   />
