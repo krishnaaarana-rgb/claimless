@@ -191,10 +191,8 @@ export async function PATCH(request: NextRequest) {
   }
 
   if (body.email_delay_minutes !== undefined) {
-    const delay = Number(body.email_delay_minutes);
-    if ([0, 15, 30, 60, 120, 240, 480].includes(delay)) {
-      updates.email_delay_minutes = delay;
-    }
+    const delay = Math.max(0, Math.min(43200, Math.round(Number(body.email_delay_minutes) || 0))); // 0 to 30 days max
+    updates.email_delay_minutes = delay;
   }
 
   if (Object.keys(updates).length === 0) {

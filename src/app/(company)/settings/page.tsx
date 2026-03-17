@@ -331,26 +331,55 @@ function GeneralTab({ getValue, updateDraft }: TabProps) {
 
           {/* Email delay */}
           <div>
-            <label className="block text-[13px] font-medium text-[#37352F]">
-              Email delay after screening
-            </label>
-            <HelperText>
-              Wait before sending screening result emails. Prevents candidates from
-              receiving instant rejections — makes the process feel more considered.
-            </HelperText>
-            <select
-              value={getValue("email_delay_minutes") ?? 60}
-              onChange={(e) => updateDraft("email_delay_minutes", Number(e.target.value))}
-              className="mt-1.5 rounded-lg border border-[#E9E9E7] px-3 py-2 text-[13px] text-[#37352F] bg-white focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20"
-            >
-              <option value={0}>Send immediately</option>
-              <option value={15}>15 minutes</option>
-              <option value={30}>30 minutes</option>
-              <option value={60}>1 hour</option>
-              <option value={120}>2 hours</option>
-              <option value={240}>4 hours</option>
-              <option value={480}>8 hours</option>
-            </select>
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="block text-[13px] font-medium text-[#37352F]">
+                  Delay screening emails
+                </label>
+                <HelperText>
+                  Wait before sending screening result emails. Prevents candidates from
+                  receiving instant rejections.
+                </HelperText>
+              </div>
+              <Toggle
+                checked={(getValue("email_delay_minutes") ?? 0) > 0}
+                onChange={(on) => updateDraft("email_delay_minutes", on ? 60 : 0)}
+              />
+            </div>
+            {(getValue("email_delay_minutes") ?? 0) > 0 && (
+              <div className="flex items-center gap-3 mt-3">
+                <div className="flex items-center gap-1.5">
+                  <input
+                    type="number"
+                    min={0}
+                    max={30}
+                    value={Math.floor((getValue("email_delay_minutes") as number) / 1440)}
+                    onChange={(e) => {
+                      const days = Math.max(0, Math.min(30, Number(e.target.value) || 0));
+                      const currentHours = Math.floor(((getValue("email_delay_minutes") as number) % 1440) / 60);
+                      updateDraft("email_delay_minutes", days * 1440 + currentHours * 60);
+                    }}
+                    className="w-14 rounded-lg border border-[#E9E9E7] px-2 py-1.5 text-[13px] text-[#37352F] text-center focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20"
+                  />
+                  <span className="text-[12px] text-[#9B9A97]">days</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <input
+                    type="number"
+                    min={0}
+                    max={23}
+                    value={Math.floor(((getValue("email_delay_minutes") as number) % 1440) / 60)}
+                    onChange={(e) => {
+                      const hours = Math.max(0, Math.min(23, Number(e.target.value) || 0));
+                      const currentDays = Math.floor((getValue("email_delay_minutes") as number) / 1440);
+                      updateDraft("email_delay_minutes", currentDays * 1440 + hours * 60);
+                    }}
+                    className="w-14 rounded-lg border border-[#E9E9E7] px-2 py-1.5 text-[13px] text-[#37352F] text-center focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20"
+                  />
+                  <span className="text-[12px] text-[#9B9A97]">hours</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
