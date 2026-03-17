@@ -106,7 +106,7 @@ function stageLabel(stage: string): string {
     case "interview_completed":
       return "Interviewed";
     case "hired":
-      return "Hired";
+      return "Shortlisted";
     case "rejected":
     case "stage_1_failed":
       return "Rejected";
@@ -151,7 +151,7 @@ const STATUS_OPTIONS = [
   { value: "stage_1_passed", label: "Passed" },
   { value: "interview_invited", label: "Interviewing" },
   { value: "interview_completed", label: "Interviewed" },
-  { value: "hired", label: "Hired" },
+  { value: "hired", label: "Shortlisted" },
   { value: "rejected", label: "Rejected" },
 ];
 
@@ -459,7 +459,7 @@ export default function JobDetailPage({
           { key: "passed", label: "Passed ATS", count: job.stage_counts.stage_1_passed || 0 },
           { key: "interviewing", label: "Interviewing", count: (job.stage_counts.interview_invited || 0) },
           { key: "interviewed", label: "Interviewed", count: job.stage_counts.interview_completed || 0 },
-          { key: "hired", label: "Hired", count: job.stage_counts.hired || 0 },
+          { key: "hired", label: "Shortlisted", count: job.stage_counts.hired || 0 },
         ];
         const maxCount = Math.max(...stages.map(s => s.count), 1);
         return (

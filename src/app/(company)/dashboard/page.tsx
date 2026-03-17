@@ -304,7 +304,7 @@ function JobCard({ job }: { job: JobRow }) {
           <PipelinePill label="New" count={applied} color="#9B9A97" />
           <PipelinePill label="Passed" count={passed} color="#059669" />
           <PipelinePill label="Interview" count={interviewing + interviewed} color="#2383E2" />
-          <PipelinePill label="Hired" count={hired} color="#16A34A" />
+          <PipelinePill label="Shortlisted" count={hired} color="#16A34A" />
           {rejected > 0 && <PipelinePill label="Rejected" count={rejected} color="#DC2626" />}
         </div>
 
@@ -351,7 +351,7 @@ function JobCard({ job }: { job: JobRow }) {
         <PipelinePill label="New" count={applied} color="#9B9A97" />
         <PipelinePill label="Passed" count={passed} color="#059669" />
         <PipelinePill label="IV" count={interviewing + interviewed} color="#2383E2" />
-        <PipelinePill label="Hired" count={hired} color="#16A34A" />
+        <PipelinePill label="Shortlisted" count={hired} color="#16A34A" />
       </div>
     </div>
   );

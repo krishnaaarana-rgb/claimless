@@ -90,7 +90,7 @@ const WEBHOOK_EVENTS: { value: string; label: string; description: string }[] = 
   { value: "candidate.interview_completed", label: "Interview Completed", description: "A voice interview is completed" },
   { value: "candidate.email_sent", label: "Email Sent", description: "An automated email is sent to a candidate" },
   { value: "candidate.rejected", label: "Candidate Rejected", description: "A candidate is rejected (manual or auto)" },
-  { value: "candidate.hired", label: "Candidate Hired", description: "A candidate is moved to hired" },
+  { value: "candidate.hired", label: "Candidate Shortlisted", description: "A candidate is moved to shortlisted" },
 ];
 
 /* ---------- helpers ---------- */

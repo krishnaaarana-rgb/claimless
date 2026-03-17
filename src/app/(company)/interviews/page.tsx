@@ -303,9 +303,9 @@ export default function InterviewsPage() {
             />
             <StatCard
               icon={<User size={14} className="text-emerald-500" />}
-              label="Hire Rate"
+              label="Shortlist Rate"
               value={scoredInterviews.length > 0 ? `${hireRate}%` : "--"}
-              sub={hireCount > 0 ? `${hireCount} strong hire / hire` : "No hires yet"}
+              sub={hireCount > 0 ? `${hireCount} strong hire / hire` : "None yet"}
             />
             <StatCard
               icon={<Clock size={14} className="text-amber-500" />}

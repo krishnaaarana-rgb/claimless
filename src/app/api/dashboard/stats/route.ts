@@ -232,7 +232,7 @@ export async function GET() {
         candidate: name,
         candidate_id: candidateId,
         job: jobTitle,
-        detail: "Hired",
+        detail: "Shortlisted",
         time: relativeTime(app.updated_at),
       });
     } else if (stage === "applied" || stage === "pending_review") {

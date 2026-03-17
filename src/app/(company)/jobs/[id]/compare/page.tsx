@@ -65,7 +65,7 @@ function stageLabel(stage: string): string {
     case "stage_1_passed": return "Passed";
     case "interview_invited": return "Interviewing";
     case "interview_completed": return "Interviewed";
-    case "hired": return "Hired";
+    case "hired": return "Shortlisted";
     case "rejected":
     case "stage_1_failed": return "Rejected";
     default: return stage;

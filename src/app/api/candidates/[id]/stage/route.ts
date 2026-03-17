@@ -92,7 +92,7 @@ export async function PATCH(
     new_stage: stage,
   });
 
-  // Also dispatch hired webhook if moving to hired
+  // Also dispatch shortlisted webhook if moving to hired/shortlisted
   if (stage === "hired") {
     dispatchWebhook(membership.company_id, "candidate.hired", {
       application_id,

@@ -8,7 +8,7 @@ const STAGE_ADVANCE_LABEL: Record<string, string> = {
   pending_review: "Pass ATS",
   stage_1_passed: "Invite to Interview",
   interview_invited: "Complete Interview",
-  interview_completed: "Hire",
+  interview_completed: "Shortlist",
 };
 
 const INVITE_ELIGIBLE_STAGES = ["applied", "pending_review", "stage_1_passed"];

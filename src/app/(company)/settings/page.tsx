@@ -59,7 +59,7 @@ const STAGE_KEYS = [
   { key: "stage_1_passed", label: "ATS passed stage" },
   { key: "interview_invited", label: "Interview invited stage" },
   { key: "interview_completed", label: "Interview completed stage" },
-  { key: "hired", label: "Hired stage" },
+  { key: "hired", label: "Shortlisted stage" },
   { key: "rejected", label: "Rejected stage" },
   { key: "pending_review", label: "Pending review stage" },
 ];

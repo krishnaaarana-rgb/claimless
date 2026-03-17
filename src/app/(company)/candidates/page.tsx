@@ -83,7 +83,7 @@ function stageLabel(stage: string): string {
     case "interview_completed":
       return "Interviewed";
     case "hired":
-      return "Hired";
+      return "Shortlisted";
     case "rejected":
     case "stage_1_failed":
       return "Rejected";
@@ -128,7 +128,7 @@ function stageChangeMessage(stage: string): string {
   switch (stage) {
     case "interview_invited": return "This will send an acceptance email with an interview link.";
     case "rejected": return "This will send a rejection email to the candidate.";
-    case "hired": return "This will mark the candidate as hired.";
+    case "hired": return "This will mark the candidate as shortlisted.";
     case "interview_completed": return "This will mark the interview as completed.";
     default: return "This will update the candidate's stage. No email will be sent.";
   }
@@ -191,7 +191,7 @@ const STATUS_OPTIONS = [
   { value: "stage_1_passed", label: "Passed" },
   { value: "interview_invited", label: "Interviewing" },
   { value: "interview_completed", label: "Interviewed" },
-  { value: "hired", label: "Hired" },
+  { value: "hired", label: "Shortlisted" },
   { value: "rejected", label: "Rejected" },
 ];
 
@@ -207,7 +207,7 @@ const STAGE_MOVES = [
   { value: "stage_1_passed", label: "Passed ATS" },
   { value: "interview_invited", label: "Interview Invited" },
   { value: "interview_completed", label: "Interviewed" },
-  { value: "hired", label: "Hired" },
+  { value: "hired", label: "Shortlisted" },
   { value: "rejected", label: "Rejected" },
 ];
 

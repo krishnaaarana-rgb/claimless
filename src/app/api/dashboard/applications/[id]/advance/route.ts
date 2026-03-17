@@ -55,7 +55,7 @@ export async function POST(
 
   if (application.current_stage === "hired") {
     return NextResponse.json(
-      { error: "Application is already hired" },
+      { error: "Application is already shortlisted" },
       { status: 400 }
     );
   }
