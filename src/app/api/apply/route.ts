@@ -3,6 +3,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { dispatchWebhook } from "@/lib/webhooks/dispatcher";
 import { checkRateLimit } from "@/lib/rate-limit";
 
+export const maxDuration = 300;
+
 export async function POST(request: NextRequest) {
   // Rate limit: 10 applications per minute per IP
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0] || "unknown";
@@ -182,15 +184,19 @@ export async function POST(request: NextRequest) {
     job_title: job.title,
   });
 
-  // 6. Fire-and-forget background ATS screening
+  // 6. Run ATS screening — await so it completes before function exits
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  fetch(`${baseUrl}/api/apply/screen`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ application_id: application.id }),
-  }).catch(() => {});
+  try {
+    await fetch(`${baseUrl}/api/apply/screen`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ application_id: application.id }),
+    });
+  } catch (screenErr) {
+    console.error("[apply] Screening trigger failed:", screenErr);
+  }
 
-  // 7. Return success immediately — candidate never waits for screening
+  // 7. Return success
   return NextResponse.json({
     success: true,
     application_id: application.id,
