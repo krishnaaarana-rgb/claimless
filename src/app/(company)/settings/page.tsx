@@ -385,23 +385,51 @@ function GeneralTab({ getValue, updateDraft }: TabProps) {
           </div>
           <div>
             <label className="block text-[13px] font-medium text-[#37352F] mb-1.5">
-              Logo URL
+              Logo
             </label>
-            <input
-              type="text"
-              value={logoUrl || ""}
-              onChange={(e) =>
-                updateDraft("brand_logo_url", e.target.value || null)
-              }
-              className="w-full rounded-lg border border-[#E9E9E7] px-4 py-2.5 text-[14px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2]"
-              placeholder="https://your-cdn.com/logo.png"
-            />
-            {logoUrl && (
-              <div className="mt-2 p-3 bg-[#F7F6F3] rounded-lg border border-[#E9E9E7] inline-block">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={logoUrl} alt="Logo preview" className="max-h-10 max-w-[200px] object-contain" />
-              </div>
-            )}
+            <div className="flex items-center gap-4">
+              {logoUrl ? (
+                <div className="p-3 bg-[#F7F6F3] rounded-lg border border-[#E9E9E7] inline-flex items-center gap-3">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={logoUrl} alt="Logo" className="max-h-10 max-w-[160px] object-contain" />
+                  <button
+                    type="button"
+                    onClick={() => updateDraft("brand_logo_url", null)}
+                    className="text-[#9B9A97] hover:text-red-500 transition-colors text-[14px]"
+                  >
+                    &times;
+                  </button>
+                </div>
+              ) : (
+                <label className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-dashed border-[#E9E9E7] text-[13px] text-[#9B9A97] hover:border-[#2383E2] hover:text-[#2383E2] transition-colors cursor-pointer">
+                  Upload logo
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/svg+xml,image/webp"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      if (file.size > 2 * 1024 * 1024) {
+                        alert("Logo must be under 2MB");
+                        return;
+                      }
+                      const fd = new FormData();
+                      fd.append("file", file);
+                      fd.append("bucket", "job-files");
+                      fd.append("path", "logos");
+                      const res = await fetch("/api/upload", { method: "POST", body: fd });
+                      if (res.ok) {
+                        const data = await res.json();
+                        updateDraft("brand_logo_url", data.url);
+                      }
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+              )}
+            </div>
+            <HelperText>PNG, JPG, SVG, or WebP. Max 2MB. Shows on candidate emails and shared pages.</HelperText>
           </div>
           <div>
             <label className="block text-[13px] font-medium text-[#37352F] mb-1.5">
