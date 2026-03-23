@@ -5,46 +5,42 @@ import { INDUSTRIES } from "@/lib/industry-skills";
 /**
  * POST /api/jobs/extract-skills
  * Extracts industry, skills, and metadata from a pasted job description.
- * Uses GPT-4o-mini for speed (this runs on paste, needs to be fast).
+ * Uses GPT-4o-mini for speed.
  */
 export async function POST(request: NextRequest) {
-  const { description } = await request.json();
+  try {
+    const { description } = await request.json();
 
-  if (!description || description.length < 50) {
-    return NextResponse.json({ error: "Description too short" }, { status: 400 });
-  }
+    if (!description || description.length < 50) {
+      return NextResponse.json({ error: "Description too short" }, { status: 400 });
+    }
 
-  // Build the list of known industries + skills for the prompt
-  const industryList = Object.entries(INDUSTRIES).map(([id, def]) => ({
-    id,
-    label: def.label,
-    skills: [...def.hard_skills.map((s) => s.name), ...def.soft_skills.map((s) => s.name)],
-    niches: def.sub_niches.map((n) => ({ id: n.id, label: n.label })),
-  }));
+    // Only send industry IDs + labels (not all skills — that bloats the prompt)
+    const industryIds = Object.entries(INDUSTRIES).map(([id, def]) => `${id} (${def.label})`).join(", ");
 
-  const systemPrompt = `You are an expert at parsing job descriptions. Extract structured data from the given JD.
+    const systemPrompt = `You parse job descriptions and extract structured data. Return valid JSON only, no markdown.
 
-Available industries and their predefined skills:
-${industryList.map((i) => `${i.id} (${i.label}): ${i.skills.join(", ")}\n  Niches: ${i.niches.map((n) => `${n.id}=${n.label}`).join(", ")}`).join("\n")}
+Available industry IDs: ${industryIds}
+
+Return this JSON structure:
+{
+  "industry": "one of the industry IDs above, or null",
+  "industry_niche": "optional sub-specialization string or null",
+  "skills": [
+    { "skill": "Skill Name", "category": "hard_skill|soft_skill|custom", "level": "basic|intermediate|advanced|expert", "required": true/false }
+  ],
+  "department": "string or null",
+  "location": "string or null"
+}
 
 Rules:
-- Pick the BEST matching industry from the list above
-- Pick a sub-niche if one clearly matches
-- Extract skills from the JD. For each skill:
-  - If it matches a predefined skill name (case-insensitive), use that exact name and set category to "hard_skill" or "soft_skill" based on the industry definition
-  - If it's a new skill not in the predefined list, set category to "custom"
-  - Set level based on context clues (e.g. "5+ years" = advanced/expert, "familiar with" = basic, "proficient" = intermediate)
-  - Set required=true if the JD says "must have", "required", "essential", etc. Otherwise false
-- Extract max 15 skills, prioritizing the most important ones
-- Also extract department and location if mentioned
+- Extract 5-15 skills from the JD, most important first
+- category: use "hard_skill" for technical/tools, "soft_skill" for behavioral, "custom" for domain-specific
+- level: "5+ years" → expert, "3+ years" → advanced, "experience with" → intermediate, "familiar" → basic
+- required: true if "must have", "required", "essential"; false otherwise`;
 
-Return valid JSON only, no markdown.`;
-
-  const userPrompt = `Extract skills from this job description:\n\n${description.slice(0, 6000)}`;
-
-  try {
     const result = await analyzeWithClaude<{
-      industry: string;
+      industry: string | null;
       industry_niche: string | null;
       skills: Array<{
         skill: string;
@@ -54,14 +50,14 @@ Return valid JSON only, no markdown.`;
       }>;
       department: string | null;
       location: string | null;
-    }>(systemPrompt, userPrompt, {
+    }>(systemPrompt, description.slice(0, 4000), {
       maxTokens: 1500,
       temperature: 0,
       model: "openai/gpt-4o-mini",
     });
 
-    // Validate industry exists
-    const industry = result.industry in INDUSTRIES ? result.industry : null;
+    // Validate industry exists in our taxonomy
+    const industry = result.industry && result.industry in INDUSTRIES ? result.industry : null;
 
     // Add weight to skills
     const skills = (result.skills || []).map((s, i) => ({
