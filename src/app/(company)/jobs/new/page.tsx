@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -161,27 +161,25 @@ export default function NewJobPage() {
     };
   };
 
-  const extractSkills = async (text: string) => {
-    if (text.length < 100 || extracting) return;
+  const extractSkills = async () => {
+    if (description.length < 50 || extracting) return;
     setExtracting(true);
     try {
       const res = await fetch("/api/jobs/extract-skills", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ description: text }),
+        body: JSON.stringify({ description }),
       });
       if (res.ok) {
         const data = await res.json();
-        if (data.industry && !industry) setIndustry(data.industry);
-        if (data.industry_niche && !industryNiche) setIndustryNiche(data.industry_niche);
-        if (data.skills?.length > 0 && skillRequirements.length === 0) {
-          setSkillRequirements(data.skills);
-        }
+        if (data.industry) setIndustry(data.industry);
+        if (data.industry_niche) setIndustryNiche(data.industry_niche);
+        if (data.skills?.length > 0) setSkillRequirements(data.skills);
         if (data.department && !department) setDepartment(data.department);
         if (data.location && !location) setLocation(data.location);
       }
     } catch {
-      // silent — skill extraction is best-effort
+      // silent
     } finally {
       setExtracting(false);
     }
@@ -386,36 +384,49 @@ export default function NewJobPage() {
             placeholder="Paste your full job description..."
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            onPaste={(e) => {
-              const pasted = e.clipboardData.getData("text");
-              if (pasted.length >= 100) {
-                // Let the paste complete first, then extract
-                setTimeout(() => extractSkills(pasted), 100);
-              }
-            }}
             rows={8}
             className="bg-background border-border resize-none"
           />
           <p className="text-[11px] text-muted-foreground">
-            {extracting ? (
-              <span className="text-[#2383E2] font-medium">Detecting skills from JD...</span>
-            ) : (
-              "Paste your full job description. Our AI will auto-detect skills, industry, and role details."
-            )}
+            Paste your full job description. Our AI will use this to screen
+            candidates and prepare interview questions.
           </p>
         </div>
       </div>
 
-      <IndustrySkillPicker
-        industry={industry}
-        industryNiche={industryNiche}
-        skills={skillRequirements}
-        onChange={({ industry: ind, industryNiche: niche, skills }) => {
-          setIndustry(ind);
-          setIndustryNiche(niche);
-          setSkillRequirements(skills);
-        }}
-      />
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <div />
+          <button
+            type="button"
+            disabled={description.length < 50 || extracting}
+            onClick={extractSkills}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-medium text-[#2383E2] border border-[#2383E2]/30 hover:bg-[#2383E2]/5 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {extracting ? (
+              <>
+                <span className="w-3 h-3 border-2 border-[#2383E2]/30 border-t-[#2383E2] rounded-full animate-spin" />
+                Detecting...
+              </>
+            ) : (
+              <>
+                <Sparkles size={13} />
+                Detect skills from JD
+              </>
+            )}
+          </button>
+        </div>
+        <IndustrySkillPicker
+          industry={industry}
+          industryNiche={industryNiche}
+          skills={skillRequirements}
+          onChange={({ industry: ind, industryNiche: niche, skills }) => {
+            setIndustry(ind);
+            setIndustryNiche(niche);
+            setSkillRequirements(skills);
+          }}
+        />
+      </div>
 
       {/* AI Interview Instructions */}
       <Section title="AI Interview Instructions" subtitle="Custom instructions for the voice interviewer on this job">

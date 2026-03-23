@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -110,6 +110,7 @@ export default function EditJobPage({
   const [customQuestions, setCustomQuestions] = useState<CustomQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [extracting, setExtracting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [dirty, setDirty] = useState(false);
@@ -192,6 +193,29 @@ export default function EditJobPage({
 
   const removeCustomQuestion = (idx: number) => {
     setCustomQuestions((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const extractSkills = async () => {
+    if (description.length < 50 || extracting) return;
+    setExtracting(true);
+    try {
+      const res = await fetch("/api/jobs/extract-skills", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ description }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.industry) setIndustry(data.industry);
+        if (data.industry_niche) setIndustryNiche(data.industry_niche);
+        if (data.skills?.length > 0) setSkillRequirements(data.skills);
+        setDirty(true);
+      }
+    } catch {
+      // silent
+    } finally {
+      setExtracting(false);
+    }
   };
 
   const handleSave = async () => {
@@ -308,6 +332,27 @@ export default function EditJobPage({
         </div>
       </div>
 
+      <div>
+        <div className="flex items-center justify-end mb-2">
+          <button
+            type="button"
+            disabled={description.length < 50 || extracting}
+            onClick={extractSkills}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-medium text-[#2383E2] border border-[#2383E2]/30 hover:bg-[#2383E2]/5 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {extracting ? (
+              <>
+                <span className="w-3 h-3 border-2 border-[#2383E2]/30 border-t-[#2383E2] rounded-full animate-spin" />
+                Detecting...
+              </>
+            ) : (
+              <>
+                <Sparkles size={13} />
+                Detect skills from JD
+              </>
+            )}
+          </button>
+        </div>
       <IndustrySkillPicker
         industry={industry}
         industryNiche={industryNiche}
@@ -318,6 +363,7 @@ export default function EditJobPage({
           setSkillRequirements(skills);
         }}
       />
+      </div>
 
       {/* AI Interview Instructions */}
       <Section title="AI Interview Instructions" subtitle="Custom instructions for the voice interviewer on this job">
