@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
+export const maxDuration = 300;
+
 interface VapiMessage {
   role: string;
   content?: string;
@@ -99,10 +101,11 @@ export async function POST(request: NextRequest) {
       )
       .join("\n\n");
 
-    // Fallback: if built transcript is missing interviewer lines, use Vapi's pre-built transcript
+    // Fallback: if built transcript is missing either side, use Vapi's pre-built transcript
     const hasInterviewerLines = transcriptText.includes("Interviewer:");
-    if (!hasInterviewerLines && transcript && typeof transcript === "string" && transcript.length > 0) {
-      console.log("[vapi-webhook] Built transcript missing interviewer lines, using Vapi transcript fallback");
+    const hasCandidateLines = transcriptText.includes("Candidate:");
+    if ((!hasInterviewerLines || !hasCandidateLines) && transcript && typeof transcript === "string" && transcript.length > 50) {
+      console.log(`[vapi-webhook] Built transcript incomplete (interviewer: ${hasInterviewerLines}, candidate: ${hasCandidateLines}), using Vapi transcript fallback`);
       transcriptText = transcript;
     }
 
@@ -136,21 +139,22 @@ export async function POST(request: NextRequest) {
       .eq("application_id", application.id)
       .in("status", ["pending", "active"]);
 
-    // Score the interview with Claude (fire and forget)
-    // ATS push happens INSIDE the score route after scoring completes,
-    // not here — avoids race condition where push fires before scores exist
+    // Score the interview with Claude — must await or Vercel kills it
     const baseUrl =
       process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    fetch(`${baseUrl}/api/interview/score`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        application_id: application.id,
-        company_id: application.jobs.company_id,
-      }),
-    }).catch((err) =>
-      console.error("[vapi-webhook] Score trigger failed:", err)
-    );
+    try {
+      const scoreRes = await fetch(`${baseUrl}/api/interview/score`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          application_id: application.id,
+          company_id: application.jobs.company_id,
+        }),
+      });
+      console.log("[vapi-webhook] Score trigger:", scoreRes.status);
+    } catch (err) {
+      console.error("[vapi-webhook] Score trigger failed:", err);
+    }
 
     // Dispatch webhook
     const { dispatchWebhook } = await import("@/lib/webhooks/dispatcher");

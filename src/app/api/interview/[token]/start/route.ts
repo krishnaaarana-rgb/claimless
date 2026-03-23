@@ -354,9 +354,11 @@ ${auBlock}`;
     voice: {
       provider: "11labs",
       voiceId: settings?.voice_agent_id || "EXAVITQu4vr4xnSDxMaL",
-      stability: 0.35,       // Lower = more natural variation in tone and pacing
-      similarityBoost: 0.6,  // Lower = more expressive, less locked to one delivery
-      style: 0.2,            // Slight style exaggeration for warmth
+      model: "eleven_turbo_v2_5",  // Optimized for low-latency streaming
+      stability: 0.5,        // Higher = more consistent audio, fewer dropouts
+      similarityBoost: 0.65,
+      style: 0,              // Disable style exaggeration — reduces audio artifacts
+      optimizeStreamingLatency: 3,  // 0-4, higher = faster but lower quality
     },
     firstMessage: interviewerName
       ? `Hey ${candidateName}! I'm ${interviewerName}. Thanks for jumping on, really appreciate you taking the time. So I've had a look at your background for the ${job.title} role${firstMessageContext} — looks like you've been busy! I'd love to just have a chat, keep it really casual. So yeah, to start us off, tell me a bit about yourself and what caught your eye about this one?`
@@ -371,7 +373,7 @@ ${auBlock}`;
     maxDurationSeconds: Math.min((duration + 2) * 60, 35 * 60),
     silenceTimeoutSeconds: 30,
     responseDelaySeconds: 0.8,   // Faster responses — more natural conversational pace
-    backchannelingEnabled: true,  // Re-enabled — GPT-5 won't interrupt like 4o-mini did
+    backchannelingEnabled: false,  // Disabled — was causing audio interruptions mid-sentence
     backgroundDenoisingEnabled: true,
     serverUrl: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/interview/webhook`,
     serverUrlSecret: process.env.VAPI_API_KEY,
