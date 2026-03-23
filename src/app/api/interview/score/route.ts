@@ -241,6 +241,21 @@ SCORING CALIBRATION:
       }
     }
 
+    // Clean up: delete the Vapi assistant now that scoring is done
+    // Recording URL is already saved in application_form_data by the webhook
+    const vapiAssistantId = formData?.vapi_assistant_id as string | undefined;
+    if (vapiAssistantId && process.env.VAPI_API_KEY) {
+      fetch(`https://api.vapi.ai/assistant/${vapiAssistantId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${process.env.VAPI_API_KEY}` },
+      })
+        .then((res) => {
+          if (res.ok) console.log("[interview-score] Deleted Vapi assistant:", vapiAssistantId);
+          else console.warn("[interview-score] Vapi assistant delete failed:", res.status);
+        })
+        .catch((err) => console.error("[interview-score] Vapi cleanup error:", err));
+    }
+
     return NextResponse.json({ success: true, scoring });
   } catch (error) {
     console.error("[interview-score] Error:", error);
