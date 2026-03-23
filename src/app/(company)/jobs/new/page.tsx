@@ -73,6 +73,7 @@ export default function NewJobPage() {
   const [jobFiles, setJobFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [extracting, setExtracting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<{ id: string; title: string } | null>(null);
   const [copied, setCopied] = useState(false);
@@ -123,6 +124,32 @@ export default function NewJobPage() {
       fields,
       custom_questions: customQuestions.filter((q) => q.question.trim()),
     };
+  };
+
+  const extractSkills = async (text: string) => {
+    if (text.length < 100 || extracting) return;
+    setExtracting(true);
+    try {
+      const res = await fetch("/api/jobs/extract-skills", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ description: text }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.industry && !industry) setIndustry(data.industry);
+        if (data.industry_niche && !industryNiche) setIndustryNiche(data.industry_niche);
+        if (data.skills?.length > 0 && skillRequirements.length === 0) {
+          setSkillRequirements(data.skills);
+        }
+        if (data.department && !department) setDepartment(data.department);
+        if (data.location && !location) setLocation(data.location);
+      }
+    } catch {
+      // silent — skill extraction is best-effort
+    } finally {
+      setExtracting(false);
+    }
   };
 
   const handleSubmit = async (status: "active" | "draft") => {
@@ -323,12 +350,22 @@ export default function NewJobPage() {
             placeholder="Paste your full job description..."
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            onPaste={(e) => {
+              const pasted = e.clipboardData.getData("text");
+              if (pasted.length >= 100) {
+                // Let the paste complete first, then extract
+                setTimeout(() => extractSkills(pasted), 100);
+              }
+            }}
             rows={8}
             className="bg-background border-border resize-none"
           />
           <p className="text-[11px] text-muted-foreground">
-            Paste your full job description. Our AI will use this to screen
-            candidates and prepare interview questions.
+            {extracting ? (
+              <span className="text-[#2383E2] font-medium">Detecting skills from JD...</span>
+            ) : (
+              "Paste your full job description. Our AI will auto-detect skills, industry, and role details."
+            )}
           </p>
         </div>
       </div>
