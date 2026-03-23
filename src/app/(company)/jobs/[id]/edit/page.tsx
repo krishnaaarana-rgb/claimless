@@ -3,12 +3,46 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import IndustrySkillPicker, { type SkillRequirement } from "@/components/IndustrySkillPicker";
 import { use } from "react";
+
+function Section({
+  title,
+  subtitle,
+  defaultOpen = false,
+  children,
+}: {
+  title: string;
+  subtitle?: string;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="bg-card border border-border rounded-lg overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-muted/30 transition-colors"
+      >
+        <div>
+          <h2 className="text-[14px] font-semibold text-foreground">{title}</h2>
+          {subtitle && <p className="text-[12px] text-muted-foreground mt-0.5">{subtitle}</p>}
+        </div>
+        <ChevronDown
+          size={16}
+          className={`text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      {open && <div className="px-6 pb-5 space-y-4 border-t border-border pt-4">{children}</div>}
+    </div>
+  );
+}
 
 const EMPLOYMENT_TYPES = [
   { value: "full_time", label: "Full-time" },
@@ -71,6 +105,7 @@ export default function EditJobPage({
   const [industry, setIndustry] = useState<string | null>(null);
   const [industryNiche, setIndustryNiche] = useState<string | null>(null);
   const [skillRequirements, setSkillRequirements] = useState<SkillRequirement[]>([]);
+  const [customInstructions, setCustomInstructions] = useState("");
   const [formFields, setFormFields] = useState<FormField[]>([]);
   const [customQuestions, setCustomQuestions] = useState<CustomQuestion[]>([]);
   const [loading, setLoading] = useState(true);
@@ -110,6 +145,7 @@ export default function EditJobPage({
         setIndustry(job.industry || null);
         setIndustryNiche(job.industry_niche || null);
         setSkillRequirements(job.skill_requirements || []);
+        setCustomInstructions(job.custom_instructions || "");
 
         // Parse form config
         const config = job.application_form_config;
@@ -189,6 +225,7 @@ export default function EditJobPage({
           industry: industry || null,
           industry_niche: industryNiche || null,
           skill_requirements: skillRequirements.length > 0 ? skillRequirements : null,
+          custom_instructions: customInstructions.trim() || null,
         }),
       });
       const data = await res.json();
@@ -282,7 +319,26 @@ export default function EditJobPage({
         }}
       />
 
-      <div className="bg-card border border-border rounded-lg p-6 space-y-5">
+      {/* AI Interview Instructions */}
+      <Section title="AI Interview Instructions" subtitle="Custom instructions for the voice interviewer on this job">
+        <div className="space-y-2">
+          <Label htmlFor="customInstructions">Custom instructions</Label>
+          <Textarea
+            id="customInstructions"
+            placeholder="e.g. Focus on system design questions. Ask about experience with distributed systems."
+            value={customInstructions}
+            onChange={(e) => { setCustomInstructions(e.target.value); setDirty(true); }}
+            rows={4}
+            className="bg-background border-border resize-none"
+          />
+          <p className="text-[11px] text-muted-foreground">
+            These instructions are injected into the AI interviewer&apos;s prompt for this job specifically.
+          </p>
+        </div>
+      </Section>
+
+      {/* Role Details */}
+      <Section title="Role Details" subtitle="Department, location, employment type">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="department">Department</Label>
@@ -355,11 +411,10 @@ export default function EditJobPage({
             Candidates must connect GitHub before starting the interview
           </span>
         </div>
-      </div>
+      </Section>
 
       {/* Application Form Configuration */}
-      <div className="bg-card border border-border rounded-lg p-6 space-y-4">
-        <h2 className="text-base font-semibold">Application Form</h2>
+      <Section title="Application Form" subtitle="Configure what candidates see when they apply">
         <div className="space-y-3">
           {formFields.map((field) => (
             <div
@@ -431,7 +486,7 @@ export default function EditJobPage({
             </button>
           )}
         </div>
-      </div>
+      </Section>
 
       {error && (
         <div className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2">

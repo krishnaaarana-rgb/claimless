@@ -30,7 +30,7 @@ export async function POST(
     // Successfully claimed — fetch full data
     const { data: fullToken } = await supabase
       .from("interview_tokens")
-      .select("*, applications(*, candidates(*), jobs(id, title, description, company_id, industry, industry_niche, skill_requirements, industry_interview_context, employment_type))")
+      .select("*, applications(*, candidates(*), jobs(id, title, description, company_id, industry, industry_niche, skill_requirements, industry_interview_context, employment_type, custom_instructions))")
       .eq("id", claimedTokens[0].id)
       .single();
     tokenData = fullToken;
@@ -38,7 +38,7 @@ export async function POST(
     // Claim failed — check why (already active for reconnection, or invalid)
     const { data: existingToken } = await supabase
       .from("interview_tokens")
-      .select("*, applications(*, candidates(*), jobs(id, title, description, company_id, industry, industry_niche, skill_requirements, industry_interview_context, employment_type))")
+      .select("*, applications(*, candidates(*), jobs(id, title, description, company_id, industry, industry_niche, skill_requirements, industry_interview_context, employment_type, custom_instructions))")
       .eq("token", token)
       .maybeSingle();
 
@@ -76,6 +76,7 @@ export async function POST(
       skill_requirements: SkillRequirement[] | null;
       industry_interview_context: string | null;
       employment_type: string | null;
+      custom_instructions: string | null;
     };
   };
 
@@ -263,7 +264,7 @@ export async function POST(
       duration_minutes: duration,
       style,
       focus,
-      custom_instructions: settings?.interview_custom_instructions || undefined,
+      custom_instructions: [job.custom_instructions, settings?.interview_custom_instructions].filter(Boolean).join("\n") || undefined,
     },
     region: "AU" as const,
   };
@@ -365,7 +366,7 @@ ${strengths.length > 0 ? `VERIFIED STRENGTHS: ${strengths.join(", ")}` : ""}
 ${concerns.length > 0 ? `CONCERNS TO PROBE: ${concerns.join(", ")}` : ""}
 ${interviewTopics.length > 0 ? `SUGGESTED TOPICS: ${interviewTopics.join(", ")}` : ""}
 
-${settings?.interview_custom_instructions ? `ADDITIONAL INSTRUCTIONS:\n${settings.interview_custom_instructions}` : ""}
+${[job.custom_instructions, settings?.interview_custom_instructions].filter(Boolean).length > 0 ? `ADDITIONAL INSTRUCTIONS:\n${[job.custom_instructions, settings?.interview_custom_instructions].filter(Boolean).join("\n")}` : ""}
 
 CONVERSATIONAL STYLE:
 - CRITICAL: Keep responses SHORT. 1-3 sentences max. This is a conversation, not a lecture. Never speak in paragraphs. Ask ONE thing, then shut up and listen.

@@ -3,12 +3,46 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import IndustrySkillPicker, { type SkillRequirement } from "@/components/IndustrySkillPicker";
 import { TemplatePicker } from "@/components/template-picker";
+
+function Section({
+  title,
+  subtitle,
+  defaultOpen = false,
+  children,
+}: {
+  title: string;
+  subtitle?: string;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="bg-card border border-border rounded-lg overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-muted/30 transition-colors"
+      >
+        <div>
+          <h2 className="text-[14px] font-semibold text-foreground">{title}</h2>
+          {subtitle && <p className="text-[12px] text-muted-foreground mt-0.5">{subtitle}</p>}
+        </div>
+        <ChevronDown
+          size={16}
+          className={`text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      {open && <div className="px-6 pb-5 space-y-4 border-t border-border pt-4">{children}</div>}
+    </div>
+  );
+}
 
 const EMPLOYMENT_TYPES = [
   { value: "full_time", label: "Full-time" },
@@ -70,6 +104,7 @@ export default function NewJobPage() {
   const [industry, setIndustry] = useState<string | null>(null);
   const [industryNiche, setIndustryNiche] = useState<string | null>(null);
   const [skillRequirements, setSkillRequirements] = useState<SkillRequirement[]>([]);
+  const [customInstructions, setCustomInstructions] = useState("");
   const [jobFiles, setJobFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
@@ -193,6 +228,7 @@ export default function NewJobPage() {
           industry: industry || null,
           industry_niche: industryNiche || null,
           skill_requirements: skillRequirements.length > 0 ? skillRequirements : null,
+          custom_instructions: customInstructions.trim() || null,
           attachments: uploadedFiles.length > 0 ? uploadedFiles : null,
           status,
         }),
@@ -370,44 +406,6 @@ export default function NewJobPage() {
         </div>
       </div>
 
-      {/* Role Brief / Attachments */}
-      <div className="space-y-2">
-        <Label>Attachments <span className="text-muted-foreground font-normal">(optional)</span></Label>
-        <p className="text-[12px] text-muted-foreground">
-          Upload role briefs, org charts, team structure docs, or any files that help the AI interviewer understand the role better.
-        </p>
-        {jobFiles.map((f, i) => (
-          <div key={i} className="flex items-center gap-2 text-[13px]">
-            <span className="flex-1 truncate">{f.name}</span>
-            <span className="text-[11px] text-muted-foreground">{(f.size / 1024).toFixed(0)}KB</span>
-            <button
-              type="button"
-              onClick={() => setJobFiles((prev) => prev.filter((_, j) => j !== i))}
-              className="text-muted-foreground hover:text-destructive transition-colors"
-            >
-              &times;
-            </button>
-          </div>
-        ))}
-        {jobFiles.length < 5 && (
-          <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-medium border border-dashed border-border text-muted-foreground hover:border-primary hover:text-primary transition-colors cursor-pointer">
-            + Add file
-            <input
-              type="file"
-              accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file && file.size <= 10 * 1024 * 1024 && jobFiles.length < 5) {
-                  setJobFiles((prev) => [...prev, file]);
-                }
-                e.target.value = "";
-              }}
-            />
-          </label>
-        )}
-      </div>
-
       <IndustrySkillPicker
         industry={industry}
         industryNiche={industryNiche}
@@ -419,7 +417,26 @@ export default function NewJobPage() {
         }}
       />
 
-      <div className="bg-card border border-border rounded-lg p-6 space-y-5">
+      {/* AI Interview Instructions */}
+      <Section title="AI Interview Instructions" subtitle="Custom instructions for the voice interviewer on this job">
+        <div className="space-y-2">
+          <Label htmlFor="customInstructions">Custom instructions</Label>
+          <Textarea
+            id="customInstructions"
+            placeholder="e.g. Focus on system design questions. Ask about experience with distributed systems. Probe for leadership examples."
+            value={customInstructions}
+            onChange={(e) => setCustomInstructions(e.target.value)}
+            rows={4}
+            className="bg-background border-border resize-none"
+          />
+          <p className="text-[11px] text-muted-foreground">
+            These instructions are injected into the AI interviewer&apos;s prompt for this job specifically. Company-wide instructions from Settings also apply.
+          </p>
+        </div>
+      </Section>
+
+      {/* Role Details */}
+      <Section title="Role Details" subtitle="Department, location, employment type">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="department">Department</Label>
@@ -494,17 +511,44 @@ export default function NewJobPage() {
             Candidates must connect GitHub before starting the interview
           </span>
         </div>
-      </div>
+      </Section>
+
+      {/* Attachments */}
+      <Section title="Attachments" subtitle="Role briefs, org charts, or supporting docs">
+        {jobFiles.map((f, i) => (
+          <div key={i} className="flex items-center gap-2 text-[13px]">
+            <span className="flex-1 truncate">{f.name}</span>
+            <span className="text-[11px] text-muted-foreground">{(f.size / 1024).toFixed(0)}KB</span>
+            <button
+              type="button"
+              onClick={() => setJobFiles((prev) => prev.filter((_, j) => j !== i))}
+              className="text-muted-foreground hover:text-destructive transition-colors"
+            >
+              &times;
+            </button>
+          </div>
+        ))}
+        {jobFiles.length < 5 && (
+          <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-medium border border-dashed border-border text-muted-foreground hover:border-primary hover:text-primary transition-colors cursor-pointer">
+            + Add file
+            <input
+              type="file"
+              accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file && file.size <= 10 * 1024 * 1024 && jobFiles.length < 5) {
+                  setJobFiles((prev) => [...prev, file]);
+                }
+                e.target.value = "";
+              }}
+            />
+          </label>
+        )}
+      </Section>
 
       {/* Application Form Configuration */}
-      <div className="bg-card border border-border rounded-lg p-6 space-y-4">
-        <div>
-          <h2 className="text-base font-semibold">Application Form</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Configure what candidates see when they apply
-          </p>
-        </div>
-
+      <Section title="Application Form" subtitle="Configure what candidates see when they apply">
         <div className="space-y-3">
           {formFields.map((field) => (
             <div
@@ -681,7 +725,7 @@ export default function NewJobPage() {
             </button>
           )}
         </div>
-      </div>
+      </Section>
 
       {error && (
         <div className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2">

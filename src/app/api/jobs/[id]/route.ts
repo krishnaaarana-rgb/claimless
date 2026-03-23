@@ -152,6 +152,7 @@ export async function PATCH(
     "industry",
     "industry_niche",
     "skill_requirements",
+    "custom_instructions",
     "attachments",
   ];
   for (const key of allowed) {
