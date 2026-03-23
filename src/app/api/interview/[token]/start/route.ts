@@ -26,7 +26,9 @@ export async function POST(
 
   // If no rows updated, either token doesn't exist, is already claimed, or expired
   let tokenData;
+  let freshClaim = false;
   if (claimedTokens && claimedTokens.length > 0) {
+    freshClaim = true;
     // Successfully claimed — fetch full data
     const { data: fullToken } = await supabase
       .from("interview_tokens")
@@ -83,9 +85,9 @@ export async function POST(
   const candidate = application.candidates;
   const job = application.jobs;
 
-  // 2. If token is already active AND interview not yet completed, allow reconnection
+  // 2. If token was ALREADY active (not freshly claimed) AND interview not yet completed, allow reconnection
   const appStage = (application as unknown as { current_stage: string }).current_stage;
-  if (tokenData.status === "active" && appStage !== "interview_completed") {
+  if (!freshClaim && tokenData.status === "active" && appStage !== "interview_completed") {
     const existingAssistantId = application.application_form_data?.vapi_assistant_id as string | undefined;
     if (existingAssistantId) {
       const { data: settings } = await supabase
