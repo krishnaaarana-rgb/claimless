@@ -7,6 +7,7 @@ import { ActionButtons } from "./action-buttons";
 import { NotesSection } from "./notes-section";
 import { ShareButton } from "./share-button";
 import { FileDownloadRow } from "./file-download";
+import { TranscriptDownload } from "./transcript-download";
 
 interface ATSScreeningResult {
   match_score: number;
@@ -608,20 +609,7 @@ export default async function CandidateDetailPage({
               </summary>
               <div className="mt-3">
                 <div className="flex justify-end mb-2">
-                  <button
-                    onClick={() => {
-                      const blob = new Blob([interviewTranscript], { type: "text/plain" });
-                      const url = URL.createObjectURL(blob);
-                      const a = document.createElement("a");
-                      a.href = url;
-                      a.download = `transcript-${candidate.full_name || "candidate"}.txt`;
-                      a.click();
-                      URL.revokeObjectURL(url);
-                    }}
-                    className="text-[12px] font-medium text-[#9B9A97] hover:text-[#2383E2] transition-colors"
-                  >
-                    Download .txt
-                  </button>
+                  <TranscriptDownload transcript={interviewTranscript} candidateName={candidate.full_name || "candidate"} />
                 </div>
                 <pre className="p-4 bg-[#F7F6F3] rounded-lg text-[12px] text-[#9B9A97] whitespace-pre-wrap leading-relaxed max-h-[400px] overflow-y-auto border border-[#E9E9E7]">
                   {interviewTranscript}
