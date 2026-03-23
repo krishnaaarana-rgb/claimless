@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-export const maxDuration = 300;
+export const maxDuration = 30;
 
 interface VapiMessage {
   role: string;
@@ -139,22 +139,21 @@ export async function POST(request: NextRequest) {
       .eq("application_id", application.id)
       .in("status", ["pending", "active"]);
 
-    // Score the interview with Claude — must await or Vercel kills it
+    // Trigger scoring — fire and forget (best effort).
+    // If this fails or Vercel kills it, the cron at /api/cron/score-interviews
+    // picks up unscored interviews every 2 minutes as a safety net.
     const baseUrl =
       process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    try {
-      const scoreRes = await fetch(`${baseUrl}/api/interview/score`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          application_id: application.id,
-          company_id: application.jobs.company_id,
-        }),
-      });
-      console.log("[vapi-webhook] Score trigger:", scoreRes.status);
-    } catch (err) {
-      console.error("[vapi-webhook] Score trigger failed:", err);
-    }
+    fetch(`${baseUrl}/api/interview/score`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        application_id: application.id,
+        company_id: application.jobs.company_id,
+      }),
+    }).catch((err) =>
+      console.error("[vapi-webhook] Score trigger failed:", err)
+    );
 
     // Dispatch webhook
     const { dispatchWebhook } = await import("@/lib/webhooks/dispatcher");
