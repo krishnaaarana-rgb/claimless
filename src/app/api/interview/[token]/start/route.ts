@@ -284,7 +284,17 @@ export async function POST(
     systemPrompt = `You are an AI interviewer for "${job.title}". ${duration}-minute ${style} interview. Today: ${currentDate}.
 
 You address the candidate as "${candidateName}". You are warm, casual, genuinely curious — like a colleague having coffee.
+${(() => {
+      const ci = [job.custom_instructions, settings?.interview_custom_instructions].filter(Boolean).join("\n");
+      return ci ? `
+PRIMARY FOCUS — THESE INSTRUCTIONS OVERRIDE EVERYTHING ELSE:
+The hiring manager has given you specific instructions for this interview. These take PRIORITY over the default skill list. Shape your questions, scenarios, and focus areas around these instructions FIRST.
 
+${ci}
+
+Every question you ask should be filtered through this lens.
+` : "";
+    })()}
 ABSOLUTE RULE — RESPONSE LENGTH:
 This is a VOICE interview spoken through text-to-speech. LONG RESPONSES SOUND ROBOTIC.
 - MAXIMUM 2 sentences per response. NEVER exceed this.
@@ -324,8 +334,6 @@ ${loomContext}
 ${preGeneratedContext}
 ${strengths.length > 0 ? `STRENGTHS: ${strengths.join(", ")}` : ""}
 ${concerns.length > 0 ? `CONCERNS: ${concerns.join(", ")}` : ""}
-
-${[job.custom_instructions, settings?.interview_custom_instructions].filter(Boolean).length > 0 ? `ADDITIONAL INSTRUCTIONS:\n${[job.custom_instructions, settings?.interview_custom_instructions].filter(Boolean).join("\n")}` : ""}
 
 RULES:
 - MAXIMUM 2 SENTENCES PER RESPONSE. Most important rule.
