@@ -368,7 +368,7 @@ export default function IndustrySkillPicker({
 
           {/* ── Added Skills List ── */}
           {skills.length > 0 && (
-            <div className="mb-3 space-y-0 rounded-lg border border-[#E9E9E7] overflow-hidden">
+            <div className="mb-3 space-y-0 rounded-lg border border-[#E9E9E7]">
               {skills.map((skill, idx) => (
                 <div
                   key={`${skill.skill}-${idx}`}
@@ -380,8 +380,8 @@ export default function IndustrySkillPicker({
                   }}
                   onDragEnd={handleDragEnd}
                   className={`group flex items-center gap-2 px-3 py-2 transition-colors ${
-                    idx > 0 ? "border-t border-[#E9E9E7]" : ""
-                  } ${dragOverIdx === idx ? "bg-blue-50/50" : "bg-white hover:bg-white"}`}
+                    idx > 0 ? "border-t border-[#E9E9E7]" : "rounded-t-lg"
+                  } ${idx === skills.length - 1 ? "rounded-b-lg" : ""} ${dragOverIdx === idx ? "bg-blue-50/50" : "bg-white hover:bg-white"}`}
                   style={{ cursor: "grab" }}
                 >
                   {/* Drag handle */}
