@@ -146,7 +146,10 @@ export async function POST(request: NextRequest) {
       process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
     fetch(`${baseUrl}/api/interview/score`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...(process.env.INTERNAL_API_SECRET && { "x-internal-secret": process.env.INTERNAL_API_SECRET }),
+      },
       body: JSON.stringify({
         application_id: application.id,
         company_id: application.jobs.company_id,

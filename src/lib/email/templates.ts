@@ -5,16 +5,33 @@ interface TemplateVars {
   interview_link?: string;
 }
 
+/** Escape HTML special characters to prevent XSS */
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+/** Strip {{...}} patterns from a value to prevent template variable injection */
+function sanitizeTemplateValue(value: string): string {
+  return value.replace(/\{\{.*?\}\}/g, "");
+}
+
 // Replace {{variable}} placeholders with actual values
 export function renderTemplate(template: string, vars: TemplateVars): string {
   let result = template;
-  result = result.replace(/\{\{candidate_name\}\}/g, vars.candidate_name);
-  result = result.replace(/\{\{job_title\}\}/g, vars.job_title);
-  result = result.replace(/\{\{company_name\}\}/g, vars.company_name);
-  result = result.replace(
-    /\{\{interview_link\}\}/g,
-    vars.interview_link || "#"
-  );
+  const safeName = sanitizeTemplateValue(vars.candidate_name);
+  const safeTitle = sanitizeTemplateValue(vars.job_title);
+  const safeCompany = sanitizeTemplateValue(vars.company_name);
+  const safeLink = sanitizeTemplateValue(vars.interview_link || "#");
+
+  result = result.replace(/\{\{candidate_name\}\}/g, safeName);
+  result = result.replace(/\{\{job_title\}\}/g, safeTitle);
+  result = result.replace(/\{\{company_name\}\}/g, safeCompany);
+  result = result.replace(/\{\{interview_link\}\}/g, safeLink);
   return result;
 }
 
@@ -36,10 +53,15 @@ export function textToHtml(
     )
     .join("");
 
+  const safeLogoUrl = options?.logoUrl ? escapeHtml(options.logoUrl) : "";
+  const safeCompanyName = options?.companyName
+    ? escapeHtml(options.companyName)
+    : "";
+
   const logoHtml = options?.logoUrl
-    ? `<div style="margin-bottom: 24px;"><img src="${options.logoUrl}" alt="${options.companyName || ""}" style="max-height: 40px; max-width: 200px;" /></div>`
+    ? `<div style="margin-bottom: 24px;"><img src="${safeLogoUrl}" alt="${safeCompanyName}" style="max-height: 40px; max-width: 200px;" /></div>`
     : options?.companyName
-      ? `<div style="margin-bottom: 24px; font-size: 18px; font-weight: 600; color: ${options.accentColor || "#1C1917"};">${options.companyName}</div>`
+      ? `<div style="margin-bottom: 24px; font-size: 18px; font-weight: 600; color: ${options.accentColor || "#1C1917"};">${safeCompanyName}</div>`
       : "";
 
   return `

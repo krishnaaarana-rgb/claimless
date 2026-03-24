@@ -12,7 +12,7 @@ export const maxDuration = 300;
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
   const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -32,10 +32,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ processed: 0 });
   }
 
-  // Filter to only unscored ones with transcripts
+  // Filter to only unscored ones with transcripts (skip if scoring already in progress)
   const unscored = applications.filter((app) => {
     const fd = app.application_form_data as Record<string, unknown> | null;
-    return fd?.interview_transcript && !fd?.interview_scoring;
+    return fd?.interview_transcript && !fd?.interview_scoring && !fd?.scoring_in_progress;
   });
 
   if (unscored.length === 0) {
@@ -53,7 +53,10 @@ export async function GET(request: NextRequest) {
     try {
       const res = await fetch(`${baseUrl}/api/interview/score`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(process.env.INTERNAL_API_SECRET && { "x-internal-secret": process.env.INTERNAL_API_SECRET }),
+        },
         body: JSON.stringify({
           application_id: app.id,
           company_id: companyId,

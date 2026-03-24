@@ -37,19 +37,24 @@ export async function sendATSNotification(
     return;
   }
 
-  // Deduplicate: check if this application already had this type of email sent
+  // Deduplicate: check if this application already had this type of email sent or is being processed.
+  // When called from cron (immediate=true), the cron already set the scheduled row to "processing",
+  // so we only check for "sent" to avoid a false dedup hit on the cron's own row.
+  // When called directly (immediate=false), also check "processing" to prevent race conditions
+  // where two direct calls overlap.
   const emailType = input.passed ? "acceptance" : "rejection";
+  const dedupStatuses = input.immediate ? ["sent"] : ["sent", "processing", "pending"];
   const { data: existingEmail } = await supabase
     .from("email_logs")
     .select("id")
     .eq("application_id", input.applicationId)
     .eq("email_type", emailType)
-    .eq("status", "sent")
+    .in("status", dedupStatuses)
     .limit(1)
     .maybeSingle();
 
-  if (existingEmail && !input.immediate) {
-    console.log("[notify] Email already sent for this application, skipping:", input.candidateEmail);
+  if (existingEmail) {
+    console.log("[notify] Email already sent/processing for this application, skipping:", input.candidateEmail);
     return;
   }
 

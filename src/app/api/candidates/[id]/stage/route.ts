@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { dispatchWebhook } from "@/lib/webhooks/dispatcher";
+import { getMembership, hasMinRole } from "@/lib/auth/permissions";
 
 const VALID_STAGES = [
   "applied",
@@ -31,15 +32,15 @@ export async function PATCH(
 
   const admin = createAdminClient();
 
-  // Verify membership
-  const { data: membership } = await admin
-    .from("company_users")
-    .select("company_id")
-    .eq("user_id", user.id)
-    .single();
+  // Verify membership and role
+  const membership = await getMembership(user.id);
 
   if (!membership) {
     return NextResponse.json({ error: "No company found" }, { status: 404 });
+  }
+
+  if (!hasMinRole(membership.role, "member")) {
+    return NextResponse.json({ error: "Insufficient permissions" }, { status: 403 });
   }
 
   const body = await request.json();
@@ -64,7 +65,7 @@ export async function PATCH(
     .from("applications")
     .select("current_stage, candidates(full_name, email), jobs(title)")
     .eq("id", application_id)
-    .eq("company_id", membership.company_id)
+    .eq("company_id", membership.companyId)
     .single();
 
   // Update the application stage
@@ -72,7 +73,7 @@ export async function PATCH(
     .from("applications")
     .update({ current_stage: stage, updated_at: new Date().toISOString() })
     .eq("id", application_id)
-    .eq("company_id", membership.company_id);
+    .eq("company_id", membership.companyId);
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -82,7 +83,7 @@ export async function PATCH(
   const candidate = currentApp?.candidates as unknown as { full_name: string; email: string } | null;
   const job = currentApp?.jobs as unknown as { title: string } | null;
 
-  dispatchWebhook(membership.company_id, "candidate.stage_changed", {
+  dispatchWebhook(membership.companyId, "candidate.stage_changed", {
     application_id,
     candidate_id: id,
     candidate_name: candidate?.full_name,
@@ -94,7 +95,7 @@ export async function PATCH(
 
   // Also dispatch shortlisted webhook if moving to hired/shortlisted
   if (stage === "hired") {
-    dispatchWebhook(membership.company_id, "candidate.hired", {
+    dispatchWebhook(membership.companyId, "candidate.hired", {
       application_id,
       candidate_id: id,
       candidate_name: candidate?.full_name,

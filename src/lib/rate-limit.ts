@@ -31,9 +31,12 @@ export async function checkRateLimit(
   try {
     const redisKey = `rate:${key}`;
 
-    // INCR + TTL in a single pipeline
+    // INCR + EXPIRE + TTL in a single pipeline to avoid race conditions.
+    // Always set EXPIRE after INCR so the key can never persist forever
+    // if the process dies between commands.
     const pipeline = [
       ["INCR", redisKey],
+      ["EXPIRE", redisKey, windowSeconds],
       ["TTL", redisKey],
     ];
 
@@ -52,15 +55,7 @@ export async function checkRateLimit(
 
     const results = await res.json();
     const count = results[0]?.result || 1;
-    const ttl = results[1]?.result || -1;
-
-    // Set expiry on first request
-    if (ttl === -1) {
-      await fetch(`${UPSTASH_URL}/EXPIRE/${redisKey}/${windowSeconds}`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` },
-      });
-    }
+    const ttl = results[2]?.result || windowSeconds;
 
     return {
       allowed: count <= limit,

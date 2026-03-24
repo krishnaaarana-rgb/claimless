@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { buildInterviewScoringPrompt } from "@/lib/claude/prompts/industry-interview";
+import { validateInternalRequest } from "@/lib/auth/internal";
 import type { SkillRequirement } from "@/types/industry-skills";
 
 export const maxDuration = 120;
@@ -8,6 +9,11 @@ export const maxDuration = 120;
 const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
 
 export async function POST(request: NextRequest) {
+  // Authenticate: only allow internal callers
+  if (!validateInternalRequest(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const body = await request.json();
   const { application_id } = body;
   const supabase = createAdminClient();
@@ -30,6 +36,16 @@ export async function POST(request: NextRequest) {
     string,
     unknown
   > | null;
+
+  // Idempotency guard: if scoring is already in progress, return early
+  if (formData?.scoring_in_progress) {
+    console.log("[interview-score] Scoring already in progress for:", application_id);
+    return NextResponse.json(
+      { error: "Scoring already in progress", already_in_progress: true },
+      { status: 409 }
+    );
+  }
+
   const transcript = formData?.interview_transcript as string | undefined;
 
   if (!transcript) {
@@ -38,6 +54,29 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     );
   }
+
+  // Set scoring_in_progress flag before LLM call
+  await supabase
+    .from("applications")
+    .update({
+      application_form_data: {
+        ...(formData || {}),
+        scoring_in_progress: true,
+      },
+    })
+    .eq("id", application.id);
+
+  // Helper to clear the flag on any error path
+  const clearScoringFlag = () =>
+    supabase
+      .from("applications")
+      .update({
+        application_form_data: {
+          ...(formData || {}),
+          scoring_in_progress: false,
+        },
+      })
+      .eq("id", application.id);
 
   const job = application.jobs as unknown as {
     title: string;
@@ -178,6 +217,7 @@ SCORING CALIBRATION:
 
     if (!response.ok) {
       console.error("[interview-score] OpenRouter error:", response.status, JSON.stringify(data).slice(0, 300));
+      await clearScoringFlag();
       return NextResponse.json({ error: "Scoring API error: " + response.status }, { status: 500 });
     }
 
@@ -194,6 +234,7 @@ SCORING CALIBRATION:
     const jsonMatch = content.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       console.error("[interview-score] No JSON found in response. Full content:", content.slice(0, 500));
+      await clearScoringFlag();
       return NextResponse.json(
         { error: "Failed to parse score" },
         { status: 500 }
@@ -225,6 +266,7 @@ SCORING CALIBRATION:
           );
         } catch (innerErr) {
           console.error("[interview-score] All parse attempts failed. Raw:", jsonMatch[0].slice(0, 500));
+          await clearScoringFlag();
           return NextResponse.json({ error: "Failed to parse scoring JSON" }, { status: 500 });
         }
       }
@@ -255,7 +297,7 @@ SCORING CALIBRATION:
     if (!Array.isArray(scoring.areas_for_improvement)) scoring.areas_for_improvement = [];
     if (!Array.isArray(scoring.skill_assessments)) scoring.skill_assessments = [];
 
-    // Store scoring results
+    // Store scoring results and clear scoring_in_progress flag
     await supabase
       .from("applications")
       .update({
@@ -264,6 +306,7 @@ SCORING CALIBRATION:
           interview_scoring: scoring,
           interview_scored_at: new Date().toISOString(),
           interview_scoring_model: "anthropic/claude-sonnet-4-6",
+          scoring_in_progress: false,
         },
       })
       .eq("id", application.id);
@@ -304,6 +347,8 @@ SCORING CALIBRATION:
     return NextResponse.json({ success: true, scoring });
   } catch (error) {
     console.error("[interview-score] Error:", error);
+    // Clear scoring_in_progress flag so it can be retried
+    await clearScoringFlag();
     return NextResponse.json({ error: "Scoring failed" }, { status: 500 });
   }
 }

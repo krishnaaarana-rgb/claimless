@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendATSNotification } from "@/lib/email/notifications";
 import { dispatchWebhook } from "@/lib/webhooks/dispatcher";
+import { getMembership, hasMinRole } from "@/lib/auth/permissions";
 
 export async function POST(
   _request: NextRequest,
@@ -22,15 +23,15 @@ export async function POST(
 
   const admin = createAdminClient();
 
-  // Get user's company
-  const { data: membership } = await admin
-    .from("company_users")
-    .select("company_id")
-    .eq("user_id", user.id)
-    .single();
+  // Get user's company and verify role
+  const membership = await getMembership(user.id);
 
   if (!membership) {
     return NextResponse.json({ error: "No company found" }, { status: 404 });
+  }
+
+  if (!hasMinRole(membership.role, "member")) {
+    return NextResponse.json({ error: "Insufficient permissions" }, { status: 403 });
   }
 
   // Get candidate
@@ -52,7 +53,7 @@ export async function POST(
     .from("applications")
     .select("id, current_stage, company_id, jobs(id, title)")
     .eq("candidate_id", candidateId)
-    .eq("company_id", membership.company_id)
+    .eq("company_id", membership.companyId)
     .order("created_at", { ascending: false })
     .limit(1)
     .single();
@@ -138,7 +139,7 @@ export async function POST(
         candidateEmail: candidate.email,
         candidateName: candidate.full_name || "Applicant",
         jobTitle: job.title,
-        companyId: membership.company_id,
+        companyId: membership.companyId,
         passed: true,
         interviewLink: interviewUrl,
       });
@@ -149,7 +150,7 @@ export async function POST(
   }
 
   // Dispatch stage_changed webhook
-  dispatchWebhook(membership.company_id, "candidate.stage_changed", {
+  dispatchWebhook(membership.companyId, "candidate.stage_changed", {
     candidate_id: candidateId,
     candidate_name: candidate.full_name,
     candidate_email: candidate.email,

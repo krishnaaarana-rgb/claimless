@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getMembership, hasMinRole } from "@/lib/auth/permissions";
 
 const STAGE_ORDER = [
   "applied",
@@ -28,22 +29,22 @@ export async function POST(
 
   const admin = createAdminClient();
 
-  // Verify user belongs to a company
-  const { data: membership } = await admin
-    .from("company_users")
-    .select("company_id")
-    .eq("user_id", user.id)
-    .single();
+  // Verify user belongs to a company and has sufficient role
+  const membership = await getMembership(user.id);
 
   if (!membership) {
     return NextResponse.json({ error: "No company found" }, { status: 404 });
+  }
+
+  if (!hasMinRole(membership.role, "member")) {
+    return NextResponse.json({ error: "Insufficient permissions" }, { status: 403 });
   }
 
   const { data: application, error: fetchError } = await admin
     .from("applications")
     .select("*, candidates (full_name, email), jobs (title)")
     .eq("id", id)
-    .eq("company_id", membership.company_id)
+    .eq("company_id", membership.companyId)
     .single();
 
   if (fetchError || !application) {

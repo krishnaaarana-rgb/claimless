@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   // Verify cron secret
   const authHeader = request.headers.get("authorization");
   const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -40,11 +40,19 @@ export async function GET(request: NextRequest) {
       // Parse the stored notification data
       const data = typeof email.body === "string" ? JSON.parse(email.body) : email.body;
 
-      // Mark as processing to prevent double-sends
-      await supabase
+      // Atomically claim this email — only succeeds if still "pending"
+      const { data: claimed } = await supabase
         .from("email_logs")
         .update({ status: "processing" })
-        .eq("id", email.id);
+        .eq("id", email.id)
+        .eq("status", "pending")
+        .select("id")
+        .maybeSingle();
+
+      if (!claimed) {
+        console.log("[cron/send-emails] Email already claimed by another run, skipping:", email.id);
+        continue;
+      }
 
       // Send the actual notification (immediate=true skips delay check)
       await sendATSNotification({

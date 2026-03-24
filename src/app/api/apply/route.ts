@@ -189,7 +189,10 @@ export async function POST(request: NextRequest) {
   try {
     await fetch(`${baseUrl}/api/apply/screen`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...(process.env.INTERNAL_API_SECRET && { "x-internal-secret": process.env.INTERNAL_API_SECRET }),
+      },
       body: JSON.stringify({ application_id: application.id }),
     });
   } catch (screenErr) {

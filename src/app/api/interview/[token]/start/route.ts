@@ -114,6 +114,41 @@ export async function POST(
     }
   }
 
+  // 2b. Double-click guard: even on a fresh claim, a concurrent request may have
+  //     already created a Vapi assistant. Re-check before creating a new one.
+  if (freshClaim) {
+    const { data: freshApp } = await supabase
+      .from("applications")
+      .select("application_form_data")
+      .eq("id", application.id)
+      .single();
+
+    const existingAssistantId = (freshApp?.application_form_data as Record<string, unknown> | null)?.vapi_assistant_id as string | undefined;
+    if (existingAssistantId) {
+      const { data: settings } = await supabase
+        .from("company_settings")
+        .select("interview_duration_minutes")
+        .eq("company_id", job.company_id)
+        .maybeSingle();
+
+      const { data: companyBrand } = await supabase
+        .from("companies")
+        .select("name, logo_url, primary_color")
+        .eq("id", job.company_id)
+        .maybeSingle();
+
+      return NextResponse.json({
+        assistant_id: existingAssistantId,
+        public_key: process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY,
+        candidate_name: (freshApp?.application_form_data as Record<string, unknown> | null)?.preferred_name as string || candidate.full_name || "the candidate",
+        job_title: job.title,
+        duration_minutes: settings?.interview_duration_minutes || 20,
+        company_name: companyBrand?.name || "Claimless",
+        company_color: companyBrand?.primary_color || "#2383E2",
+      });
+    }
+  }
+
   // 3. Get ATS screening data for context
   const screeningData = application.match_breakdown || {};
   const interviewTopics =

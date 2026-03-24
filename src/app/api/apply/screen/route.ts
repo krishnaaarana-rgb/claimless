@@ -4,11 +4,21 @@ import { screenApplication } from "@/lib/claude/prompts/ats-screening";
 import { scrapeWebsite } from "@/lib/scraping/website";
 import { dispatchWebhook } from "@/lib/webhooks/dispatcher";
 import { pushResultsToATS } from "@/lib/integrations/outbound-push";
+import { validateInternalRequest } from "@/lib/auth/internal";
+import { getAuthUser } from "@/lib/auth/permissions";
 
 // Allow up to 5 minutes for scraping + Claude analysis
 export const maxDuration = 300;
 
 export async function POST(request: NextRequest) {
+  // Authenticate: allow internal callers (server-to-server) or authenticated dashboard users
+  if (!validateInternalRequest(request)) {
+    const user = await getAuthUser();
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+  }
+
   const body = await request.json();
   const { application_id } = body;
 
