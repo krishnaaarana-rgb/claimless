@@ -203,22 +203,30 @@ SCORING CALIBRATION:
     let scoring;
     try {
       scoring = JSON.parse(jsonMatch[0]);
-    } catch {
-      // Try fixing common JSON issues
+    } catch (firstErr) {
+      console.error("[interview-score] First parse failed:", (firstErr as Error).message, "Trying cleanup...");
+      // Try fixing common JSON issues from LLM output
       try {
         const fixed = jsonMatch[0]
-          .replace(/[\x00-\x1f]/g, " ")
-          .replace(/,\s*([}\]])/g, "$1")
-          .replace(/\u2018|\u2019/g, "'")
-          .replace(/\u201C|\u201D/g, '\\"')
-          .replace(/\u2014/g, "--")
-          .replace(/\u2013/g, "-")
-          .replace(/\n/g, "\\n")
-          .replace(/\t/g, "\\t");
+          .replace(/,\s*([}\]])/g, "$1")        // trailing commas
+          .replace(/\u2018|\u2019/g, "'")         // curly single quotes
+          .replace(/\u201C|\u201D/g, '"')         // curly double quotes
+          .replace(/\u2014/g, "--")               // em dash
+          .replace(/\u2013/g, "-");               // en dash
         scoring = JSON.parse(fixed);
-      } catch (innerErr) {
-        console.error("[interview-score] Invalid JSON:", jsonMatch[0].slice(0, 500));
-        return NextResponse.json({ error: "Failed to parse scoring JSON" }, { status: 500 });
+      } catch {
+        // Last resort: use analyzeWithClaude's robust parser
+        try {
+          const { analyzeWithClaude } = await import("@/lib/claude/client");
+          scoring = await analyzeWithClaude(
+            "Fix this broken JSON and return ONLY the corrected JSON. No explanation.",
+            jsonMatch[0].slice(0, 8000),
+            { model: "openai/gpt-4o-mini", maxTokens: 4096 }
+          );
+        } catch (innerErr) {
+          console.error("[interview-score] All parse attempts failed. Raw:", jsonMatch[0].slice(0, 500));
+          return NextResponse.json({ error: "Failed to parse scoring JSON" }, { status: 500 });
+        }
       }
     }
 
