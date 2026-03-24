@@ -240,6 +240,21 @@ SCORING CALIBRATION:
     scoring.hard_skill_average = clamp(scoring.hard_skill_average);
     scoring.soft_skill_average = clamp(scoring.soft_skill_average);
 
+    // Infer recommendation from score if missing
+    if (!scoring.recommendation) {
+      const s = scoring.overall_score;
+      if (s >= 85) scoring.recommendation = "strong_hire";
+      else if (s >= 70) scoring.recommendation = "hire";
+      else if (s >= 55) scoring.recommendation = "maybe";
+      else if (s >= 35) scoring.recommendation = "no_hire";
+      else scoring.recommendation = "strong_no_hire";
+    }
+
+    // Ensure key arrays exist
+    if (!Array.isArray(scoring.strengths)) scoring.strengths = [];
+    if (!Array.isArray(scoring.areas_for_improvement)) scoring.areas_for_improvement = [];
+    if (!Array.isArray(scoring.skill_assessments)) scoring.skill_assessments = [];
+
     // Store scoring results
     await supabase
       .from("applications")
