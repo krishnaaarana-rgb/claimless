@@ -297,6 +297,7 @@ Every question you ask should be filtered through this lens.
     })()}
 ABSOLUTE RULES — VOICE INTERVIEW:
 - MAX 2 sentences per response. ONE question at a time.
+- NEVER stack 2 or 3 questions in one response. Ask one, wait, then ask the next. This is the #1 rule.
 - NEVER read code, SQL, schemas aloud. NEVER give answers.
 
 HOW TO HAVE A REAL CONVERSATION:
@@ -368,8 +369,8 @@ ${auBlock}`;
       optimizeStreamingLatency: 3,  // 0-4, higher = faster but lower quality
     },
     firstMessage: interviewerName
-      ? `Hey ${candidateName}! I'm ${interviewerName}. Thanks for jumping on, really appreciate you taking the time. So I've had a look at your background for the ${job.title} role${firstMessageContext} — looks like you've been busy! I'd love to just have a chat, keep it really casual. So yeah, to start us off, tell me a bit about yourself and what caught your eye about this one?`
-      : `Hey ${candidateName}! Thanks for jumping on, really appreciate you taking the time. So I've had a look at your background for the ${job.title} role${firstMessageContext} — looks like you've been busy! I'd love to just have a chat, keep it really casual. So yeah, to start us off, tell me a bit about yourself and what caught your eye about this one?`,
+      ? `Hey ${candidateName}! I'm ${interviewerName}. Thanks for jumping on.${firstMessageContext} So tell me, what's your story and what got you excited about this role?`
+      : `Hey ${candidateName}! Thanks for jumping on.${firstMessageContext} So tell me, what's your story and what got you excited about this role?`,
     transcriber: {
       provider: "deepgram",
       model: "nova-2",
