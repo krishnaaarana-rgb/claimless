@@ -375,7 +375,7 @@ ${auBlock}`;
       provider: "deepgram",
       model: "nova-2",
       language: "en",
-      endpointing: 800,     // Wait longer before deciding candidate is done speaking — people pause to think
+      endpointing: 500,     // Max allowed by Vapi — wait longer before deciding candidate is done speaking
     },
     endCallFunctionEnabled: true,
     maxDurationSeconds: Math.min((duration + 5) * 60, 40 * 60),  // 5 min buffer for graceful wrap-up
