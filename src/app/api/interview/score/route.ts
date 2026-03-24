@@ -196,8 +196,22 @@ SCORING CALIBRATION:
     try {
       scoring = JSON.parse(jsonMatch[0]);
     } catch {
-      console.error("[interview-score] Invalid JSON in scoring response:", jsonMatch[0].slice(0, 200));
-      return NextResponse.json({ error: "Failed to parse scoring JSON" }, { status: 500 });
+      // Try fixing common JSON issues
+      try {
+        const fixed = jsonMatch[0]
+          .replace(/[\x00-\x1f]/g, " ")
+          .replace(/,\s*([}\]])/g, "$1")
+          .replace(/\u2018|\u2019/g, "'")
+          .replace(/\u201C|\u201D/g, '\\"')
+          .replace(/\u2014/g, "--")
+          .replace(/\u2013/g, "-")
+          .replace(/\n/g, "\\n")
+          .replace(/\t/g, "\\t");
+        scoring = JSON.parse(fixed);
+      } catch (innerErr) {
+        console.error("[interview-score] Invalid JSON:", jsonMatch[0].slice(0, 500));
+        return NextResponse.json({ error: "Failed to parse scoring JSON" }, { status: 500 });
+      }
     }
 
     // Validate and clamp scores to 0-100
