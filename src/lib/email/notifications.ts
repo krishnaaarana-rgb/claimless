@@ -37,6 +37,22 @@ export async function sendATSNotification(
     return;
   }
 
+  // Deduplicate: check if this application already had this type of email sent
+  const emailType = input.passed ? "acceptance" : "rejection";
+  const { data: existingEmail } = await supabase
+    .from("email_logs")
+    .select("id")
+    .eq("application_id", input.applicationId)
+    .eq("email_type", emailType)
+    .eq("status", "sent")
+    .limit(1)
+    .maybeSingle();
+
+  if (existingEmail && !input.immediate) {
+    console.log("[notify] Email already sent for this application, skipping:", input.candidateEmail);
+    return;
+  }
+
   // Check if email should be delayed (skip if called with immediate flag from cron)
   const delayMinutes = settings.email_delay_minutes ?? 0;
   if (delayMinutes > 0 && !input.immediate) {
@@ -174,18 +190,20 @@ export async function sendATSNotification(
     console.error("[notify] Email failed:", result.error);
   }
 
-  // Also log to email_logs for history
-  await supabase
-    .from("email_logs")
-    .insert({
-      application_id: input.applicationId,
-      candidate_email: input.candidateEmail,
-      email_type: notificationType,
-      subject,
-      status: result.success ? "sent" : "failed",
-      error_message: result.error || null,
-    })
-    .then(() => {
-      console.log("[notify] Logged email for", input.candidateEmail);
-    });
+  // Log to email_logs — skip if called from cron (cron manages its own log entry)
+  if (!input.immediate) {
+    await supabase
+      .from("email_logs")
+      .insert({
+        application_id: input.applicationId,
+        candidate_email: input.candidateEmail,
+        email_type: notificationType,
+        subject,
+        status: result.success ? "sent" : "failed",
+        error_message: result.error || null,
+      })
+      .then(() => {
+        console.log("[notify] Logged email for", input.candidateEmail);
+      });
+  }
 }
