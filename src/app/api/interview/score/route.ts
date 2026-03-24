@@ -170,7 +170,7 @@ SCORING CALIBRATION:
           { role: "user", content: scoringUserPrompt },
         ],
         temperature: 0.2,
-        max_tokens: 4096,
+        max_tokens: 8192,
       }),
     });
 
