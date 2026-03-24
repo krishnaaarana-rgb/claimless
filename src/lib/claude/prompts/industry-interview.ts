@@ -382,21 +382,42 @@ ${auScoringContext}
 
 You must respond with ONLY valid JSON matching the exact schema. No markdown, no explanation.`;
 
+  const customInstructions = input.settings.custom_instructions;
+  const requiredSkills = job.skill_requirements.filter(s => s.required);
+  const niceToHaveSkills = job.skill_requirements.filter(s => !s.required);
+
   const userPrompt = `Evaluate this interview for the "${job.title}" role.
+
+STEP 1 — UNDERSTAND WHAT THIS ROLE ACTUALLY NEEDS:
+Read the job description and custom instructions below. Before scoring anything, figure out what KIND of person this role needs. Not just "do they know X and Y" but "can they do the actual job?"
+${customInstructions ? `\nHIRING MANAGER'S PRIORITY (this shapes your entire evaluation):\n${customInstructions}\n` : ""}
+JOB DESCRIPTION:
+${job.description || "No description provided"}
+
+STEP 2 — EVALUATE THE CANDIDATE:
 
 CANDIDATE: ${candidate.name}
 ${candidate.strengths ? `PRE-INTERVIEW STRENGTHS: ${candidate.strengths.join(", ")}` : ""}
 ${candidate.concerns ? `PRE-INTERVIEW CONCERNS: ${candidate.concerns.join(", ")}` : ""}
 
-SKILL REQUIREMENTS & RUBRICS:
-${rubrics.map((r) => `- ${r.skill} (expected: ${r.expected_level}, weight: ${job.skill_requirements.find(s => s.skill === r.skill)?.weight || 3}/5): ${r.rubric}`).join("\n")}
+SKILL REQUIREMENTS:
+${requiredSkills.length > 0 ? `Required: ${requiredSkills.map(s => `${s.skill} (${s.level}, weight ${s.weight || 3}/5)`).join(", ")}` : ""}
+${niceToHaveSkills.length > 0 ? `Nice-to-have: ${niceToHaveSkills.map(s => `${s.skill} (${s.level}, weight ${s.weight || 3}/5)`).join(", ")}` : ""}
+
+RUBRICS:
+${rubrics.map((r) => `- ${r.skill} (${r.expected_level}): ${r.rubric}`).join("\n")}
 
 TRANSCRIPT:
 ${transcript}
 
-Produce a JSON object:
+STEP 3 — PRODUCE YOUR ASSESSMENT:
+
+Return a JSON object. Think about skills in context — "did they demonstrate they can use X together with Y to actually build things?" not just "do they know X in isolation?"
+
 {
+  "role_understanding": "1-2 sentences: what does this role actually need based on the JD and hiring manager instructions?",
   "overall_score": <0-100>,
+  "overall_summary": "3-4 sentence executive summary for the hiring manager. Lead with the verdict, then evidence. Written as if you're briefing someone who hasn't read the transcript.",
   "skill_assessments": [
     {
       "skill": "skill name",
@@ -404,38 +425,37 @@ Produce a JSON object:
       "expected_level": "basic|intermediate|advanced|expert",
       "assessed_level": "basic|intermediate|advanced|expert|not_assessed",
       "score": <0-100>,
-      "evidence": "EXACT quote or close paraphrase from transcript that supports this score",
-      "notes": "what this reveals about the candidate's actual ability",
+      "evidence": "EXACT quote or close paraphrase from transcript",
+      "notes": "what this reveals about ability — connect to other skills where relevant (e.g. 'knows Supabase basics but couldn't connect it to the RLS discussion, suggesting surface-level experience')",
       "depth_reached": "surface|working|deep|expert",
-      "red_flags": ["any concerns from this skill area"],
-      "green_flags": ["any positive signals"]
+      "red_flags": ["concerns"],
+      "green_flags": ["positive signals"]
     }
   ],
   "hard_skill_average": <0-100>,
   "soft_skill_average": <0-100>,
   "recommendation": "strong_hire|hire|maybe|no_hire|strong_no_hire",
-  "recommendation_reasoning": "3-4 sentences. Be specific about what tipped the decision.",
-  "strengths": ["specific things the candidate demonstrated well, with evidence"],
-  "areas_for_improvement": ["specific gaps, with what they said or failed to say"],
-  "consistency_analysis": "Did the candidate's claims align with their demonstrated knowledge? Note any gaps between confidence and substance.",
-  "key_moments": [{"timestamp_approx": "early/mid/late", "description": "moment that significantly influenced assessment", "impact": "positive|negative|neutral"}],
-  "follow_up_questions": ["specific questions for a potential next round based on gaps identified"],
-  "hiring_risk_factors": ["any risks the hiring team should be aware of"],
-  "comparison_notes": "How does this candidate's demonstrated skill level compare to what's typically expected at the ${job.skill_requirements[0]?.level || 'intermediate'} level in ${INDUSTRIES[industryId]?.label || 'this field'}?"
+  "recommendation_reasoning": "3-4 sentences. Tie back to what the role actually needs, not just individual skill scores.",
+  "strengths": ["specific things demonstrated well, with evidence"],
+  "areas_for_improvement": ["specific gaps with what they said or failed to say"],
+  "consistency_analysis": "Did claims align with demonstrated knowledge? Any gaps between confidence and substance?",
+  "key_moments": [{"timestamp_approx": "early/mid/late", "description": "moment that influenced assessment", "impact": "positive|negative|neutral"}],
+  "follow_up_questions": ["questions for next round based on gaps"],
+  "hiring_risk_factors": ["risks the hiring team should know"],
+  "comparison_notes": "How does this candidate compare to what's typically expected for this role in ${INDUSTRIES[industryId]?.label || 'this field'}?"
 }
 
-SCORING CALIBRATION:
-- 85-100: Exceptional. Solved live problems elegantly, went 3+ levels deep with specifics, demonstrated expertise ABOVE expected level. They taught YOU something. Reserve for truly outstanding.
-- 70-84: Strong. Handled scenarios well, gave specific examples with measurable outcomes, discussed tradeoffs. Could do the job from day one.
-- 55-69: Adequate. Correct but generic answers. Struggled with live problem-solving or couldn't go deeper than surface level. Would need ramp-up.
-- 40-54: Below expectations. Failed live scenarios, gave vague/theoretical answers, couldn't provide specifics. Significant gaps.
-- Below 40: Does not meet requirements. Could not demonstrate the skill meaningfully. May have been coached.
-- Weight required skills more heavily than nice-to-haves
-- Weight skills by their weight value (1-5)
-- Penalize confident but wrong answers more than humble uncertainty
-- If a skill was not assessed during the interview, mark as "not_assessed" with score 0
-- Bonus points: unprompted tradeoff discussion, honest "I don't know", strong failure-mode awareness, ability to handle unexpected follow-ups
-- Penalty: every answer is rehearsed STAR format but falls apart on follow-ups, inflated claims that didn't survive probing, vague despite multiple prompts for specifics`;
+SCORING RULES:
+- 85-100: Exceptional. Demonstrated expertise ABOVE expected level. They taught you something.
+- 70-84: Strong. Specific examples, measurable outcomes, discussed tradeoffs. Could do the job day one.
+- 55-69: Adequate. Correct but generic. Would need ramp-up time.
+- 40-54: Below expectations. Vague, theoretical, couldn't provide specifics on required skills.
+- Below 40: Does not meet requirements.
+- Weight required skills MORE heavily than nice-to-haves. Use the weight values (1-5).
+- If a skill was not assessed: mark as "not_assessed". Score it based on ADJACENT evidence — if they showed strong React skills but Next.js wasn't directly tested, infer a reasonable score rather than 0. If there's truly no signal at all, score 0.
+- Penalize confident-but-wrong more than humble uncertainty.
+- Bonus: unprompted tradeoffs, honest "I don't know", failure-mode awareness.
+- Penalty: rehearsed answers that collapse on follow-ups, inflated claims, persistent vagueness.`;
 
   return { systemPrompt, userPrompt };
 }
