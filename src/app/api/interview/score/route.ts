@@ -329,10 +329,11 @@ SCORING CALIBRATION:
       }
     }
 
-    // Clean up: delete the Vapi assistant now that scoring is done
-    // Recording URL is already saved in application_form_data by the webhook
+    // Clean up: delete the Vapi assistant ONLY if interview actually ended
+    // (has recording/ended_at). Don't delete if this is a re-score of an active interview.
     const vapiAssistantId = formData?.vapi_assistant_id as string | undefined;
-    if (vapiAssistantId && process.env.VAPI_API_KEY) {
+    const interviewEnded = !!(formData?.interview_ended_at);
+    if (vapiAssistantId && interviewEnded && process.env.VAPI_API_KEY) {
       fetch(`https://api.vapi.ai/assistant/${vapiAssistantId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${process.env.VAPI_API_KEY}` },
