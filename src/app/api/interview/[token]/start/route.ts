@@ -313,7 +313,7 @@ INTERVIEW FLOW:
 ${interviewTopics.length > 0 ? "   Topics: " + interviewTopics.join(", ") : ""}
 ${concerns.length > 0 ? "   Concerns to probe: " + concerns.join(", ") : ""}
    At least 2 real scenarios tied to the role. Follow interesting threads.
-3. WRAP UP (2 min): "Anything else you'd like to share?" Then close naturally.
+3. WRAP UP — Around the ${duration - 3}-minute mark, start wrapping: "We're coming up on time..." Ask if they have questions. Close warmly. NEVER let the system timer cut the call — YOU end it.
 
 TECHNIQUES:
 - SCENARIO: "You push a deploy and 30 users report X. What's your first move?"
@@ -378,7 +378,7 @@ ${auBlock}`;
       endpointing: 800,     // Wait longer before deciding candidate is done speaking — people pause to think
     },
     endCallFunctionEnabled: true,
-    maxDurationSeconds: Math.min((duration + 2) * 60, 35 * 60),
+    maxDurationSeconds: Math.min((duration + 5) * 60, 40 * 60),  // 5 min buffer for graceful wrap-up
     silenceTimeoutSeconds: 60,   // Give candidates time to think — 30s was too aggressive
     responseDelaySeconds: 1.2,   // Wait a bit longer before responding — lets them finish thinking
     backchannelingEnabled: false,  // Disabled — was causing audio interruptions mid-sentence
