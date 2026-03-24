@@ -875,11 +875,15 @@ function EmailProviderTab({ getValue, updateDraft }: TabProps) {
           <div>
             <label className="block text-[13px] font-medium text-[#37352F] mb-1.5">API Key</label>
             <input
-              type="password"
+              type="text"
+              autoComplete="off"
+              data-1p-ignore
+              data-lpignore="true"
               value={getValue("email_api_key") || ""}
               onChange={(e) => updateDraft("email_api_key", e.target.value || null)}
               className="w-full rounded-lg border border-[#E9E9E7] px-4 py-2.5 text-[14px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2]"
               placeholder="re_xxxxxxxx or SG.xxxxxxxx"
+              style={{ WebkitTextSecurity: "disc" } as React.CSSProperties}
             />
           </div>
           <div>
