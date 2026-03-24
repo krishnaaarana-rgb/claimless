@@ -102,10 +102,14 @@ export async function GET(request: NextRequest) {
     nullsFirst: false,
   });
 
-  // Pagination
-  const from = (page - 1) * perPage;
-  const to = from + perPage - 1;
-  query = query.range(from, to);
+  // Pagination — skip when searching (search is client-side filtered, needs all results)
+  if (!search) {
+    const from = (page - 1) * perPage;
+    const to = from + perPage - 1;
+    query = query.range(from, to);
+  } else {
+    query = query.limit(500); // cap for safety
+  }
 
   const { data: apps, count, error } = await query;
 
@@ -219,9 +223,13 @@ export async function GET(request: NextRequest) {
       );
     });
 
+  // When search is active, the client-side filter reduces results below the DB count.
+  // Return filtered count so pagination reflects actual matches.
+  const filteredTotal = search ? candidates.length : (count ?? candidates.length);
+
   return NextResponse.json({
     candidates,
-    total: count ?? candidates.length,
+    total: filteredTotal,
     page,
     per_page: perPage,
     filters_applied: {
