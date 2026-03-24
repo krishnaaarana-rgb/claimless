@@ -14,6 +14,7 @@ import {
   Plug,
   LogOut,
   FileText,
+  Mail,
 } from "lucide-react";
 import { ToastProvider } from "@/components/toast";
 import type { Role } from "@/lib/auth/permissions";
@@ -34,6 +35,7 @@ const NAV_SECTIONS: { label: string; items: NavItem[] }[] = [
       { href: "/jobs", label: "Jobs", icon: Briefcase },
       { href: "/interviews", label: "Interviews", icon: Mic },
       { href: "/templates", label: "Templates", icon: FileText },
+      { href: "/email-queue", label: "Email Queue", icon: Mail },
     ],
   },
   {
