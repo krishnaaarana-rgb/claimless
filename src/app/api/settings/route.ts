@@ -5,11 +5,14 @@ import { getMembership, hasMinRole } from "@/lib/auth/permissions";
 
 async function getCompanyId(userId: string) {
   const admin = createAdminClient();
-  const { data } = await admin
+  const { data, error } = await admin
     .from("company_users")
     .select("company_id")
     .eq("user_id", userId)
-    .single();
+    .limit(1)
+    .maybeSingle();
+  if (error) console.error("[settings] getCompanyId error:", error.message);
+  console.log("[settings] user:", userId.slice(0, 8), "-> company:", data?.company_id?.slice(0, 8));
   return data?.company_id ?? null;
 }
 
@@ -74,6 +77,8 @@ export async function PATCH(request: NextRequest) {
   }
 
   const body = await request.json();
+  console.log("[settings] PATCH body keys:", Object.keys(body).join(", "));
+  console.log("[settings] PATCH for company:", companyId);
   const updates: Record<string, unknown> = {};
 
   // Validate and pick allowed fields
@@ -211,8 +216,9 @@ export async function PATCH(request: NextRequest) {
 
   if (error) {
     console.error("[settings] Update error:", error);
-    return NextResponse.json({ error: "Failed to save settings" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to save settings: " + error.message }, { status: 500 });
   }
 
+  console.log("[settings] Saved. email_provider:", settings?.email_provider, "has_api_key:", !!settings?.email_api_key);
   return NextResponse.json({ settings });
 }

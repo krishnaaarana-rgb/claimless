@@ -120,6 +120,8 @@ export default function SettingsPage() {
   const handleSave = async () => {
     if (Object.keys(draft).length === 0) return;
     setSaving(true);
+    console.log("[settings] Saving draft keys:", Object.keys(draft).join(", "));
+    console.log("[settings] Has email_api_key in draft:", "email_api_key" in draft, draft.email_api_key ? "yes (length " + String(draft.email_api_key).length + ")" : "no/null");
     try {
       const res = await fetch("/api/settings", {
         method: "PATCH",
@@ -127,6 +129,7 @@ export default function SettingsPage() {
         body: JSON.stringify(draft),
       });
       const data = await res.json();
+      console.log("[settings] Response:", res.status, "has_api_key:", !!data.settings?.email_api_key);
       if (res.ok) {
         setSettings(data.settings);
         setDraft({});
@@ -135,8 +138,9 @@ export default function SettingsPage() {
       } else {
         alert(`Failed to save: ${data.error || res.status}`);
       }
-    } catch {
-      // silent
+    } catch (err) {
+      console.error("[settings] Save error:", err);
+      alert("Failed to save settings");
     } finally {
       setSaving(false);
     }
