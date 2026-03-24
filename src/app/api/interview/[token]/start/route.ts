@@ -375,12 +375,12 @@ ${auBlock}`;
       provider: "deepgram",
       model: "nova-2",
       language: "en",
-      endpointing: 400,     // Slightly faster detection of speech completion
+      endpointing: 800,     // Wait longer before deciding candidate is done speaking — people pause to think
     },
     endCallFunctionEnabled: true,
     maxDurationSeconds: Math.min((duration + 2) * 60, 35 * 60),
-    silenceTimeoutSeconds: 30,
-    responseDelaySeconds: 0.8,   // Faster responses — more natural conversational pace
+    silenceTimeoutSeconds: 60,   // Give candidates time to think — 30s was too aggressive
+    responseDelaySeconds: 1.2,   // Wait a bit longer before responding — lets them finish thinking
     backchannelingEnabled: false,  // Disabled — was causing audio interruptions mid-sentence
     backgroundDenoisingEnabled: true,
     serverUrl: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/interview/webhook`,
