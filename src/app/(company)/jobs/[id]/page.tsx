@@ -350,13 +350,40 @@ export default function JobDetailPage({
     );
   }
 
+  // Compute metrics from filtered candidates when filters are active
+  const metricsSource = hasFilters ? (() => {
+    const scored = candidates.filter(c => c.ats_score != null);
+    const passed = candidates.filter(c => ["stage_1_passed", "interview_invited", "interview_completed", "hired"].includes(c.status));
+    const ivScored = candidates.filter(c => c.interview_score != null);
+    const ivInvited = candidates.filter(c => ["interview_invited", "interview_completed", "hired"].includes(c.status));
+    const avgAts = scored.length > 0 ? Math.round(scored.reduce((s, c) => s + (c.ats_score || 0), 0) / scored.length) : null;
+    const avgIv = ivScored.length > 0 ? Math.round(ivScored.reduce((s, c) => s + (c.interview_score || 0), 0) / ivScored.length) : null;
+    const passRate = scored.length > 0 ? Math.round((passed.length / scored.length) * 100) : null;
+    const ivRate = ivInvited.length > 0 ? Math.round((ivScored.length / ivInvited.length) * 100) : null;
+    return {
+      count: total,
+      passRate,
+      avgScore: avgAts,
+      passedCount: passed.length,
+      avgInterview: avgIv,
+      ivCompletion: ivRate,
+    };
+  })() : {
+    count: job.applicant_count,
+    passRate: job.pass_rate,
+    avgScore: job.avg_score,
+    passedCount: job.passed_count,
+    avgInterview: job.avg_interview_score,
+    ivCompletion: job.interview_completion_rate,
+  };
+
   const metrics = [
-    { label: "Applicants", value: job.applicant_count, icon: Users },
-    { label: "Pass Rate", value: job.pass_rate != null ? `${job.pass_rate}%` : "--", icon: TrendingUp },
-    { label: "Avg ATS Score", value: job.avg_score ?? "--", icon: BarChart3 },
-    { label: "Passed ATS", value: job.passed_count, icon: CheckCircle2 },
-    { label: "Avg Interview", value: job.avg_interview_score ?? "--", icon: Mic },
-    { label: "IV Completion", value: job.interview_completion_rate != null ? `${job.interview_completion_rate}%` : "--", icon: CheckCircle2 },
+    { label: hasFilters ? "Matching" : "Applicants", value: metricsSource.count, icon: Users },
+    { label: "Pass Rate", value: metricsSource.passRate != null ? `${metricsSource.passRate}%` : "--", icon: TrendingUp },
+    { label: "Avg ATS Score", value: metricsSource.avgScore ?? "--", icon: BarChart3 },
+    { label: "Passed ATS", value: metricsSource.passedCount, icon: CheckCircle2 },
+    { label: "Avg Interview", value: metricsSource.avgInterview ?? "--", icon: Mic },
+    { label: "IV Completion", value: metricsSource.ivCompletion != null ? `${metricsSource.ivCompletion}%` : "--", icon: CheckCircle2 },
   ];
 
   // Build shortlist — top 5 candidates ranked by combined score
