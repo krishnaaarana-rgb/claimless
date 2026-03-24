@@ -175,6 +175,12 @@ SCORING CALIBRATION:
     });
 
     const data = await response.json();
+
+    if (!response.ok) {
+      console.error("[interview-score] OpenRouter error:", response.status, JSON.stringify(data).slice(0, 300));
+      return NextResponse.json({ error: "Scoring API error: " + response.status }, { status: 500 });
+    }
+
     const content =
       (
         data.choices as {
@@ -182,10 +188,12 @@ SCORING CALIBRATION:
         }[]
       )?.[0]?.message?.content || "";
 
+    console.log("[interview-score] Response length:", content.length, "First 100:", content.slice(0, 100));
+
     // Parse JSON from response
     const jsonMatch = content.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      console.error("[interview-score] Failed to parse scoring response");
+      console.error("[interview-score] No JSON found in response. Full content:", content.slice(0, 500));
       return NextResponse.json(
         { error: "Failed to parse score" },
         { status: 500 }
