@@ -222,8 +222,11 @@ export default function InterviewsPage() {
     return true;
   });
 
-  // Stats
-  const completedInterviews = interviews.filter((iv) => iv.current_stage === "interview_completed" || iv.current_stage === "hired");
+  const hasActiveFilters = searchQuery || selectedJob !== "all" || selectedRecommendation !== "all" || scoreMin || scoreMax;
+
+  // Stats — use filtered list when filters are active
+  const statsSource = hasActiveFilters ? filtered : interviews;
+  const completedInterviews = statsSource.filter((iv) => iv.current_stage === "interview_completed" || iv.current_stage === "hired");
   const scoredInterviews = completedInterviews.filter((iv) => getScore(iv.interview_scoring) !== null);
   const avgScore = scoredInterviews.length > 0
     ? Math.round(scoredInterviews.reduce((sum, iv) => sum + (getScore(iv.interview_scoring) ?? 0), 0) / scoredInterviews.length)
@@ -244,8 +247,6 @@ export default function InterviewsPage() {
     });
   };
 
-  const hasActiveFilters = searchQuery || selectedJob !== "all" || selectedRecommendation !== "all" || scoreMin || scoreMax;
-
   const clearFilters = () => {
     setSearchQuery("");
     setSelectedJob("all");
@@ -262,8 +263,8 @@ export default function InterviewsPage() {
           <div>
             <h1 className="text-[22px] font-semibold text-[#37352F]">Interviews</h1>
             <p className="text-[13px] text-[#9B9A97] mt-0.5">
-              {interviews.length} total{" "}
-              {completedInterviews.length !== interviews.length && (
+              {hasActiveFilters ? `${filtered.length} matching` : `${interviews.length} total`}{" "}
+              {completedInterviews.length !== statsSource.length && (
                 <span>({completedInterviews.length} completed)</span>
               )}
             </p>
@@ -293,7 +294,7 @@ export default function InterviewsPage() {
               icon={<CheckCircle size={14} className="text-[#2383E2]" />}
               label="Completed"
               value={completedInterviews.length}
-              sub={`${interviews.filter((iv) => iv.current_stage === "interview_invited").length} invited`}
+              sub={`${statsSource.filter((iv) => iv.current_stage === "interview_invited").length} invited`}
             />
             <StatCard
               icon={<TrendingUp size={14} className="text-emerald-500" />}
