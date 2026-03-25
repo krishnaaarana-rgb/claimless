@@ -67,9 +67,13 @@ CREATE POLICY "interview_tokens_public_read" ON interview_tokens
   FOR SELECT USING (true);
 
 -- 6. Fix search_path on functions (warnings)
-ALTER FUNCTION IF EXISTS update_updated_at_column() SET search_path = public;
-ALTER FUNCTION IF EXISTS create_default_settings() SET search_path = public;
-
--- 7. Enable leaked password protection
--- This is done via Supabase dashboard: Auth > Settings > Enable Leaked Password Protection
--- Cannot be set via SQL migration
+-- IF EXISTS not supported on ALTER FUNCTION in all PG versions, use DO block
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'update_updated_at_column') THEN
+    ALTER FUNCTION update_updated_at_column() SET search_path = public;
+  END IF;
+  IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'create_default_settings') THEN
+    ALTER FUNCTION create_default_settings() SET search_path = public;
+  END IF;
+END $$;
