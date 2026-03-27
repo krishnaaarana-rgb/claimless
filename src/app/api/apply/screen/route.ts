@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
         company_id,
         application_form_data,
         candidates (full_name, email, github_username, linkedin_url, personal_website_url),
-        jobs (title, description, employment_type, industry, skill_requirements)
+        jobs (title, description, employment_type, industry, skill_requirements, ats_pass_threshold)
       `
       )
       .eq("id", application_id)
