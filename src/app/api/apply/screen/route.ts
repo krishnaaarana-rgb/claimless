@@ -70,6 +70,7 @@ export async function POST(request: NextRequest) {
       employment_type: string | null;
       industry: string | null;
       skill_requirements: { skill: string; category: string; level: string; required: boolean; weight: number }[] | null;
+      ats_pass_threshold: number | null;
     } | null;
 
     if (!candidate || !job) {
@@ -97,7 +98,7 @@ export async function POST(request: NextRequest) {
       .eq("company_id", app.company_id)
       .single();
     if (companySettings) {
-      atsThreshold = companySettings.ats_pass_threshold ?? 40;
+      atsThreshold = job.ats_pass_threshold ?? companySettings.ats_pass_threshold ?? 40;
       atsAutoReject = companySettings.ats_auto_reject ?? true;
       autoInviteInterview = companySettings.auto_invite_interview ?? false;
     }

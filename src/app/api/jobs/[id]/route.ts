@@ -154,6 +154,7 @@ export async function PATCH(
     "skill_requirements",
     "custom_instructions",
     "attachments",
+    "ats_pass_threshold",
   ];
   for (const key of allowed) {
     if (body[key] !== undefined) updates[key] = body[key];

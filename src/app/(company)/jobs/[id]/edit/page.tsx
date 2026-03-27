@@ -106,6 +106,7 @@ export default function EditJobPage({
   const [industryNiche, setIndustryNiche] = useState<string | null>(null);
   const [skillRequirements, setSkillRequirements] = useState<SkillRequirement[]>([]);
   const [customInstructions, setCustomInstructions] = useState("");
+  const [atsThreshold, setAtsThreshold] = useState<number | null>(null);
   const [formFields, setFormFields] = useState<FormField[]>([]);
   const [customQuestions, setCustomQuestions] = useState<CustomQuestion[]>([]);
   const [loading, setLoading] = useState(true);
@@ -147,6 +148,7 @@ export default function EditJobPage({
         setIndustryNiche(job.industry_niche || null);
         setSkillRequirements(job.skill_requirements || []);
         setCustomInstructions(job.custom_instructions || "");
+        setAtsThreshold(job.ats_pass_threshold ?? null);
 
         // Parse form config
         const config = job.application_form_config;
@@ -250,6 +252,7 @@ export default function EditJobPage({
           industry_niche: industryNiche || null,
           skill_requirements: skillRequirements.length > 0 ? skillRequirements : null,
           custom_instructions: customInstructions.trim() || null,
+          ats_pass_threshold: atsThreshold,
         }),
       });
       const data = await res.json();
@@ -379,6 +382,50 @@ export default function EditJobPage({
           />
           <p className="text-[11px] text-muted-foreground">
             These instructions are injected into the AI interviewer&apos;s prompt for this job specifically.
+          </p>
+        </div>
+      </Section>
+
+      {/* ATS Screening */}
+      <Section title="ATS Screening" subtitle="Override the company-wide pass threshold for this job">
+        <div className="space-y-3">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                setAtsThreshold(atsThreshold === null ? 40 : null);
+                setDirty(true);
+              }}
+              className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${atsThreshold !== null ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background"}`}
+            >
+              {atsThreshold !== null && <span className="text-[10px]">{"\u2713"}</span>}
+            </button>
+            <Label className="cursor-pointer" onClick={() => { setAtsThreshold(atsThreshold === null ? 40 : null); setDirty(true); }}>
+              Custom pass threshold for this job
+            </Label>
+          </div>
+          {atsThreshold !== null && (
+            <div className="flex items-center gap-3 pl-7">
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={atsThreshold}
+                onChange={(e) => { setAtsThreshold(Number(e.target.value)); setDirty(true); }}
+                className="flex-1 accent-primary"
+              />
+              <span
+                className="text-[14px] font-semibold text-foreground w-12 text-center tabular-nums"
+                style={{ fontFamily: "'JetBrains Mono', monospace" }}
+              >
+                {atsThreshold}
+              </span>
+            </div>
+          )}
+          <p className="text-[11px] text-muted-foreground pl-7">
+            {atsThreshold !== null
+              ? `Candidates scoring below ${atsThreshold} on this job will be rejected. Overrides the company default.`
+              : "Using the company-wide threshold from Settings."}
           </p>
         </div>
       </Section>
