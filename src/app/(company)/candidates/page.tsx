@@ -20,6 +20,7 @@ import {
   XCircle,
   RefreshCw,
   Clipboard,
+  Trash2,
 } from "lucide-react";
 import { useToast } from "@/components/toast";
 
@@ -822,6 +823,23 @@ export default function CandidatesPage() {
     }
   };
 
+  const handleDelete = async (candidate: CandidateRow) => {
+    setOpenMenu(null);
+    if (!confirm(`Permanently delete ${candidate.name}? This cannot be undone.`)) return;
+    try {
+      const res = await fetch(`/api/candidates/${candidate.id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        toast(data.error || "Failed to delete", "error");
+        return;
+      }
+      toast(`${candidate.name} deleted`, "success");
+      fetchCandidates();
+    } catch {
+      toast("Failed to delete candidate", "error");
+    }
+  };
+
   const handleCopyLink = (candidate: CandidateRow) => {
     const url = `${window.location.origin}/candidates/${candidate.id}`;
     navigator.clipboard.writeText(url);
@@ -1054,7 +1072,7 @@ export default function CandidatesPage() {
 
       {/* ─── Table ─── */}
       <div
-        className="bg-white border border-[#E9E9E7] rounded-lg overflow-hidden"
+        className="bg-white border border-[#E9E9E7] rounded-lg"
       >
         {loading ? (
           <div className="p-8 text-center">
@@ -1385,7 +1403,7 @@ export default function CandidatesPage() {
                                 className="fixed inset-0 z-10"
                                 onClick={() => { setOpenMenu(null); setStageMenu(null); }}
                               />
-                              <div className="absolute right-full top-0 mr-1 z-20 bg-white border border-[#E9E9E7] rounded-lg shadow-lg py-1 min-w-[200px]">
+                              <div className="absolute right-full bottom-0 mr-1 z-20 bg-white border border-[#E9E9E7] rounded-lg shadow-lg py-1 min-w-[200px]">
                                 <button
                                   onClick={() => { setOpenMenu(null); router.push(`/candidates/${c.id}`); }}
                                   className="w-full text-left px-3 py-2 text-[13px] text-[#37352F] hover:bg-[#F7F6F3] flex items-center gap-2 transition-colors"
@@ -1474,6 +1492,13 @@ export default function CandidatesPage() {
                                     Reject
                                   </button>
                                 )}
+                                <button
+                                  onClick={() => handleDelete(c)}
+                                  className="w-full text-left px-3 py-2 text-[13px] text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors"
+                                >
+                                  <Trash2 size={13} className="text-red-400" />
+                                  Delete
+                                </button>
                               </div>
                             </>
                           )}
