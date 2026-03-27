@@ -34,6 +34,7 @@ export function ActionButtons({
   const [advanceLoading, setAdvanceLoading] = useState(false);
   const [rejectLoading, setRejectLoading] = useState(false);
   const [inviteLoading, setInviteLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [interviewUrl, setInterviewUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -150,7 +151,29 @@ export function ActionButtons({
     }
   };
 
-  const loading = advanceLoading || rejectLoading || inviteLoading;
+  const handleDelete = async () => {
+    if (!confirm("Permanently delete this candidate and all their data? This cannot be undone.")) {
+      return;
+    }
+    setDeleteLoading(true);
+    try {
+      const res = await fetch(`/api/candidates/${candidateId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        showToast(data.error || "Failed to delete");
+        return;
+      }
+      router.push("/candidates");
+    } catch {
+      showToast("Failed to delete");
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  const loading = advanceLoading || rejectLoading || inviteLoading || deleteLoading;
 
   return (
     <div className="flex flex-col items-end gap-2 shrink-0">
@@ -199,6 +222,15 @@ export function ActionButtons({
           className="px-4 py-2 rounded-lg text-[13px] font-medium border border-[#E9E9E7] text-[#37352F] hover:bg-[#F7F6F3] transition-colors disabled:opacity-50"
         >
           {advanceLoading ? "Sending..." : `${advanceLabel} \u2192`}
+        </button>
+
+        <button
+          onClick={handleDelete}
+          disabled={loading}
+          className="px-3 py-2 rounded-lg text-[13px] font-medium text-[#9B9A97] hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+          title="Delete candidate"
+        >
+          {deleteLoading ? "..." : "\u2715"}
         </button>
       </div>
 
