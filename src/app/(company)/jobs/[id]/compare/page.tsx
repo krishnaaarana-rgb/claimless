@@ -31,10 +31,10 @@ function combinedScore(ats: number | null, iv: number | null): number | null {
 
 function recLabel(rec: string): string {
   switch (rec) {
-    case "strong_hire": return "Strong Hire";
-    case "hire": return "Hire";
+    case "strong_hire": return "Strong Shortlist";
+    case "hire": return "Shortlist";
     case "maybe": return "Maybe";
-    case "no_hire": return "No Hire";
+    case "no_hire": return "No";
     case "strong_no_hire": return "Strong No";
     default: return rec;
   }

@@ -1275,7 +1275,11 @@ export default function CandidatesPage() {
                                     : "text-[#DC2626] bg-[#FEF2F2]"
                                 }`}
                               >
-                                {c.interview_recommendation.replace(/_/g, " ")}
+                                {c.interview_recommendation === "strong_hire" ? "strong shortlist"
+                                  : c.interview_recommendation === "hire" ? "shortlist"
+                                  : c.interview_recommendation === "no_hire" ? "no"
+                                  : c.interview_recommendation === "strong_no_hire" ? "strong no"
+                                  : c.interview_recommendation.replace(/_/g, " ")}
                               </span>
                             )}
                           </div>

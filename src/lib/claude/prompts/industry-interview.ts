@@ -444,7 +444,7 @@ Return a JSON object. Think about skills in context — "did they demonstrate th
       "category": "hard_skill|soft_skill|custom",
       "expected_level": "basic|intermediate|advanced|expert",
       "assessed_level": "basic|intermediate|advanced|expert|not_assessed",
-      "score": <0-100>,
+      "score": <0-100 or null if not assessed and no adjacent evidence>,
       "evidence": "EXACT quote or close paraphrase from transcript",
       "notes": "what this reveals about ability — connect to other skills where relevant (e.g. 'knows Supabase basics but couldn't connect it to the RLS discussion, suggesting surface-level experience')",
       "depth_reached": "surface|working|deep|expert",
@@ -472,7 +472,7 @@ SCORING RULES:
 - 40-54: Below expectations. Vague, theoretical, couldn't provide specifics on required skills.
 - Below 40: Does not meet requirements.
 - Weight required skills MORE heavily than nice-to-haves. Use the weight values (1-5).
-- If a skill was not assessed: mark as "not_assessed". Score it based on ADJACENT evidence — if they showed strong React skills but Next.js wasn't directly tested, infer a reasonable score rather than 0. If there's truly no signal at all, score 0.
+- If a skill was not assessed in the interview: mark assessed_level as "not_assessed". Score it based on ADJACENT evidence — if they showed strong React skills but Next.js wasn't directly tested, infer a reasonable score. If there's truly NO signal at all (never mentioned, no adjacent evidence), set score to null and exclude it from averages. Do NOT give 0 to skills that simply weren't discussed — 0 means "assessed and found completely lacking", not "wasn't covered".
 - Penalize confident-but-wrong more than humble uncertainty.
 - Bonus: unprompted tradeoffs, honest "I don't know", failure-mode awareness.
 - Penalty: rehearsed answers that collapse on follow-ups, inflated claims, persistent vagueness.`;

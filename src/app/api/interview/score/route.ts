@@ -297,6 +297,17 @@ SCORING CALIBRATION:
     if (!Array.isArray(scoring.areas_for_improvement)) scoring.areas_for_improvement = [];
     if (!Array.isArray(scoring.skill_assessments)) scoring.skill_assessments = [];
 
+    // Recalculate averages excluding null/not-assessed skills
+    const assessed = scoring.skill_assessments.filter(
+      (s: { score: number | null; assessed_level?: string }) =>
+        s.score !== null && s.score !== undefined && s.assessed_level !== "not_assessed"
+    );
+    const hardSkills = assessed.filter((s: { category: string }) => s.category === "hard_skill");
+    const softSkills = assessed.filter((s: { category: string }) => s.category === "soft_skill" || s.category === "custom");
+    const avg = (arr: { score: number }[]) => arr.length ? Math.round(arr.reduce((sum, s) => sum + s.score, 0) / arr.length) : null;
+    scoring.hard_skill_average = clamp(avg(hardSkills)) ?? scoring.hard_skill_average;
+    scoring.soft_skill_average = clamp(avg(softSkills)) ?? scoring.soft_skill_average;
+
     // Store scoring results and clear scoring_in_progress flag
     await supabase
       .from("applications")

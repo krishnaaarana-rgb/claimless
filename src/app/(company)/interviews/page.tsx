@@ -93,11 +93,11 @@ function scoreBgColor(score: number | null): string {
 }
 
 const RECOMMENDATION_CONFIG: Record<string, { bg: string; text: string; border: string; label: string }> = {
-  strong_hire: { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200", label: "STRONG HIRE" },
-  hire: { bg: "bg-emerald-50", text: "text-emerald-600", border: "border-emerald-200", label: "HIRE" },
+  strong_hire: { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200", label: "STRONG SHORTLIST" },
+  hire: { bg: "bg-emerald-50", text: "text-emerald-600", border: "border-emerald-200", label: "SHORTLIST" },
   maybe: { bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200", label: "MAYBE" },
-  no_hire: { bg: "bg-orange-50", text: "text-orange-600", border: "border-orange-200", label: "NO HIRE" },
-  strong_no_hire: { bg: "bg-red-50", text: "text-red-700", border: "border-red-200", label: "STRONG NO HIRE" },
+  no_hire: { bg: "bg-orange-50", text: "text-orange-600", border: "border-orange-200", label: "NO" },
+  strong_no_hire: { bg: "bg-red-50", text: "text-red-700", border: "border-red-200", label: "STRONG NO" },
 };
 
 /* ─── Score Bar Component ─── */
@@ -364,11 +364,11 @@ export default function InterviewsPage() {
                 className="w-full px-3 py-2 text-[13px] text-[#37352F] bg-[#F7F6F3] border border-[#E9E9E7] rounded-md focus:outline-none focus:border-[#2383E2] focus:ring-1 focus:ring-[#2383E2]/20 transition-colors appearance-none"
               >
                 <option value="all">All Recommendations</option>
-                <option value="strong_hire">Strong Hire</option>
-                <option value="hire">Hire</option>
+                <option value="strong_hire">Strong Shortlist</option>
+                <option value="hire">Shortlist</option>
                 <option value="maybe">Maybe</option>
-                <option value="no_hire">No Hire</option>
-                <option value="strong_no_hire">Strong No Hire</option>
+                <option value="no_hire">No</option>
+                <option value="strong_no_hire">Strong No</option>
               </select>
 
               {/* Score range */}

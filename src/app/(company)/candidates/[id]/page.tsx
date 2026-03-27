@@ -897,11 +897,11 @@ export default async function CandidateDetailPage({
 
 function RecBadge({ rec }: { rec: string }) {
   const map: Record<string, { bg: string; text: string; border: string; label: string }> = {
-    strong_hire: { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200", label: "STRONG HIRE" },
-    hire: { bg: "bg-emerald-50", text: "text-emerald-600", border: "border-emerald-200", label: "HIRE" },
+    strong_hire: { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200", label: "STRONG SHORTLIST" },
+    hire: { bg: "bg-emerald-50", text: "text-emerald-600", border: "border-emerald-200", label: "SHORTLIST" },
     maybe: { bg: "bg-yellow-50", text: "text-yellow-700", border: "border-yellow-200", label: "MAYBE" },
-    no_hire: { bg: "bg-red-50", text: "text-red-600", border: "border-red-200", label: "NO HIRE" },
-    strong_no_hire: { bg: "bg-red-50", text: "text-red-700", border: "border-red-200", label: "STRONG NO HIRE" },
+    no_hire: { bg: "bg-red-50", text: "text-red-600", border: "border-red-200", label: "NO" },
+    strong_no_hire: { bg: "bg-red-50", text: "text-red-700", border: "border-red-200", label: "STRONG NO" },
   };
   const style = map[rec] || map.maybe;
   return (
