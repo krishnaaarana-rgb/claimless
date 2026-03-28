@@ -398,7 +398,11 @@ ${auBlock}`;
     name,
     model: {
       provider: "openrouter",
-      model: "openai/gpt-5",
+      model: "anthropic/claude-sonnet-4-6",
+      fallbackModels: [
+        { provider: "openrouter", model: "openai/gpt-5" },
+        { provider: "openrouter", model: "anthropic/claude-haiku-4-5-20251001" },
+      ],
       messages: [{ role: "system", content: systemPrompt }],
       temperature: 0.7,
     },
@@ -490,7 +494,7 @@ ${auBlock}`;
         preferred_name: candidateName,
         injected_prompt: systemPrompt,
         injected_prompt_length: systemPrompt.length,
-        interview_model: "openai/gpt-5",
+        interview_model: "anthropic/claude-sonnet-4-6",
       },
     })
     .eq("id", application.id);
