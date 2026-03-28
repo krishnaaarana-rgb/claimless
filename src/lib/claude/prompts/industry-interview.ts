@@ -32,6 +32,10 @@ export interface IndustryInterviewPromptInput {
     skill_requirements: SkillRequirement[];
     industry_interview_context: string | null;
     employment_type?: string;
+    interview_intelligence?: {
+      interviewer_briefing: string;
+      interview_count: number;
+    } | null;
   };
   /** Candidate details */
   candidate: {
@@ -179,7 +183,11 @@ CANDIDATE EXPERIENCE:
 ${skillAssessmentBlock}
 
 ${candidateContext}
-
+${job.interview_intelligence?.interviewer_briefing ? `
+INTERVIEW INTELLIGENCE (learned from ${job.interview_intelligence.interview_count} previous interview${job.interview_intelligence.interview_count === 1 ? "" : "s"} for this role):
+${job.interview_intelligence.interviewer_briefing}
+Use these learnings to guide your approach — but stay adaptive. Every candidate is different.
+` : ""}
 JOB DESCRIPTION:
 ${job.description}
 

@@ -32,7 +32,7 @@ export async function POST(
     // Successfully claimed — fetch full data
     const { data: fullToken } = await supabase
       .from("interview_tokens")
-      .select("*, applications(*, candidates(*), jobs(id, title, description, company_id, industry, industry_niche, skill_requirements, industry_interview_context, employment_type, custom_instructions))")
+      .select("*, applications(*, candidates(*), jobs(id, title, description, company_id, industry, industry_niche, skill_requirements, industry_interview_context, interview_intelligence, employment_type, custom_instructions))")
       .eq("id", claimedTokens[0].id)
       .single();
     tokenData = fullToken;
@@ -40,7 +40,7 @@ export async function POST(
     // Claim failed — check why (already active for reconnection, or invalid)
     const { data: existingToken } = await supabase
       .from("interview_tokens")
-      .select("*, applications(*, candidates(*), jobs(id, title, description, company_id, industry, industry_niche, skill_requirements, industry_interview_context, employment_type, custom_instructions))")
+      .select("*, applications(*, candidates(*), jobs(id, title, description, company_id, industry, industry_niche, skill_requirements, industry_interview_context, interview_intelligence, employment_type, custom_instructions))")
       .eq("token", token)
       .maybeSingle();
 
@@ -77,6 +77,7 @@ export async function POST(
       industry_niche: string | null;
       skill_requirements: SkillRequirement[] | null;
       industry_interview_context: string | null;
+      interview_intelligence: { interviewer_briefing: string; interview_count: number } | null;
       employment_type: string | null;
       custom_instructions: string | null;
     };
@@ -286,6 +287,7 @@ export async function POST(
       industry_niche: job.industry_niche,
       skill_requirements: job.skill_requirements || [],
       industry_interview_context: job.industry_interview_context,
+      interview_intelligence: job.interview_intelligence || undefined,
       employment_type: job.employment_type || undefined,
     },
     candidate: {

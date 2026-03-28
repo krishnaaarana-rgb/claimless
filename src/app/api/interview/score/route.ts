@@ -79,12 +79,14 @@ export async function POST(request: NextRequest) {
       .eq("id", application.id);
 
   const job = application.jobs as unknown as {
+    id: string;
     title: string;
     description: string | null;
     industry: string | null;
     industry_niche: string | null;
     skill_requirements: SkillRequirement[] | null;
     industry_interview_context: string | null;
+    interview_intelligence: Record<string, unknown> | null;
   };
   const candidate = application.candidates as unknown as {
     full_name: string | null;
@@ -328,6 +330,26 @@ SCORING CALIBRATION:
       scoring.overall_score || scoring.interview_score,
       scoring.recommendation
     );
+
+    // Extract interview intelligence (non-blocking — learns from each interview)
+    try {
+      const { extractAndUpdateIntelligence } = await import(
+        "@/lib/claude/extract-interview-intelligence"
+      );
+      extractAndUpdateIntelligence(
+        job.id,
+        scoring,
+        transcript,
+        job.interview_intelligence as Parameters<typeof extractAndUpdateIntelligence>[3],
+        job.skill_requirements || [],
+        job.title,
+        candidate.full_name || "Candidate"
+      ).catch((err) =>
+        console.error("[interview-score] Intelligence extraction failed:", err)
+      );
+    } catch (err) {
+      console.error("[interview-score] Intelligence import failed:", err);
+    }
 
     // Push scored results to ATS integrations (now that scoring is complete)
     const companyId = body.company_id || (application.jobs as unknown as { company_id: string })?.company_id;
