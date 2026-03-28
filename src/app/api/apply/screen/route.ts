@@ -92,6 +92,7 @@ export async function POST(request: NextRequest) {
     let atsThreshold = 40;
     let atsAutoReject = true;
     let autoInviteInterview = false;
+    let autoInterviewLink: string | undefined;
     const { data: companySettings } = await supabase
       .from("company_settings")
       .select("ats_pass_threshold, ats_auto_reject, auto_invite_interview")
@@ -269,21 +270,12 @@ export async function POST(request: NextRequest) {
         expires_at: expiresAt.toISOString(),
       });
 
-      // Fire interview invite email (fire and forget)
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
       const interviewUrl = `${baseUrl}/interview/${token}/prep`;
       console.log("[screen] Auto-invited to interview:", interviewUrl);
 
-      // Trigger invite email via the existing invite endpoint
-      fetch(`${baseUrl}/api/candidates/${app.candidate_id}/invite`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          application_id,
-          interview_url: interviewUrl,
-          auto_invited: true,
-        }),
-      }).catch(() => {});
+      // Store interview link so the email notification includes it
+      autoInterviewLink = interviewUrl;
     }
 
     // Dispatch screening completed webhook
@@ -326,18 +318,21 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Send email notification (fire and forget, non-fatal)
-    const { sendATSNotification } = await import("@/lib/email/notifications");
-    sendATSNotification({
-      applicationId: application_id,
-      candidateEmail: candidate.email || "",
-      candidateName: candidate.full_name || "Applicant",
-      jobTitle: job.title,
-      companyId: app.company_id,
-      passed: screening.pass,
-    }).catch((err) => {
+    // Send email notification — must await or Vercel kills the promise
+    try {
+      const { sendATSNotification } = await import("@/lib/email/notifications");
+      await sendATSNotification({
+        applicationId: application_id,
+        candidateEmail: candidate.email || "",
+        candidateName: candidate.full_name || "Applicant",
+        jobTitle: job.title,
+        companyId: app.company_id,
+        passed: screening.pass,
+        interviewLink: autoInterviewLink,
+      });
+    } catch (err) {
       console.error("[screen] Email notification failed:", err);
-    });
+    }
 
     return NextResponse.json({ success: true, screening });
   } catch (err) {
