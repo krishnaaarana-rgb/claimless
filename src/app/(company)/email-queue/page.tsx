@@ -86,6 +86,28 @@ export default function EmailQueuePage() {
   const [stats, setStats] = useState<Stats>({ pending: 0, processing: 0, sent: 0, failed: 0, scheduled: 0 });
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
+  const [sending, setSending] = useState<string | null>(null);
+
+  const handleSendNow = async (emailId: string) => {
+    setSending(emailId);
+    try {
+      const res = await fetch("/api/dashboard/email-queue", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email_id: emailId }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || "Failed to send");
+        return;
+      }
+      fetchData();
+    } catch {
+      alert("Failed to send");
+    } finally {
+      setSending(null);
+    }
+  };
 
   const fetchData = async () => {
     try {
@@ -205,6 +227,7 @@ export default function EmailQueuePage() {
                 <th className="text-right font-medium text-[#9B9A97] px-4 py-2.5 w-28">
                   {filter === "scheduled" ? "Sends at" : "Time"}
                 </th>
+                <th className="w-20" />
               </tr>
             </thead>
             <tbody>
@@ -241,6 +264,18 @@ export default function EmailQueuePage() {
                     {email.scheduled && email.status === "pending" && email.send_at
                       ? relativeTime(email.send_at)
                       : relativeTime(email.created_at)}
+                  </td>
+                  <td className="px-3 py-3 text-center">
+                    {email.scheduled && email.status === "pending" && (
+                      <button
+                        onClick={() => handleSendNow(email.id)}
+                        disabled={sending === email.id}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-medium text-[#2383E2] border border-[#2383E2]/30 hover:bg-[#2383E2]/5 transition-colors disabled:opacity-50"
+                      >
+                        <Send size={11} />
+                        {sending === email.id ? "..." : "Send Now"}
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
