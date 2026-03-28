@@ -186,12 +186,15 @@ Produce a JSON object:
 }
 
 SCORING CALIBRATION:
-- 85-100: Exceptional. Gave specific, deep answers that showed expertise above expectations.
-- 70-84: Strong. Met expectations with concrete examples and clear outcomes.
-- 55-69: Adequate. Correct but generic answers. Would need ramp-up time.
-- 40-54: Below expectations. Struggled with core concepts. Significant gaps.
-- Below 40: Does not meet requirements.
-- Penalize confident but wrong answers more than humble uncertainty.`;
+- CRITICAL: Separate KNOWLEDGE from COMMUNICATION. Score WHAT they know, not HOW they say it. Many candidates are non-native English speakers — simpler vocabulary, repeating questions, longer pauses, or formal tone are NOT penalties.
+- 85-100: Exceptional. Demonstrated expertise above expectations with concrete examples.
+- 70-84: Strong. Specific examples, measurable outcomes, discussed tradeoffs.
+- 55-69: Adequate. Correct understanding but limited depth. Would need ramp-up time.
+- 40-54: Below expectations. Could not provide concrete examples after multiple prompts.
+- Below 40: Does not meet requirements. No demonstrated knowledge of core skills.
+- Penalize confident but wrong answers more than humble uncertainty.
+- Bonus: concrete project descriptions, unprompted tradeoffs, honest "I don't know".
+- Penalty: contradicts themselves, claims without any supporting example, inflated numbers.`;
   }
 
   try {

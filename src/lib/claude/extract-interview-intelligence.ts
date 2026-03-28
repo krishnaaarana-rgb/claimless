@@ -199,7 +199,9 @@ export async function extractAndUpdateIntelligence(
     : scrubbedTranscript;
 
   const extraction = await analyzeWithClaude<ExtractionResult>(
-    `You are an interview process analyst. Given a scored interview and transcript, extract PROCESS LEARNINGS — not candidate evaluations. Figure out what interview TECHNIQUES worked and didn't work. Respond with ONLY valid JSON. No PII, no candidate names.`,
+    `You are an interview process analyst. Given a scored interview and transcript, extract PROCESS LEARNINGS — not candidate evaluations. Figure out what interview TECHNIQUES worked and didn't work. Respond with ONLY valid JSON. No PII, no candidate names.
+
+IMPORTANT: Many candidates are non-native English speakers. Distinguish between candidates who didn't UNDERSTAND the question (language/communication barrier) vs didn't KNOW the answer (knowledge gap). Only extract learnings about interview TECHNIQUE effectiveness, not communication patterns. Do NOT flag these as ineffective: formal speech, question repetition, simpler vocabulary, longer pauses — these are language differences, not technique failures.`,
     `ROLE: ${jobTitle}
 SKILLS: ${skillRequirements.map(s => `${s.skill} (${s.level}${s.required ? ", required" : ""})`).join(", ")}
 INTERVIEW # FOR THIS ROLE: ${(existingIntelligence?.interview_count ?? 0) + 1}
