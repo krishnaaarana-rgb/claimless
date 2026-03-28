@@ -200,6 +200,16 @@ export async function PATCH(request: NextRequest) {
     updates.email_delay_minutes = delay;
   }
 
+  if (body.post_interview_notify_threshold !== undefined) {
+    updates.post_interview_notify_threshold = Math.max(0, Math.min(100, Math.round(Number(body.post_interview_notify_threshold) || 0)));
+  }
+
+  if (body.post_interview_auto_shortlist_threshold !== undefined) {
+    updates.post_interview_auto_shortlist_threshold = body.post_interview_auto_shortlist_threshold === null
+      ? null
+      : Math.max(0, Math.min(100, Math.round(Number(body.post_interview_auto_shortlist_threshold) || 0)));
+  }
+
   if (Object.keys(updates).length === 0) {
     return NextResponse.json({ error: "No valid fields to update" }, { status: 400 });
   }

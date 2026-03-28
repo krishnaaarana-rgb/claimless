@@ -354,8 +354,80 @@ SCORING CALIBRATION:
       console.error("[interview-score] Intelligence import failed:", err);
     }
 
-    // Push scored results to ATS integrations (now that scoring is complete)
+    // Auto-notify recruiter and/or auto-shortlist based on score
     const companyId = body.company_id || (application.jobs as unknown as { company_id: string })?.company_id;
+    if (companyId && scoring.overall_score != null) {
+      try {
+        const { data: settings } = await supabase
+          .from("company_settings")
+          .select("email_api_key, email_from_address, email_from_name, post_interview_notify_threshold, post_interview_auto_shortlist_threshold")
+          .eq("company_id", companyId)
+          .single();
+
+        const notifyThreshold = settings?.post_interview_notify_threshold ?? 65;
+        const shortlistThreshold = settings?.post_interview_auto_shortlist_threshold ?? null;
+        const score = scoring.overall_score;
+
+        // Auto-shortlist if score meets threshold
+        if (shortlistThreshold && score >= shortlistThreshold && application.current_stage === "interview_completed") {
+          await supabase
+            .from("applications")
+            .update({
+              current_stage: "hired",
+              status: "hired",
+              shortlisted_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", application.id);
+          console.log("[interview-score] Auto-shortlisted:", candidate.full_name, "score:", score);
+        }
+
+        // Notify recruiter via email if score meets threshold
+        if (score >= notifyThreshold && settings?.email_api_key) {
+          // Get admin emails for this company
+          const { data: admins } = await supabase
+            .from("company_users")
+            .select("email")
+            .eq("company_id", companyId)
+            .in("role", ["admin", "owner"]);
+
+          const recLabel = scoring.recommendation === "strong_hire" ? "Strong Shortlist"
+            : scoring.recommendation === "hire" ? "Shortlist"
+            : scoring.recommendation === "maybe" ? "Maybe"
+            : "Review";
+
+          for (const admin of admins || []) {
+            if (!admin.email) continue;
+            const { sendEmail } = await import("@/lib/email/index");
+            await sendEmail(
+              {
+                to: admin.email,
+                subject: `${recLabel}: ${candidate.full_name} scored ${score}/100 — ${job.title}`,
+                html: `<div style="font-family: -apple-system, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
+                  <h2 style="color: #37352F; font-size: 18px; margin: 0 0 16px;">Interview Completed</h2>
+                  <div style="background: #F7F6F3; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+                    <p style="margin: 0 0 8px; font-size: 14px;"><strong>${candidate.full_name}</strong></p>
+                    <p style="margin: 0 0 4px; font-size: 13px; color: #6B6966;">Score: <strong style="color: ${score >= 70 ? '#059669' : score >= 55 ? '#2383E2' : '#DC2626'}">${score}/100</strong></p>
+                    <p style="margin: 0 0 4px; font-size: 13px; color: #6B6966;">Recommendation: <strong>${recLabel}</strong></p>
+                    <p style="margin: 0; font-size: 13px; color: #6B6966;">Job: ${job.title}</p>
+                  </div>
+                  <p style="font-size: 13px; color: #9B9A97; margin: 0 0 4px;">${scoring.overall_summary || scoring.overall_impression || scoring.recommendation_reasoning || ""}</p>
+                  <a href="${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/candidates/${application.candidate_id}" style="display: inline-block; margin-top: 12px; padding: 8px 16px; background: #2383E2; color: white; border-radius: 6px; text-decoration: none; font-size: 13px;">View Profile</a>
+                </div>`,
+                from: settings.email_from_address || undefined,
+                fromName: settings.email_from_name || "Claimless",
+              },
+              settings.email_api_key
+            ).catch(err => console.error("[interview-score] Recruiter notify failed:", err));
+          }
+          console.log("[interview-score] Notified recruiters:", candidate.full_name, "score:", score);
+        }
+      } catch (notifyErr) {
+        console.error("[interview-score] Auto-notify/shortlist failed:", notifyErr);
+      }
+    }
+
+    // Push scored results to ATS integrations (now that scoring is complete)
     if (companyId) {
       try {
         const { pushResultsToATS } = await import("@/lib/integrations/outbound-push");

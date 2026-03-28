@@ -30,6 +30,8 @@ interface CompanySettings {
   email_reply_to: string | null;
   email_reply_to_addresses: string[];
   email_delay_minutes: number;
+  post_interview_notify_threshold: number;
+  post_interview_auto_shortlist_threshold: number | null;
 }
 
 const TABS = [
@@ -827,6 +829,45 @@ function AIInterviewTab({ getValue, updateDraft }: TabProps) {
           className="w-full rounded-lg border border-[#E9E9E7] px-4 py-3 text-[14px] text-[#37352F] placeholder:text-[#9B9A97] focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20 focus:border-[#2383E2] resize-none"
           placeholder="Additional instructions for the AI interviewer..."
         />
+      </div>
+
+      {/* Post-interview actions */}
+      <div className="border-t border-[#E9E9E7] pt-5">
+        <h4 className="text-[13px] font-semibold text-[#37352F] mb-3">Post-Interview Actions</h4>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-[13px] font-medium text-[#37352F] mb-1">Notify me when score is above</label>
+            <div className="flex items-center gap-3">
+              <input
+                type="number"
+                min={0}
+                max={100}
+                value={Number(getValue("post_interview_notify_threshold") ?? 65)}
+                onChange={(e) => updateDraft("post_interview_notify_threshold", Math.max(0, Math.min(100, Number(e.target.value) || 0)))}
+                className="w-20 rounded-lg border border-[#E9E9E7] px-3 py-2 text-[14px] text-[#37352F] text-center focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20"
+              />
+              <span className="text-[12px] text-[#9B9A97]">/ 100 — sends you an email when a candidate scores this high</span>
+            </div>
+          </div>
+          <div>
+            <label className="block text-[13px] font-medium text-[#37352F] mb-1">Auto-shortlist when score is above</label>
+            <div className="flex items-center gap-3">
+              <input
+                type="number"
+                min={0}
+                max={100}
+                value={getValue("post_interview_auto_shortlist_threshold") != null ? Number(getValue("post_interview_auto_shortlist_threshold")) : ""}
+                onChange={(e) => {
+                  const val = e.target.value === "" ? null : Math.max(0, Math.min(100, Number(e.target.value) || 0));
+                  updateDraft("post_interview_auto_shortlist_threshold", val);
+                }}
+                className="w-20 rounded-lg border border-[#E9E9E7] px-3 py-2 text-[14px] text-[#37352F] text-center focus:outline-none focus:ring-2 focus:ring-[#2383E2]/20"
+                placeholder="Off"
+              />
+              <span className="text-[12px] text-[#9B9A97]">/ 100 — leave empty to disable auto-shortlist</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
