@@ -403,7 +403,7 @@ ${auBlock}`;
       model: "anthropic/claude-sonnet-4-6",
       fallbackModels: [
         { provider: "openrouter", model: "openai/gpt-5" },
-        { provider: "openrouter", model: "anthropic/claude-haiku-4-5-20251001" },
+        { provider: "openrouter", model: "anthropic/claude-haiku-4.5" },
       ],
       messages: [{ role: "system", content: systemPrompt }],
       temperature: 0.7,

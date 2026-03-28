@@ -167,7 +167,7 @@ Return ONLY the briefing text, no JSON, no markdown.`;
   const briefing = await analyzeWithClaude<string>(
     "You write concise interviewer briefings. Return plain text only, no JSON or markdown.",
     prompt,
-    { model: "anthropic/claude-haiku-4-5-20251001", maxTokens: 400, temperature: 0.3 }
+    { model: "anthropic/claude-haiku-4.5", maxTokens: 400, temperature: 0.3 }
   ).catch(() => null);
 
   // analyzeWithClaude tries to parse JSON — if it fails, the raw text is what we want
@@ -235,7 +235,7 @@ Return JSON:
     "low_signal_topic": "a topic that produced generic or rehearsed answers — avoid spending time here (null if nothing new)"
   }
 }`,
-    { model: "anthropic/claude-haiku-4-5-20251001", maxTokens: 2000, temperature: 0.2 }
+    { model: "anthropic/claude-haiku-4.5", maxTokens: 2000, temperature: 0.2 }
   );
 
   // Merge with existing intelligence
