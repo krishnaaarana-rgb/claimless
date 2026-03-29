@@ -404,8 +404,8 @@ ${auBlock}`;
       provider: "openrouter",
       model: "anthropic/claude-sonnet-4-6",
       fallbackModels: [
-        { provider: "openrouter", model: "openai/gpt-5" },
-        { provider: "openrouter", model: "anthropic/claude-haiku-4.5" },
+        { provider: "anthropic", model: "claude-sonnet-4-6" },
+        { provider: "openai", model: "gpt-4o" },
       ],
       messages: [{ role: "system", content: systemPrompt }],
       temperature: 0.7,
