@@ -403,10 +403,6 @@ ${auBlock}`;
     model: {
       provider: "openrouter",
       model: "anthropic/claude-sonnet-4-6",
-      fallbackModels: [
-        { provider: "anthropic", model: "claude-sonnet-4-6" },
-        { provider: "openai", model: "gpt-4o" },
-      ],
       messages: [{ role: "system", content: systemPrompt }],
       temperature: 0.7,
     },
