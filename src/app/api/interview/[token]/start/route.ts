@@ -88,7 +88,8 @@ export async function POST(
 
   // 2. If token was ALREADY active (not freshly claimed) AND interview not yet completed, allow reconnection
   const appStage = (application as unknown as { current_stage: string }).current_stage;
-  if (!freshClaim && tokenData.status === "active" && appStage !== "interview_completed") {
+  const previousInterviewEnded = !!application.application_form_data?.interview_ended_at;
+  if (!freshClaim && tokenData.status === "active" && appStage !== "interview_completed" && !previousInterviewEnded) {
     const existingAssistantId = application.application_form_data?.vapi_assistant_id as string | undefined;
     if (existingAssistantId) {
       const { data: settings } = await supabase
@@ -117,6 +118,7 @@ export async function POST(
 
   // 2b. Double-click guard: even on a fresh claim, a concurrent request may have
   //     already created a Vapi assistant. Re-check before creating a new one.
+  //     BUT: if the previous interview already ended, the old assistant was deleted — ignore it.
   if (freshClaim) {
     const { data: freshApp } = await supabase
       .from("applications")
@@ -124,8 +126,10 @@ export async function POST(
       .eq("id", application.id)
       .single();
 
-    const existingAssistantId = (freshApp?.application_form_data as Record<string, unknown> | null)?.vapi_assistant_id as string | undefined;
-    if (existingAssistantId) {
+    const freshFormData = freshApp?.application_form_data as Record<string, unknown> | null;
+    const existingAssistantId = freshFormData?.vapi_assistant_id as string | undefined;
+    const priorInterviewEnded = !!freshFormData?.interview_ended_at;
+    if (existingAssistantId && !priorInterviewEnded) {
       const { data: settings } = await supabase
         .from("company_settings")
         .select("interview_duration_minutes")
@@ -403,6 +407,10 @@ ${auBlock}`;
     model: {
       provider: "openrouter",
       model: "anthropic/claude-sonnet-4-6",
+      fallbackModels: [
+        { provider: "openrouter", model: "openai/gpt-5" },
+        { provider: "openrouter", model: "anthropic/claude-haiku-4.5" },
+      ],
       messages: [{ role: "system", content: systemPrompt }],
       temperature: 0.7,
     },
